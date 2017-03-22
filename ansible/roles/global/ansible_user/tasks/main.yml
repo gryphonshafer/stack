@@ -1,0 +1,15 @@
+---
+- user:
+    name: ansible
+    shell: /bin/bash
+    groups: "sudo"
+    append: yes
+  register: ansible_user_settings
+
+- name: add ansible to sudo
+  copy:
+    src: 98_ansible
+    dest: /etc/sudoers.d/98_ansible
+
+- include: id_rsa.yml
+- include: password.yml

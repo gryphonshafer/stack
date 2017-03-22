@@ -1,0 +1,5 @@
+---
+mysql_root_password: ''
+mysql_user: ''
+mysql_password: ''
+local_dir: "{{ lookup( 'env', 'LOCAL_DIR' ) }}"

@@ -1,0 +1,40 @@
+---
+- name: set output directory
+  set_fact:
+    ssl_directory: /etc/nginx/certificates
+
+- stat:
+    path: "{{ ssl_directory }}"
+  register: st
+
+- name: make certificates directory
+  command: mkdir -p {{ ssl_directory }}
+  when: st.stat.exists == false
+
+- name: generate SSL certificate password
+  command: /usr/bin/openssl rand -base64 15
+  register: ssl_password
+  when: st.stat.exists == false
+
+- name: generate SSL certificate
+  command: "{{ item }}"
+  with_items:
+    - |
+      openssl genrsa -des3 -passout pass:{{ ssl_password.stdout }}
+        -out {{ ssl_directory }}/{{ domain }}.key 2048 -noout
+    - |
+      openssl rsa -in {{ ssl_directory }}/{{ domain }}.key
+        -passin pass:{{ ssl_password.stdout }} -out {{ ssl_directory }}/{{ domain }}.key
+    - |
+      openssl req -new -key {{ ssl_directory }}/{{ domain }}.key
+        -out {{ ssl_directory }}/{{ domain }}.csr -passin pass:{{ ssl_password.stdout }} -subj "/"
+    - |
+      openssl x509 -req -days 9000 -in {{ ssl_directory }}/{{ domain }}.csr
+        -signkey {{ ssl_directory }}/{{ domain }}.key -out {{ ssl_directory }}/{{ domain }}.crt
+  when: st.stat.exists == false
+  notify: restart nginx
+
+- name: remove csr file
+  file:
+    path: "{{ ssl_directory }}/{{ domain }}.csr"
+    state: absent

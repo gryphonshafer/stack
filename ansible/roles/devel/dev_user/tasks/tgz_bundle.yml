@@ -1,0 +1,23 @@
+---
+- stat:
+    path: "/home/{{ dev_user }}/.files.tgz"
+  register: tgz_bundle_tgz
+
+- name: load tgz_bundle_url from credentials.ini
+  set_fact:
+    tgz_bundle_url: "{{ lookup( 'ini', 'tgz_bundle_url file={{ local_dir }}/credentials.ini' ) }}"
+  when: tgz_bundle_tgz.stat.exists == false and local_dir is defined and ( tgz_bundle_url == '' or tgz_bundle_url == [] )
+
+- name: copy tgz bundle into dev user home dir
+  get_url:
+    url: "{{ tgz_bundle_url }}"
+    dest: "/home/{{ dev_user }}/.files.tgz"
+    owner: "{{ dev_user }}"
+    group: "{{ dev_user }}"
+  when: tgz_bundle_tgz.stat.exists == false and tgz_bundle_url != '' and tgz_bundle_url != []
+
+- unarchive:
+    src: "/home/{{ dev_user }}/.files.tgz"
+    dest: "/home/{{ dev_user }}"
+    remote_src: true
+  when: tgz_bundle_tgz.stat.exists == false and tgz_bundle_url != '' and tgz_bundle_url != []

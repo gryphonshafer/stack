@@ -1,0 +1,36 @@
+---
+- name: install nginx.conf file
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: install proxy.conf file
+  copy:
+    src: proxy.conf
+    dest: /etc/nginx/conf.d/proxy.conf
+  notify: restart nginx
+
+- name: install ssl_params file
+  copy:
+    src: ssl_params
+    dest: /etc/nginx/ssl_params
+  notify: restart nginx
+
+- name: build ssl_conf file
+  template:
+    src: ssl_conf.j2
+    dest: /etc/nginx/ssl_conf
+  notify: restart nginx
+
+- name: backup /etc/nginx/fastcgi_params dist file
+  copy:
+    src: /etc/nginx/fastcgi_params
+    dest: /etc/nginx/fastcgi_params.dist
+    force: no
+
+- name: install /etc/nginx/fastcgi_params file
+  copy:
+    src: fastcgi_params
+    dest: /etc/nginx/fastcgi_params
+  notify: restart nginx

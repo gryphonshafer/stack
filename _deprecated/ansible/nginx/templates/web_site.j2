@@ -1,0 +1,22 @@
+server {
+    listen 80 default_server;
+    server_name {{ domain }} www.{{ domain }} *.{{ domain }} localhost localhost.localdomain;
+    include conf.d/error_pages;
+
+    root /var/www/{{ domain }}/htdocs;
+    index index.html;
+
+    location ~ /\.ht {
+        deny all;
+    }
+} # 80
+
+server {
+    listen 443 default_server;
+    server_name {{ domain }} www.{{ domain }} *.{{ domain }} localhost localhost.localdomain;
+    include /etc/nginx/ssl_conf;
+
+    location / {
+        proxy_pass http://localhost;
+    }
+} # 443

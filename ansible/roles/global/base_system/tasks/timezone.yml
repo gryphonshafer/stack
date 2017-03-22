@@ -1,0 +1,10 @@
+---
+- name: set timezone
+  copy:
+    src: timezone
+    dest: /etc/timezone
+  register: timezone_set
+
+- name: update the hardware clock
+  command: dpkg-reconfigure -f noninteractive tzdata
+  when: timezone_set|changed

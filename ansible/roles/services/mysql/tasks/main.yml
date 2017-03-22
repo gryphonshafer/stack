@@ -1,0 +1,12 @@
+---
+- include: passwords.yml
+
+- name: mysql docker container
+  docker_container:
+    name: service-mysql
+    image: mysql:latest
+    restart_policy: always
+    env:
+        MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+        MYSQL_USER: "{{ mysql_user }}"
+        MYSQL_PASSWORD: "{{ mysql_password }}"

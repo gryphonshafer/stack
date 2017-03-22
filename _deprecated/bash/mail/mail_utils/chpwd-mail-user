@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ ! $1 ] || [ ! $2 ]
+then
+    echo "Usage: $( basename $0 ) chpwd_mail_user EMAIL PASSWORD"
+    exit 1
+fi
+
+echo $2 | userdbpw -md5 | userdb $1 set systempw
+makeuserdb

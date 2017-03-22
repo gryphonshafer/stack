@@ -1,0 +1,18 @@
+#!/bin/bash
+export PERLBREW_ROOT=${PERLBREW_ROOT:={{ perlbrew_root }}}
+export PERLBREW_HOME=${PERLBREW_HOME:=$HOME/.perlbrew}
+. ${PERLBREW_HOME}/init
+export PATH=$PERLBREW_PATH:$PATH:/bin
+. ${PERLBREW_ROOT}/etc/bashrc
+
+_cmd="$1"
+shift
+_args="'$1'"
+shift
+for i in "$@"
+do
+   _args="${_args} '$i'"
+done
+
+_command="perl $_cmd $_args"
+bash -c "$_command"

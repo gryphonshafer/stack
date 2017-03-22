@@ -1,0 +1,10 @@
+if iptables -t nat -L DOCKER >/dev/null 2>&1; then
+    echo '*nat' >/etc/shorewall/docker_rules
+    iptables -t nat -S DOCKER >>/etc/shorewall/docker_rules
+    iptables -t nat -S POSTROUTING >>/etc/shorewall/docker_rules
+    echo "COMMIT" >>/etc/shorewall/docker_rules
+
+    echo '*filter' >>/etc/shorewall/docker_rules
+    iptables -S DOCKER >> /etc/shorewall/docker_rules
+    echo "COMMIT" >>/etc/shorewall/docker_rules
+fi

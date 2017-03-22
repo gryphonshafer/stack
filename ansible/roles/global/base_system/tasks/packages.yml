@@ -1,0 +1,36 @@
+---
+- name: backup /etc/apt/sources.list dist file
+  copy:
+    src: /etc/apt/sources.list
+    dest: /etc/apt/sources.list.dist
+    force: no
+
+- name: add contrib to /etc/apt/sources.list
+  replace:
+    dest: /etc/apt/sources.list
+    regexp: ' main$'
+    replace: ' main contrib'
+
+- name: dist upgrade
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    upgrade: dist
+
+- name: install system packages
+  apt:
+    pkg: '{{ item }}'
+    state: latest
+  with_items: '{{ system_packages }}'
+
+- name: install rsyslog
+  apt:
+    pkg: rsyslog
+    state: latest
+  notify: restart rsyslog
+
+- name: install usability packages
+  apt:
+    pkg: '{{ item }}'
+    state: latest
+  with_items: '{{ usability_packages }}'

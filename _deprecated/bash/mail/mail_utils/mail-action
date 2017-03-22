@@ -1,0 +1,21 @@
+#!/bin/sh
+action=${1:-"restart"}
+
+for service in \
+    amavis \
+    clamav-daemon \
+    clamav-freshclam \
+    saslauthd \
+    courier-authdaemon \
+    courier-imap \
+    courier-pop \
+    courier-imap-ssl \
+    courier-pop-ssl \
+    postfix \
+    spamassassin
+do
+    if [ -f /etc/init.d/$service ]
+    then
+        service $service $action
+    fi
+done

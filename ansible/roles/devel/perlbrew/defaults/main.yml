@@ -1,0 +1,3 @@
+---
+perl_version: stable
+perlbrew_root: /opt/perl5

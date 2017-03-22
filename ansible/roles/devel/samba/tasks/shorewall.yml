@@ -1,0 +1,11 @@
+---
+- stat:
+    path: /etc/shorewall/rules.d
+  register: st
+
+- name: install shorewall rules
+  copy:
+    src: shorewall.rules
+    dest: /etc/shorewall/rules.d/samba
+  when: st.stat.exists == true
+  notify: restart shorewall

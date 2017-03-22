@@ -1,0 +1,48 @@
+---
+- name: build sites-available web site conf
+  template:
+    src: web_site.j2
+    dest: /etc/nginx/sites-available/{{ domain }}
+  notify: restart nginx
+
+- name: remove default nginx web site stuff
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /var/www/nginx-default
+    - /var/www/html
+    - /etc/nginx/sites-enabled/default
+    - /etc/nginx/sites-available/default
+
+- stat:
+    path: /var/www/{{ domain }}/htdocs
+  register: st
+
+- name: make web site home directory
+  command: mkdir -p /var/www/{{ domain }}/htdocs
+  when: st.stat.exists == false
+
+- name: build default web site home page
+  template:
+    src: web_page.j2
+    dest: /var/www/{{ domain }}/htdocs/index.html
+  notify: restart nginx
+
+- name: chown /var/www/* stuff
+  file:
+    path: /var/www
+    owner: www-data
+    group: www-data
+  with_items:
+    - /var/www
+    - /var/www/{{ domain }}
+    - /var/www/{{ domain }}/htdocs
+    - /var/www/{{ domain }}/htdocs/index.html
+
+- name: set example web site conf active
+  file:
+    src: /etc/nginx/sites-available/{{ domain }}
+    dest: /etc/nginx/sites-enabled/{{ domain }}
+    state: link
+  notify: restart nginx

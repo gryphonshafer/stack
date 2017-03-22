@@ -1,0 +1,50 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.9.2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.box                        = "bento/debian-8.7"
+    config.vm.box_version                = "= 2.3.3"
+    config.vm.box_download_checksum      = "f5b1504bed7fb2801bd0062524681eb6c752a19cd11462eddab423f327fb0768"
+    config.vm.box_download_checksum_type = "sha256"
+
+    config.vm.provider "virtualbox" do |vb|
+        vb.gui = false
+        vb.customize ["modifyvm", :id, "--vram", "10"]
+    end
+
+    config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    synced_folder    = "/host"
+    hostname         = "taunton"
+
+    # create ansible user on all nodes using synced folder
+    config.vm.provision "shell",
+        name: "Ansible User",
+        path: "../../providers/ansible_user.bash",
+        env: { "LOCAL_DIR" => "#{synced_folder}/local" }
+
+    config.vm.define hostname do |node|
+        node.vm.hostname = hostname
+        node.vm.provider "virtualbox" do |vb|
+            vb.name   = "Taunton Dev VM"
+            vb.memory = 2048
+            vb.cpus   = 4
+        end
+
+        node.vm.network :private_network, ip: "10.42.0.100"
+        node.vm.network "public_network"
+
+        node.vm.synced_folder "../../../", synced_folder
+
+        node.vm.provision "shell",
+            name: "Ansible",
+            path: "../../providers/ansible.bash",
+            env: { "HOSTS" => "#{synced_folder}/vagrant/configs/#{hostname}/hosts" }
+
+        node.vm.provision "shell",
+            name: "Ansible Playbook",
+            inline:
+                "su -l ansible -c 'cd #{synced_folder}/ansible; " +
+                "PYTHONUNBUFFERED=1 LOCAL_DIR=#{synced_folder}/local " +
+                "ansible-playbook -i inventories/#{hostname}.ini playbooks/all.yml" + "'"
+    end
+end

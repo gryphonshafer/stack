@@ -1,0 +1,60 @@
+---
+- stat:
+    path: "{{ perlbrew_root }}/bin"
+  register: pb
+
+- name: download perlbrew
+  get_url:
+    url: http://install.perlbrew.pl
+    dest: /tmp/install.perlbrew.pl
+    mode: 0700
+  when: pb.stat.exists == false
+
+- name: install perlbrew
+  shell: cat /tmp/install.perlbrew.pl | /bin/bash
+  environment:
+    PERLBREW_ROOT: "{{ perlbrew_root }}"
+  when: pb.stat.exists == false
+
+- name: remove perlbrew source
+  file:
+    path: /tmp/install.perlbrew.pl
+    state: absent
+
+- name: bash.bashrc sources perlbrew bashrc
+  lineinfile:
+    dest: /etc/bash.bashrc
+    line: ". {{ perlbrew_root }}/etc/bashrc"
+
+- name: perlbrew-cron
+  template:
+    src: perlbrew-cron.j2
+    dest: /usr/local/bin/perlbrew-cron
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: upgrade perlbrew, install cpanm, install stable
+  shell: |
+    . {{ perlbrew_root }}/etc/bashrc
+    perlbrew self-upgrade >/dev/null 2>&1
+    perlbrew -f install-cpanm >/dev/null 2>&1
+    perlbrew install --notest --switch {{ perl_version }} >/dev/null 2>&1
+    exit 0
+  args:
+    executable: /bin/bash
+  changed_when: false
+
+- name: create @local and switch to it for dev user
+  shell: |
+    . {{ perlbrew_root }}/etc/bashrc
+    perlbrew switch `perlbrew list` >/dev/null 2>&1
+    perlbrew lib create local >/dev/null 2>&1
+    perlbrew switch @local >/dev/null 2>&1
+    exit 0
+  args:
+    executable: /bin/bash
+  changed_when: false
+  become: true
+  become_user: "{{ dev_user }}"
+  when: dev_user is defined and dev_user != '' and pb.stat.exists == false

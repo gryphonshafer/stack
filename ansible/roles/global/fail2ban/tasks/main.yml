@@ -1,0 +1,40 @@
+---
+- name: install fail2ban
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    pkg: fail2ban
+    state: latest
+
+- name: copy nginx-req-limit.conf
+  copy:
+    src: nginx-req-limit.conf
+    dest: /etc/fail2ban/filter.d/nginx-req-limit.conf
+  notify: restart fail2ban
+
+- name: copy jail.local
+  copy:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+  notify: restart fail2ban
+
+- name: copy ssh.conf
+  copy:
+    src: ssh.conf
+    dest: /etc/fail2ban/jail.d/ssh.conf
+  notify: restart fail2ban
+
+- name: copy action.local
+  copy:
+    src: action.local
+    dest: /etc/fail2ban/action.d/{{ item }}
+  with_items:
+    - mail
+    - mail-buffered
+    - mail-whois
+    - mail-whois-lines
+    - sendmail
+    - sendmail-buffered
+    - sendmail-whois
+    - sendmail-whois-lines
+  notify: restart fail2ban

@@ -1,0 +1,42 @@
+---
+- stat:
+    path: /etc/shorewall/rules.d
+  register: st
+
+- name: build shorewall/interfaces.f/dock
+  copy:
+    content: "dock docker0 dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0"
+    dest: /etc/shorewall/interfaces.f/1.dock
+  register: docker_interface
+  when: st.stat.exists == true
+
+- name: assemble shorewall/interfaces
+  assemble:
+    src: /etc/shorewall/interfaces.f
+    dest: /etc/shorewall/interfaces
+    owner: root
+    group: root
+    mode: 0644
+  when: docker_interface.changed
+
+- name: add docker to shorewall policy file
+  lineinfile:
+    dest: /etc/shorewall/policy
+    line: "$FW dock ACCEPT"
+    insertafter: '^\$FW\s+net\s+ACCEPT'
+  register: docker_policy
+  when: st.stat.exists == true
+
+- name: add docker to shorewall zone file
+  lineinfile:
+    dest: /etc/shorewall/zones
+    line: "dock ipv4"
+    insertafter: '^net\s+ipv4'
+  register: docker_zone
+  when: st.stat.exists == true
+
+- name: restart shorewall
+  service:
+    name: shorewall
+    state: restarted
+  when: docker_interface.changed or docker_policy.changed or docker_zone.changed

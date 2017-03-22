@@ -1,0 +1,11 @@
+if [ -f /etc/shorewall/docker_rules ]; then
+    iptables-restore -n </etc/shorewall/docker_rules
+    run_iptables -t nat -I PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
+    run_iptables -t nat -I OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER
+    run_iptables -I FORWARD -o docker0 -j DOCKER
+    run_iptables -I FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+    run_iptables -I FORWARD -i docker0 ! -o docker0 -j ACCEPT
+    run_iptables -I FORWARD -i docker0 -o docker0 -j ACCEPT
+
+    rm -f /etc/shorewall/docker_rules
+fi

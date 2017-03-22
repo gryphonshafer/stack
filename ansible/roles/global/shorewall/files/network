@@ -1,0 +1,10 @@
+# ping
+ACCEPT net $FW icmp
+ACCEPT $FW net icmp
+
+# dns bind packets
+ACCEPT net net tcp 53
+ACCEPT net net udp 53
+
+# traceroute allowance
+Trcrt/ACCEPT all all

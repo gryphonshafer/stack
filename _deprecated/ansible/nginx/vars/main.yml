@@ -1,0 +1,109 @@
+---
+errors:
+  - code: 400
+    name: Bad Request
+    description: The request could not be understood by the server due to malformed syntax.
+  - code: 401
+    name: Unauthorized
+    description: |
+        Similar to 403 Forbidden, but specifically for use when authentication
+        is required and has failed or has not yet been provided. The response
+        must include a WWW-Authenticate header field containing a challenge
+        applicable to the requested resource. Unlike a 401 Unauthorized
+        response, authenticating will make no difference.
+  - code: 404
+    name: Not Found
+    description: |
+        The requested resource could not be found but may be available again in
+        the future. Subsequent requests by the client are permissible.
+  - code: 405
+    name: Method Not Allowed
+    description: |
+        A request was made of a resource using a request method not supported by
+        that resource; for example, using GET on a form which requires data to
+        be presented via POST, or using PUT on a read-only resource.
+  - code: 406
+    name: Not Acceptable
+    description: |
+        The requested resource is only capable of generating content not
+        acceptable according to the Accept headers sent in the request.
+  - code: 407
+    name: Proxy Authentication Required
+    description: The client must first authenticate itself with the proxy.
+  - code: 408
+    name: Request Timeout
+    description: |
+        The server timed out waiting for the request. According to HTTP
+        specifications: "The client did not produce a request within the time
+        that the server was prepared to wait. The client MAY repeat the request
+        without modifications at any later time."
+  - code: 409
+    name: Conflict
+    description: |
+        Indicates that the request could not be processed because of conflict in
+        the request, such as an edit conflict in the case of multiple updates.
+  - code: 410
+    name: Gone
+    description: |
+        Indicates that the resource requested is no longer available and will
+        not be available again. This should be used when a resource has been
+        intentionally removed and the resource should be purged. Upon receiving
+        a 410 status code, the client should not request the resource again in
+        the future. Clients such as search engines should remove the resource
+        from their indices. Most use cases do not require clients and search
+        engines to purge the resource, and a "404 Not Found" may be used
+        instead.
+  - code: 411
+    name: Length Required
+    description: |
+        The request did not specify the length of its content, which is required by the requested resource.
+  - code: 412
+    name: Precondition Failed
+    description: The server does not meet one of the preconditions that the requester put on the request.
+  - code: 413
+    name: Request Entity Too Large
+    description: The request is larger than the server is willing or able to process.
+  - code: 414
+    name: Request-URI Too Long
+    description: |
+        The URI provided was too long for the server to process. Often the
+        result of too much data being encoded as a query-string of a GET
+        request, in which case it should be converted to a POST request.
+  - code: 415
+    name: Unsupported Media Type
+    description: |
+        The request entity has a media type which the server or resource does
+        not support. For example, the client uploads an image as image/svg+xml,
+        but the server requires that images use a different format.
+  - code: 500
+    name: Internal Server Error
+    description: |
+        A generic error message, given when an unexpected condition was
+        encountered and no more specific message is suitable.
+  - code: 501
+    name: Not Implemented
+    description: |
+        The server either does not recognize the request method, or it lacks the
+        ability to fulfil the request. Usually this implies future availability
+        (e.g., a new feature of a web-service API).
+  - code: 502
+    name: Bad Gateway
+    description: |
+        The server was acting as a gateway or proxy and received an invalid
+        response from the upstream server.
+  - code: 503
+    name: Service Unavailable
+    description: |
+        The server is currently unavailable (because it is overloaded or down
+        for maintenance). Generally, this is a temporary state.
+  - code: 504
+    name: Gateway Timeout
+    description: |
+        The server was acting as a gateway or proxy and did not receive a timely
+        response from the upstream server.
+  - code: 505
+    name: HTTP Version Not Supported
+    description: The server does not support the HTTP protocol version used in the request.
+  - code: 506
+    name: Variant Also Negotiates (RFC 2295)
+    description: Transparent content negotiation for the request results in a circular reference.

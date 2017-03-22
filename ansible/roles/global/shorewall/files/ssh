@@ -1,0 +1,2 @@
+# ssh
+ACCEPT net $FW tcp 22

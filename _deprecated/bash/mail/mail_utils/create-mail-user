@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# userdb fred@example.com set uid=vmail gid=vmail home=/var/vmail/example.com/fred mail=/var/vmail/example.com/fred
+# echo 'password' | userdbpw -md5 | userdb fred@example.com set systempw
+# makeuserdb
+# echo 'fred@example.com example.com/fred/' >> /var/vmail/users
+# postmap /var/vmail/users
+# echo 'Your email account is now created and usable.' | mailx -s 'Account Created' "$1@$2"
+# perl -MMIME::Base64 -e "print 'auth plain ', encode_base64(\"fred\@example.com\0fred\@example.com\0password\");"
+
+if [ ! $1 ] || [ ! $2 ]
+then
+    echo 'Usage: $( basename $0 ) USERNAME DOMAIN_NAME [PASSWORD]'
+    exit 1
+fi
+
+userdb "$1@$2" set uid=vmail gid=vmail home=/var/vmail/$2/$1 mail=/var/vmail/$2/$1
+
+_password=$( /usr/bin/openssl rand -base64 15 )
+if [ $3 ]
+then
+    _password=$3
+fi
+
+echo $_password | userdbpw -md5 | userdb "$1@$2" set systempw
+makeuserdb
+
+echo "$1@$2 $2/$1/" >> /var/vmail/users
+postmap /var/vmail/users
+
+#echo "Sending email to initiate $1@$2 account..."
+echo 'Your email account is now created and usable.' | mailx -s 'Account Created' "$1@$2"
+
+#echo "Waiting for $1@$2 account to initiate..."
+while [ ! -d /var/vmail/$2/$1 ]
+do
+    sleep 1
+done
+
+#echo "Creating default folders for $1@$2 account..."
+for folder in \
+    '.Drafts' \
+    '.Templates' \
+    '.Sent' \
+    '.Archives' \
+    '.Junk' \
+    '.Trash' \
+    '.Saved Messages'
+do
+    maildirmake.courier '/var/vmail/$2/$1/$folder'
+    chown vmail. '/var/vmail/$2/$1/$folder'
+done
+
+echo "SMTP authentication for $1@$2 account:"
+perl -MMIME::Base64 -e "print 'auth plain ', encode_base64(\"$1\@$2\0$1\@$2\0$_password\");"

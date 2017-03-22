@@ -1,0 +1,8 @@
+location ^~ /error_pages {
+    root /etc/nginx;
+    internal;
+}
+
+{% for error in errors %}
+error_page {{ error.code }} /error_pages/{{ error.code }}.html;
+{% endfor %}

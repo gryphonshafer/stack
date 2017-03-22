@@ -1,0 +1,15 @@
+---
+- name: install nginx
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    pkg: nginx
+    state: latest
+  notify: restart nginx
+
+- include: conf.yml
+- include: certificate.yml
+- include: error_pages.yml
+- include: web_site.yml
+- include: shorewall.yml
+- include: fail2ban.yml

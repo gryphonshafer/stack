@@ -1,0 +1,43 @@
+---
+- name: install docker prereq packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    pkg: '{{ item }}'
+    state: latest
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - gnupg2
+  register: docker_prereqs_installed
+
+- name: add apt-key
+  command: >
+    apt-key adv
+    --keyserver hkp://ha.pool.sks-keyservers.net:80
+    --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  when: docker_prereqs_installed|changed
+
+- name: add docker to sources list
+  copy:
+    src: docker.list
+    dest: /etc/apt/sources.list.d/docker.list
+  register: docker_list_added
+
+- name: update cache
+  apt:
+    update_cache: yes
+  when: docker_list_added|changed
+
+- name: install docker
+  apt:
+    pkg: docker-engine
+    state: latest
+    force: yes
+  register: docker_engine_installed
+
+- name: install docker-py
+  command: pip install docker-py
+  when: docker_list_added|changed
+
+- include: shorewall.yml

@@ -1,0 +1,3 @@
+# http and https
+ACCEPT net $FW tcp 80,443
+RULES_FILE

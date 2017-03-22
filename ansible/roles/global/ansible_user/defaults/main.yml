@@ -1,0 +1,3 @@
+---
+ansible_user_password: ''
+local_dir: "{{ lookup( 'env', 'LOCAL_DIR' ) }}"

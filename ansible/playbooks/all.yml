@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - base_system
+    - ansible_user
+    - shorewall
+    - exim
+    - docker
+
+- hosts: prod
+  become: true
+    - ssh_hardening
+    - fail2ban
+
+- hosts: dev
+  become: true
+  roles:
+    - de-vagrant
+    - dev_user
+    - samba
+    - perlbrew
+
+- hosts: mysql
+  become: true
+  roles:
+    - mysql

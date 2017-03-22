@@ -1,0 +1,6 @@
+---
+- include: hosts.yml
+- include: root_password.yml
+- include: timezone.yml
+- include: packages.yml
+- include: screen.yml

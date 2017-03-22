@@ -1,0 +1,2 @@
+SECTION NEW
+SHELL cat /etc/shorewall/rules.d/*

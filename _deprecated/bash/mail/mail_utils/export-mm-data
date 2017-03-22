@@ -1,0 +1,25 @@
+#!/bin/sh
+
+MMHOME=/usr/lib/mailman
+LISTDIR=/var/lib/mailman/lists
+DATADIR=`pwd`/mm-list-data
+
+echo "notice: writing output data under $DATADIR..."
+sleep 3
+
+cd $MMHOME || exit 1
+bin/list_lists -b | while read l; do
+    echo "info: collecting data for $l" >&2
+    mkdir -p $DATADIR/$l || exit 1
+
+    [ -f $DATADIR/$l/config ] || bin/config_list -o $DATADIR/$l/config $l
+    [ -f $DATADIR/$l/dbdump ] || bin/dumpdb $LISTDIR/$l/config.pck > $DATADIR/$l/dbdump
+    [ -f  $DATADIR/$l/members ] || bin/list_members -f -p $l > $DATADIR/$l/members
+
+    if [ ! -f $DATADIR/$l/config.mod ]; then
+        (
+            cat $DATADIR/$l/config
+            perl -nle '/password\047:\s*\047([^\047]+)/&&print "password = \047$1\047"' $DATADIR/$l/dbdump
+        ) > $DATADIR/$l/config.mod
+    fi
+done

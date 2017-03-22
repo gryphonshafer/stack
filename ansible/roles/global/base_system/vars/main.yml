@@ -1,0 +1,27 @@
+---
+system_packages:
+  - at
+  - libexpat1-dev
+  - libssl-dev
+  - libxml2-dev
+  - ntp
+  - ntpdate
+  - openssl
+  - ssh
+  - sudo
+  - telnet
+  - zlib1g
+  - zlib1g-dev
+  - zlibc
+usability_packages:
+  - ack-grep
+  - curl
+  - dos2unix
+  - git
+  - less
+  - perl-doc
+  - tree
+  - unzip
+  - vim
+  - wget
+  - zip

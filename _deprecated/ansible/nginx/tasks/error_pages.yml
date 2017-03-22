@@ -1,0 +1,25 @@
+---
+- name: set output directory
+  set_fact:
+    err_pages_dir: /etc/nginx/error_pages
+
+- stat:
+    path: "{{ err_pages_dir }}"
+  register: st
+
+- name: make error pages directory
+  command: mkdir -p {{ err_pages_dir }}
+  when: st.stat.exists == false
+
+- name: build error_pages file
+  template:
+    src: error_pages.j2
+    dest: /etc/nginx/conf.d/error_pages
+  notify: restart nginx
+
+- name: build error_pages HTML files
+  template:
+    src: error.html.j2
+    dest: "/etc/nginx/error_pages/{{ item.code }}.html"
+  with_items: errors
+  notify: restart nginx

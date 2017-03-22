@@ -1,0 +1,36 @@
+---
+- name: install samba
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - samba
+    - cifs-utils
+    - smbclient
+
+- name: backup smb.conf dist file
+  copy:
+    src: /etc/samba/smb.conf
+    dest: /etc/samba/smb.conf.dist
+    force: no
+
+- name: install smb.conf file
+  copy:
+    src: smb.conf
+    dest: /etc/samba/smb.conf
+  register: smb_file
+
+- name: set dev user's samba access
+  command: "bash -c '(echo \"{{ dev_user_password }}\"; echo \"{{ dev_user_password }}\") | smbpasswd -a -s {{ dev_user }}'"
+  changed_when: false
+  when: dev_user is defined and dev_user_password is defined
+
+- name: restart samba
+  service:
+    name: smbd
+    state: restarted
+  when: smb_file.changed
+
+- include: shorewall.yml

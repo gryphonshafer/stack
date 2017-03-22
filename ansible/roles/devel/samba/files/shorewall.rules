@@ -1,0 +1,3 @@
+# samba
+SMB(ACCEPT) $FW net
+SMB(ACCEPT) net $FW
