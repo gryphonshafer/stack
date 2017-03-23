@@ -1,0 +1,13 @@
+---
+- name: check if docker image already exists
+  command: docker images -q perl:latest
+  register: perl_image_check
+  changed_when: false
+
+- name: build perl base docker image
+  docker_image:
+    name: perl
+    tag: latest
+    state: present
+    path: ../docker/perl
+  when: perl_image_check.stdout == ""
