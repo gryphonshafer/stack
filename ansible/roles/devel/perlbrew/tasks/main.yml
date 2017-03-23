@@ -67,9 +67,10 @@
     group: root
     mode: '0644'
 
-- name: upgrade perlbrew, install cpanm, install stable
+- name: install libraries from cpanfile
   shell: |
     . {{ perlbrew_root }}/etc/bashrc
+    cd /root
     cpanm -n -f --with-develop --with-all-features --installdeps .
     exit 0
   args:
