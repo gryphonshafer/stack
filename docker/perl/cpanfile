@@ -6,7 +6,7 @@ feature 'develop', 'Development Tools' => sub {
     requires 'Term::ReadKey';
     requires 'Term::ReadLine::Perl';
     requires 'Term::ANSIColor';
-    requires 'Devel::Profiler';
+    requires 'Devel::NYTProf';
 };
 
 feature 'best', 'Best Practices' => sub {
