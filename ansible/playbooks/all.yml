@@ -21,6 +21,11 @@
     - samba
     - perlbrew
 
+- hosts: app
+  become: true
+  roles:
+    - perl
+
 - hosts: mysql
   become: true
   roles:
