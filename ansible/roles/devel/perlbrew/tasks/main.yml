@@ -58,3 +58,20 @@
   become: true
   become_user: "{{ dev_user }}"
   when: dev_user is defined and dev_user != '' and pb.stat.exists == false
+
+- name: copy cpanfile
+  copy:
+    src: cpanfile
+    dest: /root/cpanfile
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: upgrade perlbrew, install cpanm, install stable
+  shell: |
+    . {{ perlbrew_root }}/etc/bashrc
+    cpanm -n -f --with-develop --with-all-features --installdeps .
+    exit 0
+  args:
+    executable: /bin/bash
+  changed_when: false
