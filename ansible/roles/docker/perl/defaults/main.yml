@@ -1,0 +1,2 @@
+---
+src_dir: "{{ lookup( 'env', 'SRC_DIR'   ) | default( '/host', true ) }}"

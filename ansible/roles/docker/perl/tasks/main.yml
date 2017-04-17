@@ -9,5 +9,5 @@
     name: perl
     tag: latest
     state: present
-    path: ../docker/perl
+    path: "{{ src_dir }}/docker/perl"
   when: perl_image_check.stdout == ""

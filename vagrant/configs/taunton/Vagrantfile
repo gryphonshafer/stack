@@ -44,7 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             name: "Ansible Playbook",
             inline:
                 "su -l ansible -c 'cd #{synced_folder}/ansible; " +
-                "PYTHONUNBUFFERED=1 LOCAL_DIR=#{synced_folder}/local " +
+                "PYTHONUNBUFFERED=1 LOCAL_DIR=#{synced_folder}/local SRC_DIR=#{synced_folder}" +
                 "ansible-playbook -i inventories/#{hostname}.ini playbooks/all.yml" + "'"
     end
 end
