@@ -1,0 +1,4 @@
+---
+dependencies:
+  - dev_user
+  - samba

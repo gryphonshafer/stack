@@ -23,6 +23,7 @@
     - de-vagrant
     - dev_user
     - samba
+    - host_drive_mount
 
 - hosts: perl
   become: true
