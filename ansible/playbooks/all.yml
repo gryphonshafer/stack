@@ -6,6 +6,10 @@
     - ansible_user
     - shorewall
     - exim
+
+- hosts: docker
+  become: true
+  roles:
     - docker
 
 - hosts: prod
@@ -19,6 +23,10 @@
     - de-vagrant
     - dev_user
     - samba
+
+- hosts: perl
+  become: true
+  roles:
     - perlbrew
 
 - hosts: app

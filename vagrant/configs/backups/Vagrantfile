@@ -14,7 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
     synced_folder    = "/host"
-    hostname         = "taunton"
+    hostname         = "backups"
 
     # create ansible user on all nodes using synced folder
     config.vm.provision "shell",
@@ -25,12 +25,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define hostname do |node|
         node.vm.hostname = hostname
         node.vm.provider "virtualbox" do |vb|
-            vb.name   = "Taunton Dev VM"
+            vb.name   = "Backup Manager VM"
             vb.memory = 2048
             vb.cpus   = 4
         end
 
-        node.vm.network :private_network, ip: "10.42.0.100"
+        node.vm.network :private_network, ip: "10.42.0.2"
         node.vm.network "public_network"
 
         node.vm.synced_folder "../../../", synced_folder
