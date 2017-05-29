@@ -39,3 +39,8 @@
   become: true
   roles:
     - mysql
+
+- hosts: backups
+  become: true
+  roles:
+    - backup_scripts
