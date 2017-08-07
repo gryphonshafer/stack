@@ -29,6 +29,7 @@ cd ~/rsyncs/ufda/var
 echo 'archive: ufda trac'
 sudo tar $_flags $_outdir/ufda.trac.tgz trac
 echo 'archive: ufda www'
+sudo rm $_outdir/ufda.www.tgz.*
 sudo tar $_flags - www | sudo split -d -b 1G - $_outdir/ufda.www.tgz.
 
 cd ~/rsyncs/ufda/usr/local
