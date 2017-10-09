@@ -1,5 +1,5 @@
 ---
-- include: load_settings.yml
-- include: dev_user_account.yml
-- include: id_rsa.yml
-- include: tgz_bundle.yml
+- import_tasks: load_settings.yml
+- import_tasks: dev_user_account.yml
+- import_tasks: id_rsa.yml
+- import_tasks: tgz_bundle.yml

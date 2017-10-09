@@ -40,4 +40,4 @@
   command: pip install docker-py
   when: docker_list_added|changed
 
-- include: shorewall.yml
+- import_tasks: shorewall.yml

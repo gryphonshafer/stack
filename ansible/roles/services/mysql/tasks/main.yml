@@ -1,5 +1,5 @@
 ---
-- include: passwords.yml
+- import_tasks: passwords.yml
 
 - name: mysql docker container
   docker_container:

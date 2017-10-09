@@ -1,6 +1,6 @@
 ---
-- include: hosts.yml
-- include: root_password.yml
-- include: timezone.yml
-- include: packages.yml
-- include: screen.yml
+- import_tasks: hosts.yml
+- import_tasks: root_password.yml
+- import_tasks: timezone.yml
+- import_tasks: packages.yml
+- import_tasks: screen.yml

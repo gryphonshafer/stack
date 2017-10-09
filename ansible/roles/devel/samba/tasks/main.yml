@@ -33,4 +33,4 @@
     state: restarted
   when: smb_file.changed
 
-- include: shorewall.yml
+- import_tasks: shorewall.yml
