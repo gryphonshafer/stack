@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 export DEBIAN_FRONTEND=noninteractive
-
-apt-get -q -y update
-apt-get -q -y upgrade
 apt-get -q -y install build-essential libssl-dev libffi-dev python-dev
 
 # install pip

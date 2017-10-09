@@ -1,10 +1,10 @@
 VAGRANTFILE_API_VERSION = "2"
-Vagrant.require_version ">= 1.9.2"
+Vagrant.require_version ">= 2.0.0"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box                        = "bento/debian-8.7"
-    config.vm.box_version                = "= 2.3.3"
-    config.vm.box_download_checksum      = "f5b1504bed7fb2801bd0062524681eb6c752a19cd11462eddab423f327fb0768"
+    config.vm.box                        = "bento/debian-9.1"
+    config.vm.box_version                = "201708.22.0"
+    config.vm.box_download_checksum      = "8c61d77346a349d23311c0e10b51c93004fa44a644f7988225901700ab69844f"
     config.vm.box_download_checksum_type = "sha256"
 
     config.vm.provider "virtualbox" do |vb|
@@ -16,7 +16,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     synced_folder    = "/host"
     hostname         = "backups"
 
-    # create ansible user on all nodes using synced folder
+    config.vm.provision "shell", inline: "apt-get -q -y update && apt-get -q -y upgrade"
     config.vm.provision "shell",
         name: "Ansible User",
         path: "../../providers/ansible_user.bash",

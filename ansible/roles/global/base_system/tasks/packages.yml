@@ -11,14 +11,10 @@
     regexp: ' main$'
     replace: ' main contrib'
 
-- name: dist upgrade
+- name: install system packages
   apt:
     update_cache: yes
     cache_valid_time: 86400
-    upgrade: dist
-
-- name: install system packages
-  apt:
     pkg: '{{ item }}'
     state: latest
   with_items: '{{ system_packages }}'
