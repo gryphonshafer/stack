@@ -44,7 +44,7 @@
     - ssh
 
 - name: get interfaces
-  shell: "ifconfig | grep ^eth | grep -v ^eth[0-9]: | awk -F'[ ]+' '{print $1}'"
+  shell: "ifconfig | egrep '^e(th|np)' | awk -F'[ ]+' '{print $1}' | sed -e 's/:$//'"
   register: interfaces
   changed_when: false
 

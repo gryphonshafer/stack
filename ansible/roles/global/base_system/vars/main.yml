@@ -4,8 +4,6 @@ system_packages:
   - libexpat1-dev
   - libssl-dev
   - libxml2-dev
-  - ntp
-  - ntpdate
   - openssl
   - ssh
   - sudo

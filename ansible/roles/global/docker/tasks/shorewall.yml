@@ -5,7 +5,7 @@
 
 - name: build shorewall/interfaces.f/dock
   copy:
-    content: "dock docker0 dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0"
+    content: "dock docker0 - dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0"
     dest: /etc/shorewall/interfaces.f/1.dock
   register: docker_interface
   when: st.stat.exists == true

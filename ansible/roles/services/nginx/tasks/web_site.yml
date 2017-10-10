@@ -20,7 +20,9 @@
   register: st
 
 - name: make web site home directory
-  command: mkdir -p /var/www/{{ domain }}/htdocs
+  file:
+    path: "/var/www/{{ domain }}/htdocs"
+    state: directory
   when: st.stat.exists == false
 
 - name: build default web site home page

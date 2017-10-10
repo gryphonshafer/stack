@@ -4,7 +4,6 @@
   roles:
     - base_system
     - ansible_user
-    - shorewall
     - exim
 
 - hosts: docker
@@ -14,12 +13,15 @@
 
 - hosts: prod
   become: true
+    - shorewall
     - ssh_hardening
     - fail2ban
+    - ntp
 
 - hosts: dev
   become: true
   roles:
+    - timezone
     - de-vagrant
     - dev_user
     - samba
@@ -33,11 +35,8 @@
 - hosts: app
   become: true
   roles:
+    - nginx
     - perl
-
-- hosts: mysql
-  become: true
-  roles:
     - mysql
 
 - hosts: backups

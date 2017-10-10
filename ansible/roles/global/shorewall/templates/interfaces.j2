@@ -1,3 +1,2 @@
-FORMAT 2
-{% for interface in interfaces.stdout_lines %}net {{ interface }} dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0
+{% for interface in interfaces.stdout_lines %}net {{ interface }} - dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0
 {% endfor %}

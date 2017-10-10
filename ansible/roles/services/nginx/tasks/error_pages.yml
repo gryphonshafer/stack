@@ -21,5 +21,5 @@
   template:
     src: error.html.j2
     dest: "/etc/nginx/error_pages/{{ item.code }}.html"
-  with_items: errors
+  with_items: "{{ errors }}"
   notify: restart nginx
