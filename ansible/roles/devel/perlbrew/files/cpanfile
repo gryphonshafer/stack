@@ -10,6 +10,7 @@ feature 'develop', 'Development Tools' => sub {
 };
 
 feature 'best', 'Best Practices' => sub {
+    requires 'exact';
     requires 'Modern::Perl';
     requires 'Try::Tiny';
     requires 'Carp';
@@ -53,6 +54,7 @@ feature 'data', 'Data Access Channels' => sub {
 
 feature 'files', 'File System Tools' => sub {
     requires 'File::Path';
+    requires 'IO::All';
 };
 
 feature 'logging', 'Logging Tools' => sub {
