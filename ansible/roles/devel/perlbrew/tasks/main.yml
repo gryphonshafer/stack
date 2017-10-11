@@ -54,12 +54,6 @@
     mode: '0755'
   when: dev_user is defined and dev_user != '' and perlbrew_installed|changed
 
-- name: copy cpanfile
-  copy:
-    src: cpanfile
-    dest: /tmp/cpanfile
-  when: dev_user is defined and dev_user != '' and perlbrew_installed|changed
-
 - name: create local lib, switch to it, and install libs from cpanfile
   command: /tmp/local_lib.bash
   changed_when: false
@@ -70,7 +64,7 @@
     path: /tmp/local_lib.bash
     state: absent
 
-- name: remove cpanfile
+- name: remove perlbrew help text file
   file:
-    path: /tmp/cpanfile
+    path: /tmp/perlbrew
     state: absent
