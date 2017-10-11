@@ -1,0 +1,15 @@
+#!/bin/bash
+
+su -l {{ dev_user }} <<EOF
+
+. {{ perlbrew_root }}/etc/bashrc
+perlbrew switch `perlbrew list` >/dev/null 2>&1
+perlbrew lib create local >/dev/null 2>&1
+perlbrew switch @local >/dev/null 2>&1
+
+cd /tmp
+cpanm -n -f --with-develop --with-all-features --installdeps .
+
+EOF
+
+exit 0
