@@ -6,17 +6,17 @@
     - ansible_user
     - exim
 
-- hosts: docker
-  become: true
-  roles:
-    - docker
-
 - hosts: prod
   become: true
     - shorewall
     - ssh_hardening
     - fail2ban
     - ntp
+
+- hosts: docker
+  become: true
+  roles:
+    - docker
 
 - hosts: dev
   become: true

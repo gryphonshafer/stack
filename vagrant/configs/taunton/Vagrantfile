@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provider "virtualbox" do |vb|
         vb.gui = false
         vb.customize ["modifyvm", :id, "--vram", "20"]
+        vb.customize ["modifyvm", :id, "--vrde", "off"]
     end
 
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
