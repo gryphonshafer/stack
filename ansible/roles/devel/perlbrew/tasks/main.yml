@@ -47,23 +47,6 @@
   changed_when: false
   when: perlbrew_installed|changed
 
-- name: copy local_lib.bash
-  template:
-    src: local_lib.bash.j2
-    dest: /tmp/local_lib.bash
-    mode: '0755'
-  when: dev_user is defined and dev_user != '' and perlbrew_installed|changed
-
-- name: create local lib, switch to it, and install libs from cpanfile
-  command: /tmp/local_lib.bash
-  changed_when: false
-  when: dev_user is defined and dev_user != '' and perlbrew_installed|changed
-
-- name: remove local_lib.bash
-  file:
-    path: /tmp/local_lib.bash
-    state: absent
-
 - name: remove perlbrew help text file
   file:
     path: /tmp/perlbrew
