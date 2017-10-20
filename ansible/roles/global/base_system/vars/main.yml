@@ -12,7 +12,7 @@ system_packages:
   - zlib1g-dev
   - zlibc
 usability_packages:
-  - ack-grep
+  - ack
   - curl
   - dos2unix
   - git
