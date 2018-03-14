@@ -39,7 +39,7 @@
     - perl
     - mysql
 
-- hosts: backups
+- hosts: backup_tools
   become: true
   roles:
     - backup_scripts

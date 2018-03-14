@@ -1,7 +1,10 @@
 ---
-- name: setup soft links to backup scripts
-  command: "ln -s /host/etc/{{ item }}.sh /home/{{ dev_user }}/{{ item }} && chown -h {{ dev_user }} /home/{{ dev_user }}/{{ item }}"
-  changed_when: false
+- file:
+    src: "/host/etc/{{ item }}"
+    dest: "/home/{{ dev_user }}/{{ item }}"
+    owner: "{{ dev_user }}"
+    group: "{{ dev_user }}"
+    state: link
   with_items:
     - pull_backups.sh
     - make_archives.sh

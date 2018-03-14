@@ -1,10 +1,10 @@
 VAGRANTFILE_API_VERSION = "2"
-Vagrant.require_version ">= 2.0.0"
+Vagrant.require_version ">= 2.0.2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box                        = "bento/debian-9.1"
-    config.vm.box_version                = "201708.22.0"
-    config.vm.box_download_checksum      = "8c61d77346a349d23311c0e10b51c93004fa44a644f7988225901700ab69844f"
+    config.vm.box                        = "bento/debian-9.3"
+    config.vm.box_version                = "201802.02.0"
+    config.vm.box_download_checksum      = "c886437574fa5b32f442d80ec5374066c9ef12cea92056f983faf5e71c72731e"
     config.vm.box_download_checksum_type = "sha256"
 
     config.vm.provider "virtualbox" do |vb|
@@ -34,9 +34,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.network "private_network", ip: "10.42.0.42"
         node.vm.network "public_network"
         node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
-        node.vm.network "forwarded_port", host_ip: "localhost", guest: 22, host: 2242
+        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2242
 
-        node.vm.synced_folder "../../../", synced_folder
+        node.vm.synced_folder "../../../", synced_folder, SharedFoldersEnableSymlinksCreate: false
 
         node.vm.provision "shell",
             name: "Ansible",

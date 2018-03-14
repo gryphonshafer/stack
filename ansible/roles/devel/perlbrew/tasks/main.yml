@@ -40,7 +40,7 @@
     . {{ perlbrew_root }}/etc/bashrc
     perlbrew self-upgrade >/dev/null 2>&1
     perlbrew -f install-cpanm >/dev/null 2>&1
-    perlbrew install --notest --switch {{ perl_version }} >/dev/null 2>&1
+    perlbrew install --notest {{ perl_version }} >/dev/null 2>&1
     exit 0
   args:
     executable: /bin/bash
