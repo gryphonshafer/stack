@@ -19,7 +19,7 @@ for _dir in \
     /opt/gitlab
 do
     mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings 104.237.132.91:$_dir/ $_this_home$_dir
+    eval sudo rsync $_settings ufda:$_dir/ $_this_home$_dir
 done
 
 #-----------------------------------------------------------------------------
@@ -37,5 +37,5 @@ for _dir in \
     /var/lib/amavis/.spamassassin
 do
     mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings 173.230.139.160:$_dir/ $_this_home$_dir
+    eval sudo rsync $_settings uber:$_dir/ $_this_home$_dir
 done
