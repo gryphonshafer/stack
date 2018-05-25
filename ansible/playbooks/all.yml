@@ -8,6 +8,7 @@
 
 - hosts: prod
   become: true
+  roles:
     - shorewall
     - ssh_hardening
     - fail2ban
