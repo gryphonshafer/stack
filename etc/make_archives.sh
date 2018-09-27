@@ -1,7 +1,7 @@
 #!/bin/sh
 
 _basedir="/y"
-_outdir="$_basedir/Linode_Servers"
+_outdir="$_basedir/Linode"
 
 if [ ! -d $_basedir ]
 then
@@ -9,67 +9,69 @@ then
     exit 1
 fi
 
-mkdir -p $_basedir/Linode_Servers
+mkdir -p $_basedir/Linode
 
-stty -echo
-printf "Password: "
-read _password
-stty echo
-printf "\n"
+# stty -echo
+# printf "Password: "
+# read _password
+# stty echo
+# printf "\n"
+
+# ... | openssl aes-256-cbc -a -k $_password | gzip ...
 
 #-----------------------------------------------------------------------------
 
 cd ~/rsyncs/ufda
 echo 'archive: ufda root'
-sudo tar -cf - etc root | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/ufda.etc-root.tar.aes.gz
+sudo tar -cf - etc root | gzip > $_outdir/ufda.etc-root.tar.gz
 
 echo 'archive: ufda home'
-sudo tar -cf - home | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/ufda.home.tar.aes.gz
+sudo tar -cf - home | gzip > $_outdir/ufda.home.tar.gz
 
 cd ~/rsyncs/ufda/var/spool/cron
 echo 'archive: ufda crontabs'
-sudo tar -cf - crontabs | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/ufda.crontabs.tar.aes.gz
+sudo tar -cf - crontabs | gzip > $_outdir/ufda.crontabs.tar.gz
 
 cd ~/rsyncs/ufda/var
 echo 'archive: ufda trac'
-sudo tar -cf - trac | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/ufda.trac.tar.aes.gz
+sudo tar -cf - trac | gzip > $_outdir/ufda.trac.tar.gz
 
 echo 'archive: ufda www'
-sudo rm $_outdir/ufda.www.aes.gz.*
-sudo tar -cf - www | openssl aes-256-cbc -a -k $_password | gzip | sudo split -d -b 1G - $_outdir/ufda.www.aes.gz.
+sudo rm $_outdir/ufda.www.gz.*
+sudo tar -cf - www | gzip | sudo split -d -b 1G - $_outdir/ufda.www.gz.
 
 cd ~/rsyncs/ufda/usr/local
 echo 'archive: ufda hybserv'
-sudo tar -cf - hybserv | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/ufda.hybserv.tar.aes.gz
+sudo tar -cf - hybserv | gzip > $_outdir/ufda.hybserv.tar.gz
 
 cd ~/rsyncs/ufda/opt
 echo 'archive: ufda gitlab'
-sudo tar -cf - gitlab | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/ufda.gitlab.tar.aes.gz
+sudo tar -cf - gitlab | gzip > $_outdir/ufda.gitlab.tar.gz
 
 #-----------------------------------------------------------------------------
 
 cd ~/rsyncs/uber
 echo 'archive: uber root'
-sudo tar -cf - etc root | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.etc-root.tar.aes.gz
+sudo tar -cf - etc root | gzip > $_outdir/uber.etc-root.tar.gz
 
 echo 'archive: uber home'
-sudo tar -cf - home | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.home.tar.aes.gz
+sudo tar -cf - home | gzip > $_outdir/uber.home.tar.gz
 
 cd ~/rsyncs/uber/var/spool/cron
 echo 'archive: uber crontabs'
-sudo tar -cf - crontabs | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.crontabs.tar.aes.gz
+sudo tar -cf - crontabs | gzip > $_outdir/uber.crontabs.tar.gz
 
 cd ~/rsyncs/uber/var
 echo 'archive: uber www'
-sudo tar -cf - www | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.www.tar.aes.gz
+sudo tar -cf - www | gzip > $_outdir/uber.www.tar.gz
 
 echo 'archive: uber vmail'
-sudo tar -cf - vmail | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.vmail.tar.aes.gz
+sudo tar -cf - vmail | gzip > $_outdir/uber.vmail.tar.gz
 
 cd ~/rsyncs/uber/var/lib
 echo 'archive: uber mailman'
-sudo tar -cf - mailman | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.mailman.tar.aes.gz
+sudo tar -cf - mailman | gzip > $_outdir/uber.mailman.tar.gz
 
 cd ~/rsyncs/uber/var/lib/amavis
 echo 'archive: uber spamassassin'
-sudo tar -cf - .spamassassin | openssl aes-256-cbc -a -k $_password | gzip > $_outdir/uber.spamassassin.tar.aes.gz
+sudo tar -cf - .spamassassin | gzip > $_outdir/uber.spamassassin.tar.gz
