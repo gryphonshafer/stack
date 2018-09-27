@@ -1,6 +1,6 @@
 #!/bin/sh
 
-_basedir="/c/Users/gryphon/OneDrive/Backups"
+_basedir="/y"
 _outdir="$_basedir/Linode_Servers"
 
 if [ ! -d $_basedir ]
