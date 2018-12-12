@@ -1,0 +1,4 @@
+requires 'exact', '>= 1.05';
+requires 'FindBin', '>= 1.51';
+requires 'YAML::XS', '>= 0.75';
+requires 'Template', '>= 2.28';

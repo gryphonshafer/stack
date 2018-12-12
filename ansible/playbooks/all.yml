@@ -14,17 +14,20 @@
     - fail2ban
     - ntp
 
+- hosts: user
+  become: true
+    - timezone
+    - user
+
 - hosts: docker
   become: true
   roles:
     - docker
 
-- hosts: dev
+- hosts: local
   become: true
   roles:
-    - timezone
     - de-vagrant
-    - dev_user
     - samba
     - host_drive_mount
 
@@ -33,10 +36,13 @@
   roles:
     - perlbrew
 
+- hosts: web
+  become: true
+    - nginx
+
 - hosts: app
   become: true
   roles:
-    - nginx
     - perl
     - mysql
 

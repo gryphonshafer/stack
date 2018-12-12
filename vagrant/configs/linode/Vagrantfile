@@ -21,31 +21,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         path: "../../providers/ansible_user.bash",
         env: { "LOCAL_DIR" => "/host/local" }
 
-    config.vm.define backups do |node|
-        node.vm.hostname = backups
+    config.vm.define git do |node|
+        node.vm.hostname = git
         node.vm.provider "virtualbox" do |vb|
-            vb.name   = "Backup Manager VM"
-            vb.memory = 1024
-            vb.cpus   = 1
+            vb.name   = "GitLab Linode Server"
+            vb.memory = 4096
+            vb.cpus   = 2
         end
 
-        node.vm.network "private_network", ip: "10.42.0.2"
+        node.vm.network "private_network", ip: "10.51.0.3"
         node.vm.network "public_network"
         node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
-        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2202
+        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2253
                 
         node.vm.synced_folder "../../../", synced_folder, SharedFoldersEnableSymlinksCreate: false
 
         node.vm.provision "shell",
             name: "Ansible",
             path: "../../providers/ansible.bash",
-            env: { "HOSTS" => "/host/vagrant/configs/backups/hosts" }
+            env: { "HOSTS" => "/host/vagrant/configs/git/hosts" }
 
         node.vm.provision "shell",
             name: "Ansible Playbook",
             inline:
                 "su -l ansible -c 'cd /host/ansible; " +
                 "PYTHONUNBUFFERED=1 LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/backups.ini playbooks/all.yml" + "'"
+                "ansible-playbook -i inventories/gitlab.ini playbooks/all.yml" + "'"
     end
 end

@@ -1,33 +1,33 @@
 ---
-- name: create dev user
+- name: create user
   user:
-    name: "{{ dev_user }}"
+    name: "{{ user }}"
     shell: /bin/bash
     groups: sudo
     generate_ssh_key: yes
     ssh_key_file: .ssh/id_rsa
-  register: create_dev_user
+  register: create_user
 
 - name: set root password
   user:
-    name: "{{ dev_user }}"
+    name: "{{ user }}"
     update_password: always
-    password: "{{ dev_user_password }}"
+    password: "{{ user_password }}"
 
 - name: move authorized_keys file
-  command: mv /home/{{ dev_user }}/.ssh/id_rsa.pub /home/{{ dev_user }}/.ssh/authorized_keys
-  when: create_dev_user.ssh_public_key != none
+  command: mv /home/{{ user }}/.ssh/id_rsa.pub /home/{{ user }}/.ssh/authorized_keys
+  when: create_user.ssh_public_key != none
 
 - name: add user to nopasswd sudoers
   copy:
-    content: "{{ dev_user }} ALL=(ALL) NOPASSWD:ALL"
-    dest: /etc/sudoers.d/42_{{ dev_user }}
+    content: "{{ user }} ALL=(ALL) NOPASSWD:ALL"
+    dest: /etc/sudoers.d/42_{{ user }}
 
 - name: setup email alias for dev user
   replace:
     dest: /etc/aliases
     regexp: '^root: \S+'
-    replace: 'root: {{ dev_user_email }}'
+    replace: 'root: {{ user_email }}'
   register: new_prime_alias
 
 - name: newaliases
