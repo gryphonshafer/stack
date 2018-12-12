@@ -2,11 +2,11 @@
 universal:
     vagrant:
         api_version: 2
-        require_version: 2.0.2
+        require_version: 2.2.2
     image:
-        name: bento/debian-9.3
-        version: 201802.02.0
-        checksum: c886437574fa5b32f442d80ec5374066c9ef12cea92056f983faf5e71c72731e
+        name: bento/debian-9
+        version: 201808.24.0
+        checksum: 151ba928d7c14383fa59f3bda1018ecb5e01469063684c127beb192e2b78386e
         checksum_type: sha256
     virtualbox:
         - vram: 20

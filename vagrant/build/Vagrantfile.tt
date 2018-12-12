@@ -18,19 +18,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
-    config.vm.provision "shell", inline: "apt-get -q -y update && apt-get -q -y upgrade"
+    config.vm.provision "shell", inline:
+        "apt-get -q -y update && " +
+        "DEBIAN_FRONTEND=noninteractive apt-get -y " +
+        "-o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade"
+
     [%- IF ansible_user %]
     config.vm.provision "shell",
         name: "Ansible User",
         path: "../../providers/ansible_user.bash",
         env: { "LOCAL_DIR" => "[% synced_folder %]/local" }
-    [%- END %]
+    [% END -%]
 
     [%- FOR host IN hosts -%]
     [%- hostname = host.keys.0 -%]
     [%- host = host.values.0 %]
-    config.vm.define [% hostname %] do |node|
-        node.vm.hostname = [% hostname %]
+    config.vm.define "[% hostname %]" do |node|
+        node.vm.hostname = "[% hostname %]"
         node.vm.provider "virtualbox" do |vb|
             vb.name   = "[% host.name %]"
             vb.memory = [% host.memory %]
@@ -50,20 +54,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         [% END -%]
         [% END -%]
 
-        node.vm.synced_folder "../../../", synced_folder, SharedFoldersEnableSymlinksCreate: false
+        node.vm.synced_folder "../../../", "[% synced_folder %]", SharedFoldersEnableSymlinksCreate: false
         [%- IF host.ansible %]
 
         node.vm.provision "shell",
             name: "Ansible",
             path: "../../providers/ansible.bash",
-            env: { "HOSTS" => "[% synced_folder %]/vagrant/configs/[% hostname %]/hosts" }
+            env: { "HOSTS" => "[% synced_folder %]/vagrant/configs/[% project %]/hosts" }
 
         node.vm.provision "shell",
             name: "Ansible Playbook",
             inline:
                 "su -l ansible -c 'cd [% synced_folder %]/ansible; " +
-                "PYTHONUNBUFFERED=1 LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
-                "ansible-playbook -i inventories/[% host.ansible.inventories %] playbooks/[% host.ansible.playbooks %]" + "'"
+                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
+                "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
+                "ansible-playbook -i inventories/[% host.ansible.inventories %] " +
+                "playbooks/[% host.ansible.playbooks %]" + "'"
         [%- END %]
     end
 
