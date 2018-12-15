@@ -36,7 +36,12 @@ for my $project (
 ) {
     my $dir = $FindBin::Bin . '/../configs/' . $project->{project};
     mkdir $dir;
-    $tt->process( $FindBin::Bin . '/Vagrantfile.tt', $project, $dir . '/Vagrantfile' ) or die $tt->error;
+
+    $tt->process( $FindBin::Bin . '/Vagrantfile.tt', $project, \my $output ) or die $tt->error;
+
+    $output =~ s/^\s+$//msg;
+    open( my $output_out, '>', $dir . '/Vagrantfile' ) or die $!;
+    print $output_out $output;
 
     my $hosts;
     if ( open( my $hosts_in, '<', $dir . '/hosts' ) ) {

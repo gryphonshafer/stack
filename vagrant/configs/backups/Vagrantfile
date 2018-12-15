@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.customize ["modifyvm", :id, "--vram", "20"]
         vb.customize ["modifyvm", :id, "--vrde", "off"]
     end
-    
+
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
     config.vm.provision "shell", inline:
@@ -24,7 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         name: "Ansible User",
         path: "../../providers/ansible_user.bash",
         env: { "LOCAL_DIR" => "/host/local" }
-    
+
     config.vm.define "backups" do |node|
         node.vm.hostname = "backups"
         node.vm.provider "virtualbox" do |vb|
@@ -37,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.network "public_network"
         node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
         node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2202
-                
+
         node.vm.synced_folder "../../../", "/host", SharedFoldersEnableSymlinksCreate: false
 
         node.vm.provision "shell",
