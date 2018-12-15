@@ -1,0 +1,16 @@
+---
+- name: ssh configuration hardening
+  replace:
+    dest: /etc/ssh/sshd_config
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    - { regexp: 'PermitRootLogin \S+', replace: 'PermitRootLogin no' }
+    - { regexp: '#PasswordAuthentication yes', replace: 'PasswordAuthentication no' }
+  register: ssh_config
+
+- name: reload ssh configuration
+  when: ssh_config is changed
+  service:
+    name: ssh
+    state: reloaded

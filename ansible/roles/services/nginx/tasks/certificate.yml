@@ -8,7 +8,9 @@
   register: st
 
 - name: make certificates directory
-  command: mkdir -p {{ ssl_directory }}
+  file:
+    path: "{{ ssl_directory }}"
+    state: directory
   when: st.stat.exists == false
 
 - name: generate SSL certificate password
@@ -21,7 +23,7 @@
   with_items:
     - |
       openssl genrsa -des3 -passout pass:{{ ssl_password.stdout }}
-        -out {{ ssl_directory }}/{{ domain }}.key 2048 -noout
+        -out {{ ssl_directory }}/{{ domain }}.key 2048
     - |
       openssl rsa -in {{ ssl_directory }}/{{ domain }}.key
         -passin pass:{{ ssl_password.stdout }} -out {{ ssl_directory }}/{{ domain }}.key

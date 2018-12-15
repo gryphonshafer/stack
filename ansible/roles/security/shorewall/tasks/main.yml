@@ -1,0 +1,72 @@
+---
+- name: install shorewall
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    pkg: [ 'shorewall', 'shorewall-doc' ]
+    state: latest
+
+- name: copy shorewall/examples/one-interface
+  copy:
+    src: /usr/share/doc/shorewall/examples/one-interface/{{ item }}
+    dest: /etc/shorewall/{{ item }}
+    force: no
+  with_items:
+    - policy
+    - zones
+  notify: restart shorewall
+
+- name: copy shorewall config files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/shorewall/{{ item }}"
+  notify: restart shorewall
+  with_items:
+    - rules
+    - init
+    - start
+    - stop
+
+- name: mkdir rules.d
+  file:
+    path: /etc/shorewall/rules.d
+    state: directory
+
+- name: copy rules.d files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/shorewall/rules.d/
+  with_items:
+    - network
+    - ssh
+
+- name: get interfaces
+  shell: "ifconfig | egrep '^e(th|np)' | awk -F'[ ]+' '{print $1}' | sed -e 's/:$//'"
+  register: interfaces
+  changed_when: false
+
+- name: mkdir interfaces.f
+  file:
+    path: /etc/shorewall/interfaces.f
+    state: directory
+
+- name: build shorewall/interfaces.f/0.net
+  template:
+    src: interfaces.j2
+    dest: /etc/shorewall/interfaces.f/0.net
+
+- name: assemble shorewall/interfaces
+  assemble:
+    src: /etc/shorewall/interfaces.f
+    dest: /etc/shorewall/interfaces
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart shorewall
+
+- name: activate shorewall
+  replace:
+    dest: /etc/default/shorewall
+    regexp: 'startup=0'
+    replace: 'startup=1'
+  notify: restart shorewall

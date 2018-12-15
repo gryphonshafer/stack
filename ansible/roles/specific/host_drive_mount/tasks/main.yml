@@ -1,0 +1,25 @@
+---
+- name: create cifs credentials file
+  template:
+    src: credentials.j2
+    dest: "/home/{{ user }}/.hdmount"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0600
+
+- name: setup mounting functions
+  template:
+    src: functions.j2
+    dest: "/home/{{ user }}/.hdmountrc"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+
+- name: load .backuprc in .localrc
+  lineinfile:
+    dest: "/home/{{ user }}/.localrc"
+    create: yes
+    state: present
+    line: ". ~/.hdmountrc"
+    owner: "{{ user }}"
+    group: "{{ user }}"

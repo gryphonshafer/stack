@@ -8,7 +8,9 @@
   register: st
 
 - name: make error pages directory
-  command: mkdir -p {{ err_pages_dir }}
+  file:
+    path: "{{ err_pages_dir }}"
+    state: directory
   when: st.stat.exists == false
 
 - name: build error_pages file

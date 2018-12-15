@@ -33,3 +33,6 @@ chown -R ansible. /home/ansible/.ssh
 chmod 700 /home/ansible/.ssh
 chmod 600 /home/ansible/.ssh/id_rsa
 chmod 644 /home/ansible/.ssh/authorized_keys
+
+mkdir -p /root/.ansible/tmp
+chmod 700 /root/.ansible/tmp

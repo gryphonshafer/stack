@@ -1,5 +1,0 @@
----
-- import_tasks: load_settings.yml
-- import_tasks: user_account.yml
-- import_tasks: id_rsa.yml
-- import_tasks: tgz_bundle.yml

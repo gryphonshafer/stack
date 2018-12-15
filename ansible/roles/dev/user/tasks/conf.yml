@@ -1,0 +1,97 @@
+---
+- name: conf dir check
+  stat:
+    path: /home/{{ user }}/.conf
+  register: conf_dir
+
+- name: check if git is available
+  command: whereis git
+  register: git_available
+  changed_when: no
+
+- name: get ssh-keyscan github.com
+  command: ssh-keyscan github.com
+  register: ssh_keyscan
+  changed_when: no
+  when:
+    - conf_dir.stat.exists == false
+    - git_available.stdout | length != 4
+
+- name: save ssh-keyscan github.com
+  lineinfile:
+    path: /home/{{ user }}/.ssh/known_hosts
+    line: "{{ ssh_keyscan.stdout }}"
+    create: yes
+  when:
+    - conf_dir.stat.exists == false
+    - git_available.stdout | length != 4
+
+- name: git clone conf via ssh
+  git:
+    repo: git@github.com:gryphonshafer/.conf.git
+    version: master
+    dest: /home/{{ user }}/.conf
+  become: yes
+  become_user: "{{ user }}"
+  register: clone_conf_ssh
+  changed_when: no
+  failed_when: no
+  when:
+    - conf_dir.stat.exists == false
+    - git_available.stdout | length != 4
+
+- name: conf dir check 2
+  stat:
+    path: /home/{{ user }}/.conf
+  register: conf_dir_2
+  when: git_available.stdout | length != 4
+
+- name: git clone conf via https
+  git:
+    repo: https://github.com/gryphonshafer/.conf.git
+    version: master
+    dest: /home/{{ user }}/.conf
+  become: yes
+  become_user: "{{ user }}"
+  register: clone_conf_https
+  changed_when: no
+  failed_when: no
+  when:
+    - conf_dir_2.stat.exists == false
+    - git_available.stdout | length != 4
+
+- name: conf dir check 3
+  stat:
+    path: /home/{{ user }}/.conf
+  register: conf_dir_3
+
+- name: download conf
+  get_url:
+    url: https://github.com/gryphonshafer/.conf/archive/master.tar.gz
+    dest: /home/{{ user }}/conf.tgz
+  when: conf_dir_3.stat.exists == false
+
+- name: extract conf
+  unarchive:
+    src: /home/{{ user }}/conf.tgz
+    dest: /home/{{ user }}
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  when: conf_dir_3.stat.exists == false
+
+- name: rename extracted conf dir
+  command: mv /home/{{ user }}/.conf-master /home/{{ user }}/.conf
+  changed_when: no
+  when: conf_dir_3.stat.exists == false
+
+- name: remove archive file
+  file:
+    state: absent
+    path: /home/{{ user }}/conf.tgz
+
+- name: rename extracted conf dir
+  command: /home/{{ user }}/.conf/install
+  changed_when: no
+  become: yes
+  become_user: "{{ user }}"
+  when: conf_dir.stat.exists == false

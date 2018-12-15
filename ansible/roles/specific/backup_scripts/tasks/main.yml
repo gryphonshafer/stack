@@ -1,0 +1,26 @@
+---
+- stat:
+    path: "/home/{{ user }}/pull_backups.sh"
+  register: st
+
+- name: link pull backups script
+  file:
+    src: "/host/etc/pull_backups.sh"
+    dest: "/home/{{ user }}/pull_backups.sh"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    state: link
+  when: st.stat.exists == false
+
+- stat:
+    path: "/home/{{ user }}/make_archives.sh"
+  register: st
+
+- name: link pull backups script
+  file:
+    src: "/host/etc/make_archives.sh"
+    dest: "/home/{{ user }}/make_archives.sh"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    state: link
+  when: st.stat.exists == false

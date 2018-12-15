@@ -6,7 +6,7 @@
     - ansible_user
     - exim
 
-- hosts: prod
+- hosts: production
   become: true
   roles:
     - shorewall
@@ -16,37 +16,24 @@
 
 - hosts: user
   become: true
+  roles:
     - timezone
     - user
-
-- hosts: docker
-  become: true
-  roles:
-    - docker
 
 - hosts: local
   become: true
   roles:
     - de-vagrant
     - samba
-    - host_drive_mount
+    - perlbrew
+    - docker
 
-- hosts: perl
+- hosts: backup
   become: true
   roles:
-    - perlbrew
+    - backup_scripts
+    - host_drive_mount
 
 - hosts: web
   become: true
     - nginx
-
-- hosts: app
-  become: true
-  roles:
-    - perl
-    - mysql
-
-- hosts: backup_tools
-  become: true
-  roles:
-    - backup_scripts

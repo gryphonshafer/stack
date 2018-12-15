@@ -1,6 +1,0 @@
----
-user: ''
-user_email: ''
-user_password: ''
-tgz_bundle_url: ''
-local_dir: "{{ lookup( 'env', 'LOCAL_DIR' ) }}"
