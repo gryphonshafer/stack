@@ -89,9 +89,9 @@
     state: absent
     path: /home/{{ user }}/conf.tgz
 
-- name: rename extracted conf dir
+- name: install configuration
   command: /home/{{ user }}/.conf/install
-  changed_when: no
   become: yes
   become_user: "{{ user }}"
-  when: conf_dir.stat.exists == false
+  register: install_conf
+  changed_when: install_conf.stdout | regex_search('(Successfully installed:)')
