@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+docker pull gitlab/gitlab-ce:latest
+docker stop gitlab
+docker rm gitlab
+docker run \
+    --detach \
+    --hostname {{ ansible_hostname }}.{{ domain }} \
+    --publish 5880:80 \
+    --publish 6722:22 \
+    --name gitlab \
+    --restart unless-stopped \
+    --volume /opt/gitlab/config:/etc/gitlab \
+    --volume /opt/gitlab/logs:/var/log/gitlab \
+    --volume /opt/gitlab/data:/var/opt/gitlab \
+    gitlab/gitlab-ce:latest

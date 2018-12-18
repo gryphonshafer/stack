@@ -1,0 +1,37 @@
+---
+- name: gitlab host storage folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - /opt/gitlab/config
+    - /opt/gitlab/logs
+    - /opt/gitlab/data
+
+- name: pull latest gitlab image
+  docker_image:
+    name: gitlab/gitlab-ce:latest
+
+- name: gitlab container run
+  docker_container:
+    recreate: yes
+    name: gitlab
+    hostname: "{{ ansible_hostname }}.{{ domain }}"
+    restart_policy: unless-stopped
+    image: gitlab/gitlab-ce:latest
+    published_ports:
+      - "5880:80"
+      - "6722:22"
+    volumes:
+      - "/opt/gitlab/config:/etc/gitlab"
+      - "/opt/gitlab/logs:/var/log/gitlab"
+      - "/opt/gitlab/data:/var/opt/gitlab"
+
+- name: manual restart bash script
+  template:
+    src: docker_gitlab_upgrade.bash.j2
+    dest: /root/docker_run_gitlab.bash
+    owner: root
+    group: root
+    mode: 0744

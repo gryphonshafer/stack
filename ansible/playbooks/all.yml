@@ -37,3 +37,8 @@
 - hosts: web
   become: true
     - nginx
+
+- hosts: gitlab
+  become: true
+  roles:
+    - docker_gitlab
