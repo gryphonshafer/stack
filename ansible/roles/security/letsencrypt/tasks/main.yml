@@ -1,0 +1,35 @@
+---
+- name: add stretch backports apt repository
+  apt_repository:
+    repo: deb http://ftp.debian.org/debian stretch-backports main
+
+- name: install certbot with nginx plugin
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: python-certbot-nginx
+    state: latest
+    default_release: stretch-backports
+  register: install_certbot
+
+- name: register certbot
+  command: 'certbot register -m "{{ user_email }}" --agree-tos'
+  when: install_certbot.changed
+  changed_when: no
+
+- name: register certbot
+  command: "certbot -a webroot --webroot-map '{{ webroot_map }}'"
+  when: webroot_map | length > 0
+  changed_when: no
+
+- name: nginx sites available ssl conf
+  replace:
+    dest: '/etc/nginx/{{ item.conf }}'
+    regexp: 'include /etc/nginx/ssl_conf;'
+    replace: |
+      include ssl_params;
+      ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
+  with: sites_available

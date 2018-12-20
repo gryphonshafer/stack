@@ -42,3 +42,8 @@
   become: true
   roles:
     - docker_gitlab
+
+- hosts: ssl
+  become: true
+  roles:
+    - letsencrypt

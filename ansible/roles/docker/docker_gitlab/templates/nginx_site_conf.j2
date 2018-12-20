@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    server_name {{ ansible_hostname }}.{{ domain }};
+    include conf.d/server;
+
+    location /.well-known {
+        alias /var/www/{{ domain }}/htdocs/.well-known;
+    }
+
+    location / {
+        rewrite ^$      https://$host    redirect;
+        rewrite ^/$     https://$host/   redirect;
+        rewrite ^/(.*)$ https://$host/$1 redirect;
+    }
+} # 80
+
+server {
+    listen 443;
+    server_name {{ ansible_hostname }}.{{ domain }};
+
+    include ssl_params;
+    ssl_certificate     /etc/letsencrypt/live/{{ ansible_hostname }}.{{ domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ ansible_hostname }}.{{ domain }}/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:5880;
+    }
+} # 443

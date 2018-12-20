@@ -11,6 +11,12 @@
     dest: /etc/nginx/conf.d/proxy.conf
   notify: restart nginx
 
+- name: install server (conf) file
+  copy:
+    src: server
+    dest: /etc/nginx/conf.d/server
+  notify: restart nginx
+
 - name: install ssl_params file
   copy:
     src: ssl_params

@@ -35,3 +35,22 @@
     owner: root
     group: root
     mode: 0744
+
+- name: nginx site conf
+  template:
+    src: nginx_site_conf.j2
+    dest: "/etc/nginx/sites-available/{{ ansible_hostname }}.{{ domain }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: set example web site conf active
+  file:
+    src: "/etc/nginx/sites-available/{{ ansible_hostname }}.{{ domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ ansible_hostname }}.{{ domain }}"
+    state: link
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
