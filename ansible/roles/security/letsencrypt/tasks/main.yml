@@ -27,7 +27,7 @@
 - name: nginx sites available ssl conf
   replace:
     dest: '/etc/nginx/{{ item.conf }}'
-    regexp: 'include /etc/nginx/ssl_conf;'
+    regexp: 'include ssl_conf;'
     replace: |
       include ssl_params;
       ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;

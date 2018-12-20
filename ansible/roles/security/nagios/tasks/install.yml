@@ -1,0 +1,50 @@
+---
+- name: make tmp install directory
+  file:
+    path: /tmp/nagios
+    state: directory
+
+- name: download source
+  get_url:
+    url: "{{ item.src }}"
+    dest: "/tmp/nagios/{{ item.dest }}"
+  with_items:
+    - { src: 'https://github.com/NagiosEnterprises/nagioscore/archive/master.tar.gz', dest: 'nagioscore.tar.gz' }
+    - { src: 'https://github.com/nagios-plugins/nagios-plugins/archive/master.tar.gz', dest: 'nagios-plugins.tar.gz' }
+
+- name: decompress source
+  unarchive:
+    src: "/tmp/nagios/{{ item }}"
+    dest: /tmp/nagios
+  with_items:
+    - nagioscore.tar.gz
+    - nagios-plugins.tar.gz
+
+- name: make and install nagios core
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/nagios/nagioscore-master
+  with_items:
+    - ./configure --sysconfdir=/etc/nagios
+    - make all
+    - make install-groups-users
+    - usermod -a -G nagios www-data
+    - make install
+    - make install-config
+    - make install-init
+    - make install-commandmode
+
+- name: make and install nagios core
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/nagios/nagios-plugins-master
+  with_items:
+    - ./tools/setup
+    - ./configure --sysconfdir=/etc/nagios
+    - make
+    - make install
+
+- name: remove tmp install directory
+  file:
+    path: /tmp/nagios
+    state: absent

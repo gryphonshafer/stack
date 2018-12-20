@@ -13,6 +13,7 @@
     - ssh_hardening
     - fail2ban
     - ntp
+    - nagios
 
 - hosts: user
   become: true

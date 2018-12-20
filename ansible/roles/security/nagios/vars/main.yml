@@ -1,0 +1,24 @@
+---
+nagios_package_dependencies:
+  - build-essential
+  - autoconf
+  - gcc
+  - libc6
+  - make
+  - wget
+  - unzip
+  - libgd2-xpm-dev
+  - autoconf
+  - gcc
+  - libc6
+  - libmcrypt-dev
+  - make
+  - libssl-dev
+  - wget
+  - bc
+  - gawk
+  - dc
+  - build-essential
+  - snmp
+  - libnet-snmp-perl
+  - gettext

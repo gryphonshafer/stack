@@ -17,10 +17,8 @@ server {
 server {
     listen 443;
     server_name {{ ansible_hostname }}.{{ domain }};
-
-    include ssl_params;
-    ssl_certificate     /etc/letsencrypt/live/{{ ansible_hostname }}.{{ domain }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ ansible_hostname }}.{{ domain }}/privkey.pem;
+    include conf.d/server;
+    include ssl_conf;
 
     location / {
         proxy_pass http://localhost:5880;

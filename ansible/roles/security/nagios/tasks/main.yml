@@ -1,0 +1,61 @@
+---
+- name: install nagios package dependencies
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ nagios_package_dependencies }}'
+    state: latest
+
+- stat:
+    path: /etc/nagios
+  register: nagios_exists
+
+- name: install nagios
+  include: install.yml
+  when: nagios_exists.stat.exists == false
+
+- name: establish nagios log file
+  copy:
+    content: ""
+    dest: /var/log/nagios.log
+    force: no
+
+- name: nagios log file settings
+  file:
+    path: /var/log/nagios.log
+    owner: nagios
+    group: nagios
+    mode: 0644
+
+- name: set nagios email
+  replace:
+    dest: "{{ item }}"
+    regexp: '\bnagios\@localhost'
+    replace: "{{ nagios_email }}"
+  with_items:
+    - /etc/nagios/objects/contacts.cfg
+    - /etc/nagios/nagios.cfg
+
+- name: set nagios page email
+  replace:
+    dest: /etc/nagios/nagios.cfg
+    regexp: '\bpagenagios\@localhost'
+    replace: "{{ nagios_page_email }}"
+
+- name: set check workers
+  replace:
+    dest: /etc/nagios/nagios.cfg
+    regexp: '#check_workers=3'
+    replace: 'check_workers=2'
+
+- name: set log file
+  replace:
+    dest: /etc/nagios/nagios.cfg
+    regexp: 'log_file=.+$'
+    replace: 'log_file=/var/log/nagios.log'
+
+- name: system start nagios
+  command: systemctl start nagios
+  when: nagios_exists.stat.exists == false
