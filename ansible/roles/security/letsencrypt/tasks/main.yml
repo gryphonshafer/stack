@@ -32,4 +32,4 @@
       include ssl_params;
       ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;
       ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
-  with: sites_available
+  with_items: sites_available

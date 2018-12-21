@@ -46,12 +46,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             env: { "HOSTS" => "/host/vagrant/configs/backups/hosts" }
 
         node.vm.provision "shell",
-            name: "Ansible Playbook",
+            name: "Ansible Auto Playbook: backups.ini all.yml",
             inline:
                 "su -l ansible -c 'cd /host/ansible; " +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
                 "ansible-playbook -i inventories/backups.ini " +
                 "playbooks/all.yml" + "'"
+
     end
 end

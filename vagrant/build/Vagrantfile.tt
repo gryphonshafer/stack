@@ -62,14 +62,37 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             path: "../../providers/ansible.bash",
             env: { "HOSTS" => "[% synced_folder %]/vagrant/configs/[% project %]/hosts" }
 
+        [% FOR host.ansible.auto %]
+
         node.vm.provision "shell",
-            name: "Ansible Playbook",
+            name: "Ansible Auto Playbook: [% inventory %] [% playbook %]",
             inline:
                 "su -l ansible -c 'cd [% synced_folder %]/ansible; " +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
-                "ansible-playbook -i inventories/[% host.ansible.inventories %] " +
-                "playbooks/[% host.ansible.playbooks %]" + "'"
+                "ansible-playbook -i inventories/[% inventory %] " +
+                "playbooks/[% playbook %]" + "'"
+        [%- END %]
+        [% IF host.ansible.manual %]
+
+        node.vm.provision "shell",
+            name: "Ansible Manual Playbook: [% inventory %] [% playbook %]",
+            inline:
+                "echo '#!/usr/bin/env bash' > /home/ansible/manual_playbooks.bash; " +
+                "chmod 755 /home/ansible/manual_playbooks.bash"
+
+        [%- END %]
+        [% FOR host.ansible.manual %]
+
+        node.vm.provision "shell",
+            name: "Ansible Manual Playbook: [% inventory %] [% playbook %]",
+            inline:
+                "echo '" +
+                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
+                "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
+                "ansible-playbook -i inventories/[% inventory %] " +
+                "playbooks/[% playbook %]" + "' >> /home/ansible/manual_playbooks.bash"
+        [%- END %]
         [%- END %]
     end
 

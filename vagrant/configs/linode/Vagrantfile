@@ -25,18 +25,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         path: "../../providers/ansible_user.bash",
         env: { "LOCAL_DIR" => "/host/local" }
 
-    config.vm.define "git" do |node|
-        node.vm.hostname = "git"
+    config.vm.define "linode" do |node|
+        node.vm.hostname = "linode"
         node.vm.provider "virtualbox" do |vb|
-            vb.name   = "GitLab Linode Server"
-            vb.memory = 4096
-            vb.cpus   = 2
+            vb.name   = "Linode Ansible Manager"
+            vb.memory = 1024
+            vb.cpus   = 1
         end
 
-        node.vm.network "private_network", ip: "10.51.0.3"
+        node.vm.network "private_network", ip: "10.42.0.3"
         node.vm.network "public_network"
         node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
-        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2253
+        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2203
 
         node.vm.synced_folder "../../../", "/host", SharedFoldersEnableSymlinksCreate: false
 
@@ -46,12 +46,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             env: { "HOSTS" => "/host/vagrant/configs/linode/hosts" }
 
         node.vm.provision "shell",
-            name: "Ansible Playbook",
+            name: "Ansible Auto Playbook: linode.ini all.yml",
             inline:
                 "su -l ansible -c 'cd /host/ansible; " +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/gitlab.ini " +
+                "ansible-playbook -i inventories/linode.ini " +
                 "playbooks/all.yml" + "'"
+
+        node.vm.provision "shell",
+            name: "Ansible Manual Playbook:  ",
+            inline:
+                "echo '#!/usr/bin/env bash' > /home/ansible/manual_playbooks.bash; " +
+                "chmod 755 /home/ansible/manual_playbooks.bash"
+
+        node.vm.provision "shell",
+            name: "Ansible Manual Playbook: linode/git.ini all.yml",
+            inline:
+                "echo '" +
+                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
+                "LOCAL_DIR=/host/local SRC_DIR=/host " +
+                "ansible-playbook -i inventories/linode/git.ini " +
+                "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
     end
 end

@@ -25,8 +25,9 @@ configs:
                     public_network: true
                     remap_ssh: 2242
                 ansible:
-                    inventories: taunton.ini
-                    playbooks: all.yml
+                    auto:
+                        - inventory: taunton.ini
+                          playbook: all.yml
     backups:
         hosts:
             - backups:
@@ -38,18 +39,23 @@ configs:
                     public_network: true
                     remap_ssh: 2202
                 ansible:
-                    inventories: backups.ini
-                    playbooks: all.yml
+                    auto:
+                        - inventory: backups.ini
+                          playbook: all.yml
     linode:
         hosts:
-            - git:
-                name: GitLab Linode Server
-                memory: 4096
-                cpus: 2
+            - linode:
+                name: Linode Ansible Manager
+                memory: 1024
+                cpus: 1
                 network:
-                    private_network: 10.51.0.3
+                    private_network: 10.42.0.3
                     public_network: true
-                    remap_ssh: 2253
+                    remap_ssh: 2203
                 ansible:
-                    inventories: gitlab.ini
-                    playbooks: all.yml
+                    auto:
+                        - inventory: linode.ini
+                          playbook: all.yml
+                    manual:
+                        - inventory: linode/git.ini
+                          playbook: all.yml
