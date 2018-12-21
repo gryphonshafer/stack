@@ -78,7 +78,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.provision "shell",
             name: "Ansible Manual Playbook: [% inventory %] [% playbook %]",
             inline:
-                "echo '#!/usr/bin/env bash' > /home/ansible/manual_playbooks.bash; " +
+                "echo -e '#!/usr/bin/env bash\ncd [% synced_folder %]/ansible' " +
+                "> /home/ansible/manual_playbooks.bash; " +
                 "chmod 755 /home/ansible/manual_playbooks.bash"
 
         [%- END %]
