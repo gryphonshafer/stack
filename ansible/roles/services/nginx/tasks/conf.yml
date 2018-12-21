@@ -33,6 +33,7 @@
   copy:
     src: /etc/nginx/fastcgi_params
     dest: /etc/nginx/fastcgi_params.dist
+    remote_src: yes
     force: no
 
 - name: install /etc/nginx/fastcgi_params file

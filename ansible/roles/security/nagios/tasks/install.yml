@@ -16,6 +16,7 @@
   unarchive:
     src: "/tmp/nagios/{{ item }}"
     dest: /tmp/nagios
+    remote_src: yes
   with_items:
     - nagioscore.tar.gz
     - nagios-plugins.tar.gz

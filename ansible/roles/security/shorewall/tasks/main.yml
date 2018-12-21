@@ -13,6 +13,7 @@
     src: /usr/share/doc/shorewall/examples/one-interface/{{ item }}
     dest: /etc/shorewall/{{ item }}
     force: no
+    remote_src: true
   with_items:
     - policy
     - zones

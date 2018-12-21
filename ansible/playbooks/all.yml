@@ -6,15 +6,6 @@
     - ansible_user
     - exim
 
-- hosts: production
-  become: true
-  roles:
-    - shorewall
-    - ssh_hardening
-    - fail2ban
-    - ntp
-    - nagios
-
 - hosts: user
   become: true
   roles:
@@ -29,15 +20,18 @@
     - perlbrew
     - docker
 
-- hosts: backup
-  become: true
-  roles:
-    - backup_scripts
-    - host_drive_mount
-
 - hosts: web
   become: true
     - nginx
+
+- hosts: production
+  become: true
+  roles:
+    - shorewall
+    - ssh_hardening
+    - fail2ban
+    - ntp
+    - nagios
 
 - hosts: gitlab
   become: true
@@ -48,3 +42,9 @@
   become: true
   roles:
     - letsencrypt
+
+- hosts: backup
+  become: true
+  roles:
+    - backup_scripts
+    - host_drive_mount

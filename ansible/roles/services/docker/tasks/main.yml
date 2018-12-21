@@ -43,7 +43,7 @@
   apt:
     update_cache: yes
     cache_valid_time: 86400
-    pkg: docker-ce
+    pkg: [ 'docker-ce', 'python-pip' ]
     state: latest
     force: yes
   register: docker_engine_installed
