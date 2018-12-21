@@ -59,3 +59,11 @@
 - name: system start nagios
   command: systemctl start nagios
   when: nagios_exists.stat.exists == false
+
+- stat:
+    path: /etc/nginx
+  register: nginx_exists
+
+- name: install nagios web user interface
+  include: web_ui.yml
+  when: nginx_exists.stat.exists

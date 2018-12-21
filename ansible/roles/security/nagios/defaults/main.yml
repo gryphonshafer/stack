@@ -1,3 +1,5 @@
 ---
 nagios_email: "{{ user_email }}"
 nagios_page_email: "{{ user_email }}"
+user: ''
+user_password: ''
