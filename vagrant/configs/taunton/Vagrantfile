@@ -46,12 +46,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             env: { "HOSTS" => "/host/vagrant/configs/taunton/hosts" }
 
         node.vm.provision "shell",
-            name: "Ansible Auto Playbook: taunton.ini all.yml",
+            name: "Ansible Auto Playbook: inventories/all.ini playbooks/all.yml",
             inline:
                 "su -l ansible -c 'cd /host/ansible; " +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/taunton.ini " +
+                "ansible-playbook -i inventories/all.ini -l taunton " +
                 "playbooks/all.yml" + "'"
 
     end

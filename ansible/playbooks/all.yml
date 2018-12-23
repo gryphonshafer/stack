@@ -5,45 +5,38 @@
     - base_system
     - ansible_user
     - exim
-
-- hosts: user
-  become: true
-  roles:
-    - timezone
     - user
+    - timezone
 
-- hosts: local
-  become: true
-  roles:
-    - de-vagrant
-    - samba
-    - perlbrew
-    - docker
-
-- hosts: web
-  become: true
-    - nginx
-
-- hosts: production
+- hosts: remote
   become: true
   roles:
     - shorewall
     - ssh_hardening
     - fail2ban
     - ntp
+    - letsencrypt
     - nagios
 
-- hosts: gitlab
+- hosts: git
   become: true
   roles:
     - docker_gitlab
 
-- hosts: ssl
+- hosts: local
   become: true
   roles:
-    - letsencrypt
+    - de-vagrant
+    - samba
 
-- hosts: backup
+- hosts: dev
+  become: true
+  roles:
+    - nginx
+    - perlbrew
+    - docker
+
+- hosts: backups
   become: true
   roles:
     - backup_scripts

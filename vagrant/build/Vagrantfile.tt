@@ -70,8 +70,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "su -l ansible -c 'cd [% synced_folder %]/ansible; " +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
-                "ansible-playbook -i inventories/[% inventory %] " +
-                "playbooks/[% playbook %]" + "'"
+                "ansible-playbook -i [% inventory %] [% IF limit %]-l [% limit %] [% END %]" +
+                "[% playbook %]" + "'"
         [%- END %]
         [% IF host.ansible.manual %]
 
@@ -91,8 +91,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "echo '" +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
-                "ansible-playbook -i inventories/[% inventory %] " +
-                "playbooks/[% playbook %]" + "' >> /home/ansible/manual_playbooks.bash"
+                "ansible-playbook -i [% inventory %] [% IF limit %]-l [% limit %] [% END %]" +
+                "[% playbook %]" + "' >> /home/ansible/manual_playbooks.bash"
         [%- END %]
         [%- END %]
     end

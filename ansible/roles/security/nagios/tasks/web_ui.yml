@@ -8,6 +8,18 @@
     pkg: python-passlib
     state: latest
 
+- name: install FastCGI Perl
+  include_role:
+    name: fastcgi_perl
+    allow_duplicates: no
+    public: yes
+
+- name: install FastCGI PHP
+  include_role:
+    name: fastcgi_php
+    allow_duplicates: no
+    public: yes
+
 - name: ensure credentials.ini exists
   ini_file:
     dest: "{{ local_dir }}/credentials.ini"

@@ -26,8 +26,9 @@ configs:
                     remap_ssh: 2242
                 ansible:
                     auto:
-                        - inventory: taunton.ini
-                          playbook: all.yml
+                        - inventory: inventories/all.ini
+                          playbook: playbooks/all.yml
+                          limit: taunton
     backups:
         hosts:
             - backups:
@@ -40,8 +41,9 @@ configs:
                     remap_ssh: 2202
                 ansible:
                     auto:
-                        - inventory: backups.ini
-                          playbook: all.yml
+                        - inventory: inventories/all.ini
+                          playbook: playbooks/all.yml
+                          limit: backups
     linode:
         hosts:
             - linode:
@@ -54,8 +56,10 @@ configs:
                     remap_ssh: 2203
                 ansible:
                     auto:
-                        - inventory: linode.ini
-                          playbook: all.yml
+                        - inventory: inventories/all.ini
+                          playbook: playbooks/all.yml
+                          limit: linode
                     manual:
-                        - inventory: linode/git.ini
-                          playbook: all.yml
+                        - inventory: inventories/all.ini
+                          playbook: playbooks/all.yml
+                          limit: git

@@ -1,0 +1,60 @@
+---
+- name: install FastCGI PHP packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: [ 'php5-common', 'php5-cgi', 'php5', 'php5-sqlite', 'php5-curl' ]
+    state: latest
+
+- name: fix_pathinfo set to 0 in php.ini
+  lineinfile:
+    path: /etc/php5/cgi/php.ini
+    line: 'cgi.fix_pathinfo = 0;'
+
+- name: install php-fcgi default
+  copy:
+    src: default_php-fcgi
+    dest: /etc/default/php-fcgi
+    owner: root
+    group: root
+    mode: 0644
+
+- name: install php-fcgi init.d
+  copy:
+    src: init.d_php-fcgi
+    dest: /etc/init.d/php-fcgi
+    owner: root
+    group: root
+    mode: 0755
+  register: fcgi_init
+
+- name: update rc php-fcgi defaults
+  command: update-rc.d php-fcgi defaults
+  when: fcgi_init is changed
+
+- name: restart php-fcgi
+  service:
+    name: php-fcgi
+    state: restarted
+  when: fcgi_init is changed
+
+- name: create nginx upstream.conf
+  copy:
+    content: ""
+    dest: /etc/nginx/conf.d/upstream.conf
+    force: no
+
+- name: append to nginx upstream.conf
+  blockinfile:
+    path: /etc/nginx/conf.d/upstream.conf
+    block: |
+        upstream php {
+            server 127.0.0.1:9000;
+        }
+
+- name: install nginx fastcgi_php
+  copy:
+    src: fastcgi_php
+    dest: /etc/nginx/fastcgi_php

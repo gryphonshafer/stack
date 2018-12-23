@@ -1,0 +1,60 @@
+---
+- name: install FastCGI Perl packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: [ 'fcgiwrap', 'spawn-fcgi' ]
+    state: latest
+
+- name: install fcgiwrap default
+  copy:
+    src: default_fcgiwrap
+    dest: /etc/default/fcgiwrap
+    owner: root
+    group: root
+    mode: 0644
+
+- name: install fcgiwrap inid.d
+  copy:
+    src: inid.d_fcgiwrap
+    dest: /etc/init.d/fcgiwrap
+    owner: root
+    group: root
+    mode: 0755
+  register: fcgiwrap_init
+
+- name: update rc fcgiwrap defaults
+  command: update-rc.d fcgiwrap defaults
+  when: fcgiwrap_init is changed
+
+- name: restart fcgiwrap
+  service:
+    name: fcgiwrap
+    state: restarted
+  when: fcgiwrap_init is changed
+
+- name: create nginx upstream.conf
+  copy:
+    content: ""
+    dest: /etc/nginx/conf.d/upstream.conf
+    force: no
+
+- name: append to nginx upstream.conf
+  blockinfile:
+    path: /etc/nginx/conf.d/upstream.conf
+    block: |
+      upstream perl {
+          server unix:/var/run/fcgiwrap.socket;
+      }
+
+- name: install nginx fastcgi_perl_set
+  copy:
+    src: fastcgi_perl_set
+    dest: /etc/nginx/fastcgi_perl_set
+
+- name: install nginx fastcgi_perl
+  copy:
+    src: fastcgi_perl
+    dest: /etc/nginx/fastcgi_perl

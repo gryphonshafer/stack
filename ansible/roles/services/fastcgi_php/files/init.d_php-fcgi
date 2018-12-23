@@ -1,18 +1,3 @@
-#!/usr/bin/env bash
-
-apt-get install php5-common php5-cgi php5 php5-sqlite php5-curl
-
-echo 'Configuring PHP FastCGI...'
-echo 'cgi.fix_pathinfo = 0;' >> /etc/php5/cgi/php.ini
-
-cat <<\DEFAULT_SETTINGS > /etc/default/php-fcgi
-BIND=127.0.0.1:9000
-USER=www-data
-PHP_FCGI_CHILDREN=3
-PHP_FCGI_MAX_REQUESTS=1000
-DEFAULT_SETTINGS
-
-cat <<\CONF_FILE > /etc/init.d/php-fcgi
 #!/bin/bash
 ### BEGIN INIT INFO
 # Provides:          php-fcgi
@@ -64,34 +49,3 @@ case "$1" in
   ;;
 esac
 exit $RETVAL
-CONF_FILE
-
-chmod a+x /etc/init.d/php-fcgi
-update-rc.d -f php-fcgi defaults
-service php-fcgi start
-
-#-----------------------------------------------------------------------------
-
-if [ -d /etc/nginx/conf.d ]
-then
-
-echo 'Configuring FastCGI PHP Nginx...'
-
-cat <<CONF_FILE >> /etc/nginx/conf.d/upstream.conf
-upstream php {
-    server 127.0.0.1:9000;
-}
-CONF_FILE
-
-cat <<CONF_FILE >> /etc/nginx/fastcgi_php
-location ~ \.php$ {
-    include fastcgi_params;
-    fastcgi_intercept_errors on;
-    fastcgi_pass php;
-}
-CONF_FILE
-
-perl -i -pe 's/(index .*);/$1 index.php;/' /etc/nginx/sites-available/$domain
-service nginx restart
-
-fi

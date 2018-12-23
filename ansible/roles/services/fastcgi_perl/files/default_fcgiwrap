@@ -1,0 +1,20 @@
+FCGI_CHILDREN="3"
+
+export USER="www-data"
+export HOME="/var/www"
+export LOGNAME="www-data"
+export MAIL="/var/mail/www-data"
+
+if [ -d /opt/perl5 ]
+then
+    export PERLBREW_ROOT="/opt/perl5"
+    export PERLBREW_HOME="${HOME}/.perlbrew"
+    . ${PERLBREW_HOME}/init
+
+    __perlbrew_code="$(${PERLBREW_ROOT}/bin/perlbrew env ${PERLBREW_PERL}@${PERLBREW_LIB})"
+    eval "$__perlbrew_code"
+    unset __perlbrew_code
+
+    export PATH=${PERLBREW_PATH}:$PATH
+    export MANPATH=${PERLBREW_MANPATH}:$MANPATH
+fi

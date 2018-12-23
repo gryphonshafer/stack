@@ -46,12 +46,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             env: { "HOSTS" => "/host/vagrant/configs/linode/hosts" }
 
         node.vm.provision "shell",
-            name: "Ansible Auto Playbook: linode.ini all.yml",
+            name: "Ansible Auto Playbook: inventories/all.ini playbooks/all.yml",
             inline:
                 "su -l ansible -c 'cd /host/ansible; " +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/linode.ini " +
+                "ansible-playbook -i inventories/all.ini -l linode " +
                 "playbooks/all.yml" + "'"
 
         node.vm.provision "shell",
@@ -62,12 +62,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "chmod 755 /home/ansible/manual_playbooks.bash"
 
         node.vm.provision "shell",
-            name: "Ansible Manual Playbook: linode/git.ini all.yml",
+            name: "Ansible Manual Playbook: inventories/all.ini playbooks/all.yml",
             inline:
                 "echo '" +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/linode/git.ini " +
+                "ansible-playbook -i inventories/all.ini -l git " +
                 "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
     end
 end
