@@ -19,7 +19,7 @@
   when: install_certbot.changed
   changed_when: no
 
-- name: register certbot
+- name: certbot webroot map call
   command: "certbot -a webroot --webroot-map '{{ webroot_map }}'"
   when: webroot_map | length > 0
   changed_when: no
@@ -33,3 +33,4 @@
       ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;
       ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
   with_items: sites_available
+  when: sites_available != '' and sites_available != []

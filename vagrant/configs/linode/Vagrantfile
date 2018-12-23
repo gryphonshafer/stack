@@ -55,7 +55,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "playbooks/all.yml" + "'"
 
         node.vm.provision "shell",
-            name: "Ansible Manual Playbook:  ",
+            name: "Ansible Manual Playbook Setup",
             inline:
                 "echo -e '#!/usr/bin/env bash\ncd /host/ansible' " +
                 "> /home/ansible/manual_playbooks.bash; " +
@@ -69,5 +69,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
                 "ansible-playbook -i inventories/all.ini -l git " +
                 "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
+    end
+
+    config.vm.define "git" do |node|
+        node.vm.hostname = "git"
+        node.vm.provider "virtualbox" do |vb|
+            vb.name   = "Git Linode Server"
+            vb.memory = 4096
+            vb.cpus   = 4
+        end
+
+        node.vm.network "private_network", ip: "10.42.0.4"
+        node.vm.network "public_network"
+        node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
+        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2204
+
+        node.vm.synced_folder "../../../", "/host", SharedFoldersEnableSymlinksCreate: false
     end
 end

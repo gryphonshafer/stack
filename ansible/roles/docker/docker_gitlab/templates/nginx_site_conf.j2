@@ -3,6 +3,9 @@ server {
     server_name {{ ansible_hostname }}.{{ domain }};
     include conf.d/server;
 
+    root /var/www/goldenguru.com/htdocs;
+    index index.html;
+
     location /.well-known {
         alias /var/www/{{ domain }}/htdocs/.well-known;
     }

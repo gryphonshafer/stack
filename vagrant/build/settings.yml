@@ -63,3 +63,11 @@ configs:
                         - inventory: inventories/all.ini
                           playbook: playbooks/all.yml
                           limit: git
+            - git:
+                name: Git Linode Server
+                memory: 4096
+                cpus: 4
+                network:
+                    private_network: 10.42.0.4
+                    public_network: true
+                    remap_ssh: 2204

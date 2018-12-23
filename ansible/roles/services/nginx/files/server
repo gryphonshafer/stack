@@ -3,3 +3,7 @@ include conf.d/error_pages;
 location ~ /.git/ {
     deny all;
 }
+
+location ~ /\.ht {
+    deny all;
+}

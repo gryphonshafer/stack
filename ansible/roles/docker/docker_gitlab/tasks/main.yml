@@ -1,17 +1,14 @@
 ---
-- name: gitlab host storage folders
+- name: gitlab host storage
   file:
-    path: "{{ item }}"
+    path: /opt/gitlab
     state: directory
     mode: 0755
-  with_items:
-    - /opt/gitlab/config
-    - /opt/gitlab/logs
-    - /opt/gitlab/data
 
 - name: pull latest gitlab image
   docker_image:
     name: gitlab/gitlab-ce:latest
+  register: pull_image
 
 - name: gitlab container run
   docker_container:
@@ -27,6 +24,7 @@
       - "/opt/gitlab/config:/etc/gitlab"
       - "/opt/gitlab/logs:/var/log/gitlab"
       - "/opt/gitlab/data:/var/opt/gitlab"
+  when: pull_image is changed
 
 - name: manual restart bash script
   template:
@@ -54,3 +52,4 @@
   service:
     name: nginx
     state: restarted
+  when: pull_image is changed

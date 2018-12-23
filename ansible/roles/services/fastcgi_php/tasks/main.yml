@@ -5,12 +5,12 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'php5-common', 'php5-cgi', 'php5', 'php5-sqlite', 'php5-curl' ]
+    pkg: [ 'php-common', 'php-cgi', 'php', 'php-sqlite3', 'php-curl' ]
     state: latest
 
 - name: fix_pathinfo set to 0 in php.ini
   lineinfile:
-    path: /etc/php5/cgi/php.ini
+    path: /etc/php/7.0/cgi/php.ini
     line: 'cgi.fix_pathinfo = 0;'
 
 - name: install php-fcgi default
@@ -49,6 +49,7 @@
 - name: append to nginx upstream.conf
   blockinfile:
     path: /etc/nginx/conf.d/upstream.conf
+    marker: '# {mark} ANSIBLE MANAGED PHP BLOCK'
     block: |
         upstream php {
             server 127.0.0.1:9000;

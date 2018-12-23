@@ -18,7 +18,7 @@
     - letsencrypt
     - nagios
 
-- hosts: git
+- hosts: gitlab
   become: true
   roles:
     - docker_gitlab
@@ -36,7 +36,7 @@
     - perlbrew
     - docker
 
-- hosts: backups
+- hosts: backup
   become: true
   roles:
     - backup_scripts

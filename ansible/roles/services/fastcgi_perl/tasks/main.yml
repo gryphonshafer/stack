@@ -18,7 +18,7 @@
 
 - name: install fcgiwrap inid.d
   copy:
-    src: inid.d_fcgiwrap
+    src: init.d_fcgiwrap
     dest: /etc/init.d/fcgiwrap
     owner: root
     group: root
@@ -44,6 +44,7 @@
 - name: append to nginx upstream.conf
   blockinfile:
     path: /etc/nginx/conf.d/upstream.conf
+    marker: '# {mark} ANSIBLE MANAGED PERL BLOCK'
     block: |
       upstream perl {
           server unix:/var/run/fcgiwrap.socket;
