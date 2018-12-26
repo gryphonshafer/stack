@@ -8,36 +8,44 @@
     - user
     - timezone
 
-- hosts: remote
+- hosts: firewall
   become: true
   roles:
     - shorewall
-    - ssh_hardening
-    - fail2ban
-    - ntp
-    - letsencrypt
-    - nagios
 
-- hosts: gitlab
-  become: true
-  roles:
-    - docker_gitlab
-
-- hosts: local
-  become: true
-  roles:
-    - de-vagrant
-    - samba
-
-- hosts: dev
+- hosts: web
   become: true
   roles:
     - nginx
-    - perlbrew
-    - docker
 
-- hosts: backup
-  become: true
-  roles:
-    - backup_scripts
-    - host_drive_mount
+# - hosts: remote
+#   become: true
+#   roles:
+#     - ssh_hardening
+#     - ntp
+#     - fail2ban
+#     - letsencrypt
+#     - nagios
+
+# - hosts: gitlab
+#   become: true
+#   roles:
+#     - docker_gitlab
+
+# - hosts: local
+#   become: true
+#   roles:
+#     - de-vagrant
+#     - samba
+
+# - hosts: dev
+#   become: true
+#   roles:
+#     - perlbrew
+#     - docker
+
+# - hosts: backup
+#   become: true
+#   roles:
+#     - backup_scripts
+#     - host_drive_mount

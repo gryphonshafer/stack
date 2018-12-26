@@ -7,11 +7,19 @@
     autoremove: yes
     pkg: nginx
     state: latest
-  notify: restart nginx
+  # notify: restart nginx
 
-- import_tasks: conf.yml
-- import_tasks: certificate.yml
-- import_tasks: error_pages.yml
-- import_tasks: web_site.yml
-- import_tasks: shorewall.yml
-- import_tasks: fail2ban.yml
+- stat:
+    path: /etc/nginx/params
+  register: st
+
+- import_tasks: params.yml
+  when: st.stat.exists == false
+  # notify: restart nginx
+
+# - import_tasks: conf.yml
+# - import_tasks: certificate.yml
+# - import_tasks: error_pages.yml
+# - import_tasks: web_site.yml
+# - import_tasks: shorewall.yml
+# - import_tasks: fail2ban.yml

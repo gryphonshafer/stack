@@ -1,0 +1,34 @@
+---
+- name: mkdir params/charset
+  file:
+    path: /etc/nginx/params/charset
+    state: directory
+
+- name: move params files
+  command: "mv /etc/nginx/{{ item }} /etc/nginx/params"
+  args:
+    creates: "/etc/nginx/params/{{ item }}"
+  with_items:
+    - fastcgi_params
+    - proxy_params
+    - scgi_params
+    - uwsgi_params
+
+- name: move charset files
+  command: "mv /etc/nginx/{{ item }} /etc/nginx/params/charset"
+  args:
+    creates: "/etc/nginx/params/charset/{{ item }}"
+  with_items:
+    - koi-utf
+    - koi-win
+    - win-utf
+
+- name: move fastcgi.conf
+  command: "mv /etc/nginx/fastcgi.conf /etc/nginx/snippets"
+  args:
+    creates: "/etc/nginx/snippets/fastcgi.conf"
+
+- name: move mime.types
+  command: "mv /etc/nginx/mime.types /etc/nginx/conf.d"
+  args:
+    creates: "/etc/nginx/conf.d/mime.types"
