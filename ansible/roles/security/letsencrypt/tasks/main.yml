@@ -26,11 +26,11 @@
 
 - name: nginx sites available ssl conf
   replace:
-    dest: '/etc/nginx/{{ item.conf }}'
-    regexp: 'include ssl_conf;'
+    dest: '/etc/nginx/sites-available/{{ item.conf }}'
+    regexp: '^(\s+)include snippets/ssl.conf;\n'
     replace: |
-      include ssl_params;
-      ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;
-      ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
-  with_items: sites_available
+      \n\1include snippets/ssl_params.conf;
+      \1ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;
+      \1ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
+  with_items: "{{ sites_available }}"
   when: sites_available != '' and sites_available != []
