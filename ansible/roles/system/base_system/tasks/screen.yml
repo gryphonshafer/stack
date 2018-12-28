@@ -15,5 +15,5 @@
     path: '{{ item.path }}'
     mode: '{{ item.mode }}'
   with_items:
-    - { path: '/usr/bin/screen', mode: '6755' }
-    - { path: '/var/run/screen', mode: '0755' }
+    - { path: '/usr/bin/screen', mode: '2755' }
+    - { path: '/var/run/screen', mode: '0775' }
