@@ -38,36 +38,49 @@
 - name: load user password
   set_fact:
     user_password: "{{ lookup( 'ini', 'user_password file={{ local_dir }}/credentials.ini' ) }}"
-  when: local_dir is defined and ( user_password == '' or user_password == [] )
+  when:
+    - local_dir is defined
+    - user_password == '' or user_password == []
 
-- htpasswd:
+- name: create nagios htpasswd.users file
+  htpasswd:
     path: /etc/nagios/htpasswd.users
     name: "{{ user }}"
     password: "{{ user_password }}"
     owner: root
     group: root
-    mode: 0640
+    mode: 0644
+    crypt_scheme: des_crypt
   when:
     - user is defined
     - user_password is defined
 
-- name: build nagios web site conf
-  template:
-    src: web_site.j2
-    dest: /etc/nginx/sites-available/nagios
-  register: web_conf
+- name: install nginx conf files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/snippets/{{ item }}"
+  with_items:
+    - nagios_ui_80.conf
+    - nagios_ui_443.conf
+  register: web_conf_snippets
 
-- name: set nagios web site conf active
-  file:
-    src: /etc/nginx/sites-available/nagios
-    dest: /etc/nginx/sites-enabled/nagios
-    state: link
+- name: inject nagios_ui into default web site
+  lineinfile:
+    path: "/etc/nginx/sites-available/{{ domain }}"
+    line: "\n    include snippets/nagios_ui_{{ item }}.conf;"
+    insertbefore: "^\\} # {{ item }}$"
+  with_items:
+    - 80
+    - 443
+  register: web_conf
+  changed_when: no
 
 - name: restart nginx
   service:
     name: nginx
     state: restarted
-  when: web_conf is changed
+  when: web_conf_snippets is changed or web_conf.results.0.msg == "line added" or web_conf.results.1.msg == "line added"
+  changed_when: no
 
 - name: set nagios admin auth
   replace:

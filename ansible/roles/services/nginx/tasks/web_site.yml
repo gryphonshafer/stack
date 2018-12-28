@@ -3,7 +3,7 @@
   template:
     src: web_site.j2
     dest: /etc/nginx/sites-available/{{ domain }}
-  notify: restart nginx
+  changed_when: no
 
 - name: remove default nginx web site stuff
   file:
