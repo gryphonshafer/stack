@@ -15,8 +15,8 @@
 
 - name: build error_pages file
   template:
-    src: error_pages.j2
-    dest: /etc/nginx/conf.d/error_pages
+    src: error_pages.conf.j2
+    dest: /etc/nginx/snippets/error_pages.conf
   notify: restart nginx
 
 - name: build error_pages HTML files

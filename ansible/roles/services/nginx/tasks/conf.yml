@@ -1,4 +1,12 @@
 ---
+- stat:
+    path: /etc/nginx/params
+  register: st
+
+- import_tasks: params.yml
+  when: st.stat.exists == false
+  notify: restart nginx
+
 - name: install nginx.conf file
   copy:
     src: nginx.conf
@@ -11,33 +19,35 @@
     dest: /etc/nginx/conf.d/proxy.conf
   notify: restart nginx
 
-- name: install server (conf) file
+- name: install server.conf file
   copy:
-    src: server
-    dest: /etc/nginx/conf.d/server
+    src: server.conf
+    dest: /etc/nginx/snippets/server.conf
   notify: restart nginx
 
-- name: install ssl_params file
+- name: install ssl_params.conf file
   copy:
-    src: ssl_params
-    dest: /etc/nginx/ssl_params
+    src: ssl_params.conf
+    dest: /etc/nginx/snippets/ssl_params.conf
   notify: restart nginx
 
 - name: build ssl_conf file
   template:
-    src: ssl_conf.j2
-    dest: /etc/nginx/ssl_conf
+    src: ssl.conf.j2
+    dest: /etc/nginx/snippets/ssl.conf
   notify: restart nginx
 
-- name: backup /etc/nginx/fastcgi_params dist file
-  copy:
-    src: /etc/nginx/fastcgi_params
-    dest: /etc/nginx/fastcgi_params.dist
-    remote_src: yes
-    force: no
-
-- name: install /etc/nginx/fastcgi_params file
+- name: install fastcgi_params file
   copy:
     src: fastcgi_params
-    dest: /etc/nginx/fastcgi_params
+    dest: /etc/nginx/params/fastcgi_params
   notify: restart nginx
+
+- name: delete unused (and probably later overwritten) snippets
+  file:
+    path: "/etc/nginx/{{ item }}"
+    state: absent
+  with_items:
+    - fastcgi.conf
+    - fastcgi-php.conf
+    - snakeoil.conf

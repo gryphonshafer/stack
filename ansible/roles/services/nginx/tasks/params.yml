@@ -10,7 +10,6 @@
     creates: "/etc/nginx/params/{{ item }}"
   with_items:
     - fastcgi_params
-    - proxy_params
     - scgi_params
     - uwsgi_params
 
@@ -32,3 +31,8 @@
   command: "mv /etc/nginx/mime.types /etc/nginx/conf.d"
   args:
     creates: "/etc/nginx/conf.d/mime.types"
+
+- name: delete proxy_params
+  file:
+    path: /etc/nginx/proxy_params
+    state: absent
