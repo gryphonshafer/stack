@@ -1,3 +1,0 @@
-include fastcgi_params;
-fastcgi_intercept_errors on;
-fastcgi_pass perl;

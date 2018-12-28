@@ -1,3 +1,0 @@
-location ~ \.(pl|cgi)$ {
-    include fastcgi_perl_set;
-}

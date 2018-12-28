@@ -35,27 +35,27 @@
     state: restarted
   when: fcgiwrap_init is changed
 
-- name: create nginx upstream.conf
+- name: create nginx upstreams.conf
   copy:
     content: ""
-    dest: /etc/nginx/conf.d/upstream.conf
+    dest: /etc/nginx/conf.d/upstreams.conf
     force: no
 
-- name: append to nginx upstream.conf
+- name: append to nginx upstreams.conf
   blockinfile:
-    path: /etc/nginx/conf.d/upstream.conf
+    path: /etc/nginx/conf.d/upstreams.conf
     marker: '# {mark} ANSIBLE MANAGED PERL BLOCK'
     block: |
       upstream perl {
           server unix:/var/run/fcgiwrap.socket;
       }
 
-- name: install nginx fastcgi_perl_set
+- name: install nginx fastcgi_perl_params
   copy:
-    src: fastcgi_perl_set
-    dest: /etc/nginx/fastcgi_perl_set
+    src: fastcgi_perl_params
+    dest: /etc/nginx/params/fastcgi_perl_params
 
-- name: install nginx fastcgi_perl
+- name: install nginx fastcgi_perl.conf
   copy:
-    src: fastcgi_perl
-    dest: /etc/nginx/fastcgi_perl
+    src: fastcgi_perl.conf
+    dest: /etc/nginx/snippets/fastcgi_perl.conf

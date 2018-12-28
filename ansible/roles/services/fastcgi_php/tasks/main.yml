@@ -40,22 +40,22 @@
     state: restarted
   when: fcgi_init is changed
 
-- name: create nginx upstream.conf
+- name: create nginx upstreams.conf
   copy:
     content: ""
-    dest: /etc/nginx/conf.d/upstream.conf
+    dest: /etc/nginx/conf.d/upstreams.conf
     force: no
 
-- name: append to nginx upstream.conf
+- name: append to nginx upstreams.conf
   blockinfile:
-    path: /etc/nginx/conf.d/upstream.conf
+    path: /etc/nginx/conf.d/upstreams.conf
     marker: '# {mark} ANSIBLE MANAGED PHP BLOCK'
     block: |
         upstream php {
             server 127.0.0.1:9000;
         }
 
-- name: install nginx fastcgi_php
+- name: install nginx fastcgi_php.conf
   copy:
-    src: fastcgi_php
-    dest: /etc/nginx/fastcgi_php
+    src: fastcgi_php.conf
+    dest: /etc/nginx/snippets/fastcgi_php.conf
