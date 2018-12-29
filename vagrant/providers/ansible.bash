@@ -27,3 +27,6 @@ grep -v '^#' $HOSTS | cut -d' ' -f2 | xargs \
     ssh-keyscan -t ssh-rsa > /home/ansible/.ssh/known_hosts 2> /dev/null
 
 chown ansible. /home/ansible/.ssh/known_hosts
+
+cp $LOCAL_DIR/ansible.id_rsa /home/ansible/.ssh/id_rsa
+chmod 600 /home/ansible/.ssh/id_rsa

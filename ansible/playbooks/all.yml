@@ -49,3 +49,8 @@
   roles:
     - backup_scripts
     - host_drive_mount
+
+- hosts: ansible
+  become: true
+  roles:
+    - ansible_user_private

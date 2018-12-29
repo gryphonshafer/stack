@@ -25,13 +25,11 @@ echo "ansible ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/98_ansible
 # setup the ansible user's ~/.ssh directory
 mkdir /home/ansible/.ssh > /dev/null 2>&1
 
-cp $LOCAL_DIR/ansible.id_rsa     /home/ansible/.ssh/id_rsa
 cp $LOCAL_DIR/ansible.id_rsa.pub /home/ansible/.ssh/authorized_keys
 
 chown -R ansible. /home/ansible/.ssh
 
 chmod 700 /home/ansible/.ssh
-chmod 600 /home/ansible/.ssh/id_rsa
 chmod 644 /home/ansible/.ssh/authorized_keys
 
 mkdir -p /root/.ansible/tmp

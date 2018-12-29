@@ -11,5 +11,5 @@
     src: 98_ansible
     dest: /etc/sudoers.d/98_ansible
 
-- import_tasks: id_rsa.yml
+- import_tasks: id_rsa_pub.yml
 - import_tasks: password.yml
