@@ -1,0 +1,9 @@
+    location /.well-known {
+        alias /var/www/{{ domain }}/htdocs/.well-known;
+    }
+
+    location / {
+        rewrite ^$      https://$host    redirect;
+        rewrite ^/$     https://$host/   redirect;
+        rewrite ^/(.*)$ https://$host/$1 redirect;
+    }

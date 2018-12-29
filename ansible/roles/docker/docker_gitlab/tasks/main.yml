@@ -34,22 +34,46 @@
     group: root
     mode: 0744
 
-- name: nginx site conf
-  template:
-    src: nginx_site_conf.j2
-    dest: "/etc/nginx/sites-available/{{ ansible_hostname }}.{{ domain }}"
-    owner: root
-    group: root
-    mode: 0644
+- name: insert nginx 80 block
+  blockinfile:
+    path: "/etc/nginx/sites-available/{{ domain }}"
+    block: "{{ lookup( 'template', 'nginx_80_block.j2' ) }}"
+    insertbefore: '^\} # 80$'
+  changed_when: no
 
-- name: set example web site conf active
-  file:
-    src: "/etc/nginx/sites-available/{{ ansible_hostname }}.{{ domain }}"
-    dest: "/etc/nginx/sites-enabled/{{ ansible_hostname }}.{{ domain }}"
-    state: link
+- name: adjust nginx server names
+  replace:
+    path: "/etc/nginx/sites-available/{{ domain }}"
+    regexp: '^(\s+server_name\s){{ domain }} '
+    replace: '\1{{ ansible_hostname }}.{{ domain }} {{ domain }} '
+  changed_when: no
+
+- name: adjust nginx proxy_pass
+  replace:
+    path: "/etc/nginx/sites-available/{{ domain }}"
+    regexp: '^(\s+proxy_pass http://localhost);'
+    replace: '\1:5880;'
+  changed_when: no
 
 - name: restart nginx
   service:
     name: nginx
     state: restarted
   when: pull_image is changed
+
+- stat:
+    path: /etc/shorewall/rules.d
+  register: st
+
+- name: install shorewall rules
+  copy:
+    src: shorewall.rules
+    dest: /etc/shorewall/rules.d/gitlab
+  when: st.stat.exists == true
+  register: shorewall_rules
+
+- name: restart shorewall
+  service:
+    name: shorewall
+    state: restarted
+  when: shorewall_rules is changed
