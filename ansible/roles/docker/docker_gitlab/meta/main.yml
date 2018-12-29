@@ -1,4 +1,6 @@
 ---
 dependencies:
-  - nginx
-  - docker
+  - role: nginx
+    when: nginx_executed is not defined
+  - role: docker
+    when: docker_executed is not defined

@@ -17,12 +17,12 @@
 - name: register certbot
   command: 'certbot register -m "{{ user_email }}" --agree-tos'
   when: install_certbot.changed
-  changed_when: no
+  changed_when: false
 
 - name: certbot webroot map call
   command: "certbot -a webroot --webroot-map '{{ webroot_map }}'"
   when: webroot_map | length > 0
-  changed_when: no
+  changed_when: false
 
 - name: nginx sites available ssl conf
   replace:
@@ -34,3 +34,5 @@
       \1ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
   with_items: "{{ sites_available }}"
   when: sites_available != '' and sites_available != []
+
+- import_tasks: ../../../end.yml

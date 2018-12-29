@@ -53,3 +53,4 @@
   when: docker_engine_installed is changed
 
 - import_tasks: shorewall.yml
+- import_tasks: ../../../end.yml

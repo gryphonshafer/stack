@@ -3,3 +3,4 @@
 - import_tasks: user_account.yml
 - import_tasks: id_rsa.yml
 - import_tasks: conf.yml
+- import_tasks: ../../../end.yml

@@ -13,3 +13,4 @@
 
 - import_tasks: id_rsa_pub.yml
 - import_tasks: password.yml
+- import_tasks: ../../../end.yml

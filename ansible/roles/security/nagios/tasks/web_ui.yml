@@ -67,20 +67,19 @@
 - name: inject nagios_ui into default web site
   lineinfile:
     path: "/etc/nginx/sites-available/{{ domain }}"
-    line: "\n    include snippets/nagios_ui_{{ item }}.conf;"
+    line: "    include snippets/nagios_ui_{{ item }}.conf;"
+    regexp: "    include snippets/nagios_ui_{{ item }}.conf;"
     insertbefore: "^\\} # {{ item }}$"
   with_items:
     - 80
     - 443
   register: web_conf
-  changed_when: no
 
 - name: restart nginx
   service:
     name: nginx
     state: restarted
   when: web_conf_snippets is changed or web_conf.results.0.msg == "line added" or web_conf.results.1.msg == "line added"
-  changed_when: no
 
 - name: set nagios admin auth
   replace:

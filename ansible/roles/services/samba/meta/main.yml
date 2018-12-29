@@ -1,3 +1,4 @@
 ---
 dependencies:
-  - user
+  - role: user
+    when: user_executed is not defined

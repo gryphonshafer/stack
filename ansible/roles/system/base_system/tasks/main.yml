@@ -3,3 +3,4 @@
 - import_tasks: root_password.yml
 - import_tasks: packages.yml
 - import_tasks: screen.yml
+- import_tasks: ../../../end.yml

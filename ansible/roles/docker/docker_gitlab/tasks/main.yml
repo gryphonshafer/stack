@@ -39,21 +39,19 @@
     path: "/etc/nginx/sites-available/{{ domain }}"
     block: "{{ lookup( 'template', 'nginx_80_block.j2' ) }}"
     insertbefore: '^\} # 80$'
-  changed_when: no
+    marker: '    # {mark} ANSIBLE MANAGED BLOCK'
 
 - name: adjust nginx server names
   replace:
     path: "/etc/nginx/sites-available/{{ domain }}"
     regexp: '^(\s+server_name\s){{ domain }} '
     replace: '\1{{ ansible_hostname }}.{{ domain }} {{ domain }} '
-  changed_when: no
 
 - name: adjust nginx proxy_pass
   replace:
     path: "/etc/nginx/sites-available/{{ domain }}"
     regexp: '^(\s+proxy_pass http://localhost);'
     replace: '\1:5880;'
-  changed_when: no
 
 - name: restart nginx
   service:
@@ -77,3 +75,5 @@
     name: shorewall
     state: restarted
   when: shorewall_rules is changed
+
+- import_tasks: ../../../end.yml

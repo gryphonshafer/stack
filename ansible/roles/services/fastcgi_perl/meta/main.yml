@@ -1,3 +1,4 @@
 ---
 dependencies:
-  - nginx
+  - role: nginx
+    when: nginx_executed is not defined

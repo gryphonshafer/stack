@@ -32,3 +32,5 @@
     name: exim4
     state: restarted
   when: exim_conf_change is changed
+
+- import_tasks: ../../../end.yml

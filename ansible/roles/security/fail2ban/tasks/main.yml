@@ -38,3 +38,5 @@
     - sendmail-whois
     - sendmail-whois-lines
   notify: restart fail2ban
+
+- import_tasks: ../../../end.yml

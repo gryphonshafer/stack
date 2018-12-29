@@ -67,3 +67,5 @@
 - name: install nagios web user interface
   include: web_ui.yml
   when: nginx_exists.stat.exists
+
+- import_tasks: ../../../end.yml

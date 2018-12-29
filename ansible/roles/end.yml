@@ -1,0 +1,4 @@
+- name: 'set "{{ role_name }}_executed" fact'
+  set_fact:
+    "{{ role_name }}_executed": true
+    cacheable: true

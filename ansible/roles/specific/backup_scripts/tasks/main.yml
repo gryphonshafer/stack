@@ -24,3 +24,5 @@
     group: "{{ user }}"
     state: link
   when: st.stat.exists == false
+
+- import_tasks: ../../../end.yml

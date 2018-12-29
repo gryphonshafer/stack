@@ -1,3 +1,4 @@
 ---
 dependencies:
-  - docker
+  - role: docker
+    when: docker_executed is not defined

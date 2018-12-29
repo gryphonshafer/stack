@@ -1,4 +1,6 @@
 ---
 dependencies:
-  - user
-  - samba
+  - role: user
+    when: user_executed is not defined
+  - role: samba
+    when: samba_executed is not defined

@@ -73,3 +73,5 @@
     regexp: 'startup=0'
     replace: 'startup=1'
   notify: restart shorewall
+
+- import_tasks: ../../../end.yml

@@ -20,3 +20,5 @@
     dest: "{{ local_dir }}/ansible.id_rsa"
     remote_src: true
   when: local_dir is defined
+
+- import_tasks: ../../../end.yml

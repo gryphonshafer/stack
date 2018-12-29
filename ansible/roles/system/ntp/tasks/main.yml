@@ -7,3 +7,5 @@
     autoremove: yes
     pkg: [ 'ntp', 'ntpdate' ]
     state: latest
+
+- import_tasks: ../../../end.yml

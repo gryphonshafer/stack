@@ -8,3 +8,5 @@
   file:
     path: /root/de-vagrant.bash
     mode: 0700
+
+- import_tasks: ../../../end.yml

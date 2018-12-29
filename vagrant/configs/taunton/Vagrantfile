@@ -43,7 +43,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.provision "shell",
             name: "Ansible",
             path: "../../providers/ansible.bash",
-            env: { "HOSTS" => "/host/vagrant/configs/taunton/hosts" }
+            env: {
+                "HOSTS"     => "/host/vagrant/configs/taunton/hosts",
+                "LOCAL_DIR" => "/host/local",
+            }
 
         node.vm.provision "shell",
             name: "Ansible Auto Playbook: inventories/all.ini playbooks/all.yml",

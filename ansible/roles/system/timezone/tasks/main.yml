@@ -2,3 +2,5 @@
 - name: set timezone to Pacific time
   timezone:
     name: America/Los_Angeles
+
+- import_tasks: ../../../end.yml

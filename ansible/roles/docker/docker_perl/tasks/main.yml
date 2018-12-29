@@ -11,3 +11,5 @@
     state: present
     path: "{{ src_dir }}/docker/perl"
   when: perl_image_check.stdout == ""
+
+- import_tasks: ../../../end.yml

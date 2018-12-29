@@ -51,3 +51,5 @@
   file:
     path: /tmp/perlbrew
     state: absent
+
+- import_tasks: ../../../end.yml

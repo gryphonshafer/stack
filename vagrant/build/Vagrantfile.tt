@@ -60,7 +60,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.provision "shell",
             name: "Ansible",
             path: "../../providers/ansible.bash",
-            env: { "HOSTS" => "[% synced_folder %]/vagrant/configs/[% project %]/hosts" }
+            env: {
+                "HOSTS"     => "[% synced_folder %]/vagrant/configs/[% project %]/hosts",
+                "LOCAL_DIR" => "[% synced_folder %]/local",
+            }
 
         [% FOR host.ansible.auto %]
 
