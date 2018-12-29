@@ -26,6 +26,12 @@
     - conf_dir.stat.exists == false
     - git_available.stdout | length != 4
 
+- name: known_hosts ownership
+  file:
+    path: /home/{{ user }}/.ssh/known_hosts
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
 - name: git clone conf via ssh
   git:
     repo: git@github.com:gryphonshafer/.conf.git

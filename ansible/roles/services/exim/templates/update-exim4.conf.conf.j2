@@ -1,5 +1,5 @@
 dc_eximconfig_configtype='satellite'
-dc_other_hostnames='{{ ansible_hostname }}.{{ domain }}'
+dc_other_hostnames='{{ inventory_hostname }}.{{ domain }}'
 dc_local_interfaces='127.0.0.1 ; ::1'
 dc_readhost='{{ domain }}'
 dc_relay_domains=''

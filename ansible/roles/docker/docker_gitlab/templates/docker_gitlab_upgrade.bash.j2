@@ -5,7 +5,7 @@ docker stop gitlab
 docker rm gitlab
 docker run \
     --detach \
-    --hostname {{ ansible_hostname }}.{{ domain }} \
+    --hostname {{ inventory_hostname }}.{{ domain }} \
     --publish 5880:80 \
     --publish 6722:22 \
     --name gitlab \
