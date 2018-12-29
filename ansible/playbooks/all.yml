@@ -18,34 +18,34 @@
   roles:
     - nginx
 
-# - hosts: remote
-#   become: true
-#   roles:
-#     - ssh_hardening
-#     - ntp
-#     - fail2ban
-#     - letsencrypt
-#     - nagios
+- hosts: remote
+  become: true
+  roles:
+    - ssh_hardening
+    - ntp
+    - fail2ban
+    - letsencrypt
+    - nagios
 
-# - hosts: gitlab
-#   become: true
-#   roles:
-#     - docker_gitlab
+- hosts: gitlab
+  become: true
+  roles:
+    - docker_gitlab
 
-# - hosts: local
-#   become: true
-#   roles:
-#     - de-vagrant
-#     - samba
+- hosts: local
+  become: true
+  roles:
+    - de-vagrant
+    - samba
 
-# - hosts: dev
-#   become: true
-#   roles:
-#     - perlbrew
-#     - docker
+- hosts: dev
+  become: true
+  roles:
+    - perlbrew
+    - docker
 
-# - hosts: backup
-#   become: true
-#   roles:
-#     - backup_scripts
-#     - host_drive_mount
+- hosts: backup
+  become: true
+  roles:
+    - backup_scripts
+    - host_drive_mount
