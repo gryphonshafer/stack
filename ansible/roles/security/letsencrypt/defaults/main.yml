@@ -1,3 +1,6 @@
 ---
-webroot_map: ''
-sites_available: []
+run_certbot: no
+webroot_map: '{"{{ inventory_hostname }}.{{ domain }}":"/var/www/{{ domain }}/htdocs"}'
+sites_available:
+  - conf: "{{ domain }}"
+    key: "{{ inventory_hostname }}.{{ domain }}"

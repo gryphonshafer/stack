@@ -21,7 +21,7 @@
 
 - name: certbot webroot map call
   command: "certbot certonly -a webroot --webroot-map '{{ webroot_map }}'"
-  when: webroot_map | length > 0
+  when: run_certbot and webroot_map | length > 0
   changed_when: false
 
 - name: nginx sites available ssl conf
@@ -33,6 +33,13 @@
       \1ssl_certificate     /etc/letsencrypt/live/{{ item.key }}/fullchain.pem;
       \1ssl_certificate_key /etc/letsencrypt/live/{{ item.key }}/privkey.pem;
   with_items: "{{ sites_available }}"
-  when: sites_available != '' and sites_available != []
+  when: run_certbot and sites_available != '' and sites_available != []
+  register: nginx_conf
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  when: nginx_conf is changed
 
 - import_tasks: ../../../end.yml
