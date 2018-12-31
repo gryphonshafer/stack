@@ -15,8 +15,7 @@ for _dir in \
     /var/spool/cron/crontabs \
     /var/trac \
     /var/www \
-    /usr/local/hybserv \
-    /opt/gitlab
+    /usr/local/hybserv
 do
     mkdir -p $_this_home$_dir
     eval sudo rsync $_settings ufda:$_dir/ $_this_home$_dir
@@ -38,4 +37,15 @@ for _dir in \
 do
     mkdir -p $_this_home$_dir
     eval sudo rsync $_settings uber:$_dir/ $_this_home$_dir
+done
+
+#-----------------------------------------------------------------------------
+
+_this_home="$_home/rsyncs/git"
+
+for _dir in \
+    /opt/gitlab
+do
+    mkdir -p $_this_home$_dir
+    eval sudo rsync $_settings git:$_dir/ $_this_home$_dir
 done

@@ -1,8 +1,8 @@
 function hdmount {
     sudo mkdir -p /$2
     sudo mount -t cifs \
-        -o credentials=/home/{{ user }}/.hdmount,iocharset=utf8,rw,sec=ntlm,uid={{ user }},gid={{ user }},dynperm \
-        //${1^^}/${2^^} /$2 -o vers=2.0
+        -o user={{ user }},iocharset=utf8,rw,sec=ntlm,uid={{ user }},gid={{ user }},dynperm,vers=2.0 \
+        //${1^^}/${2^^} /$2
 }
 
 function hdumount {

@@ -44,10 +44,6 @@ cd ~/rsyncs/ufda/usr/local
 echo 'archive: ufda hybserv'
 sudo tar -cf - hybserv | gzip > $_outdir/ufda.hybserv.tar.gz
 
-cd ~/rsyncs/ufda/opt
-echo 'archive: ufda gitlab'
-sudo tar -cf - gitlab | gzip > $_outdir/ufda.gitlab.tar.gz
-
 #-----------------------------------------------------------------------------
 
 cd ~/rsyncs/uber
@@ -75,3 +71,9 @@ sudo tar -cf - mailman | gzip > $_outdir/uber.mailman.tar.gz
 cd ~/rsyncs/uber/var/lib/amavis
 echo 'archive: uber spamassassin'
 sudo tar -cf - .spamassassin | gzip > $_outdir/uber.spamassassin.tar.gz
+
+#-----------------------------------------------------------------------------
+
+cd ~/rsyncs/git/opt
+echo 'archive: git gitlab'
+sudo tar -cf - gitlab | gzip > $_outdir/git.gitlab.tar.gz
