@@ -35,7 +35,7 @@
 - hosts: local
   become: true
   roles:
-    - de-vagrant
+    - devagrant
     - samba
 
 - hosts: dev
@@ -43,6 +43,8 @@
   roles:
     - perlbrew
     - docker
+    - sqlite
+    - mysql
 
 - hosts: backup
   become: true

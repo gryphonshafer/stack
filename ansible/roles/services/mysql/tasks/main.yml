@@ -1,0 +1,31 @@
+---
+- name: install mysql
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: [ 'mysql-server', 'mysql-client', 'libmysql++-dev' ]
+    state: latest
+  register: install_mysql
+
+- name: 'set root password, create/set mysql dev user'
+  command: |
+    bash -c "echo \"{{ item }}\" | mysql"
+  with_items:
+    - "CREATE USER IF NOT EXISTS '{{ user }}'@'%'"
+    - "GRANT ALL PRIVILEGES ON *.* TO '{{ user }}'@'%' WITH GRANT OPTION"
+    - "SET PASSWORD FOR '{{ user }}'@'%' = PASSWORD('{{ user_password }}')"
+  when: user_executed is defined
+  changed_when: false
+
+- name: set user my.cnf file
+  template:
+    src: my.cnf.j2
+    dest: "/home/{{ user }}/.my.cnf"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0600
+  when: user_executed is defined
+
+- import_tasks: ../../../end.yml

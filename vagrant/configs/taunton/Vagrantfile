@@ -29,8 +29,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.hostname = "taunton"
         node.vm.provider "virtualbox" do |vb|
             vb.name   = "Taunton Dev VM"
-            vb.memory = 1024
-            vb.cpus   = 1
+            vb.memory = 4096
+            vb.cpus   = 4
         end
 
         node.vm.network "private_network", ip: "10.42.0.42"
@@ -57,5 +57,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "ansible-playbook -i inventories/all.ini -l taunton " +
                 "playbooks/all.yml" + "'"
 
+        node.vm.provision "shell",
+            name: "Ansible Manual Playbook Setup",
+            inline:
+                "echo -e '#!/usr/bin/env bash\ncd /host/ansible' " +
+                "> /home/ansible/manual_playbooks.bash; " +
+                "chmod 755 /home/ansible/manual_playbooks.bash"
+
+        node.vm.provision "shell",
+            name: "Ansible Manual Playbook: inventories/all.ini playbooks/all.yml",
+            inline:
+                "echo '" +
+                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
+                "LOCAL_DIR=/host/local SRC_DIR=/host " +
+                "ansible-playbook -i inventories/all.ini -l taunton " +
+                "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
     end
 end

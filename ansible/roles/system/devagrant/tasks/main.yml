@@ -1,0 +1,12 @@
+---
+- name: install devagrant.bash
+  copy:
+    src: devagrant.bash
+    dest: /root/devagrant.bash
+
+- name: set devagrant.bash permission
+  file:
+    path: /root/devagrant.bash
+    mode: 0700
+
+- import_tasks: ../../../end.yml

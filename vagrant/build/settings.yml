@@ -18,14 +18,18 @@ configs:
         hosts:
             - taunton:
                 name: Taunton Dev VM
-                memory: 1024
-                cpus: 1
+                memory: 4096
+                cpus: 4
                 network:
                     private_network: 10.42.0.42
                     public_network: true
                     remap_ssh: 2242
                 ansible:
                     auto:
+                        - inventory: inventories/all.ini
+                          playbook: playbooks/all.yml
+                          limit: taunton
+                    manual:
                         - inventory: inventories/all.ini
                           playbook: playbooks/all.yml
                           limit: taunton

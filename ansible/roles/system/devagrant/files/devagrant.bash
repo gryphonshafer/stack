@@ -15,4 +15,4 @@ rmdir /vagrant
 
 /opt/VBoxGuestAdditions-*/uninstall.sh
 
-rm /root/de-vagrant.bash
+rm /root/devagrant.bash
