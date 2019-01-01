@@ -1,8 +1,12 @@
 #!/bin/sh
 
 _home="/home/gryphon"
-_e="ssh -p 4222 -l gryphon -i $_home/.ssh/id_rsa"
+
+_e="ssh -p 22 -l gryphon -i $_home/.ssh/id_rsa"
 _settings="-chazvP -e \"$_e\" --rsync-path=\"sudo rsync\" --delete"
+
+_e_x="ssh -p 4222 -l gryphon -i $_home/.ssh/id_rsa"
+_settings_x="-chazvP -e \"$_e_x\" --rsync-path=\"sudo rsync\" --delete"
 
 #-----------------------------------------------------------------------------
 
@@ -18,7 +22,7 @@ for _dir in \
     /usr/local/hybserv
 do
     mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings ufda:$_dir/ $_this_home$_dir
+    eval sudo rsync $_settings_x ufda:$_dir/ $_this_home$_dir
 done
 
 #-----------------------------------------------------------------------------
@@ -36,7 +40,7 @@ for _dir in \
     /var/lib/amavis/.spamassassin
 do
     mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings uber:$_dir/ $_this_home$_dir
+    eval sudo rsync $_settings_x uber:$_dir/ $_this_home$_dir
 done
 
 #-----------------------------------------------------------------------------
