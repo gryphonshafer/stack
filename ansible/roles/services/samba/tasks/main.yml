@@ -5,7 +5,10 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'samba', 'cifs-utils', 'smbclient' ]
+    pkg:
+      - samba
+      - cifs-utils
+      - smbclient
     state: latest
 
 - name: backup smb.conf dist file

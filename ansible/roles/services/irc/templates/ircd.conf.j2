@@ -1,0 +1,296 @@
+serverinfo {
+    name         = "irc.{{ domain }}";
+    description  = "irc.{{ domain }} IRC Server";
+    network_name = "irc.{{ domain }}";
+    network_desc = "irc.{{ domain }} IRC Network";
+
+    hub                 = no;
+    default_max_clients = 512;
+    max_nick_length     = 15;
+    max_topic_length    = 300;
+
+    rsa_private_key_file = "/etc/ircd-hybrid/key/ircd.key";
+    ssl_certificate_file = "/etc/ircd-hybrid/key/ircd.pem";
+};
+
+admin {
+    name        = "{{ user }}";
+    description = "IRC Server Administrator";
+    email       = "<{{ user_email }}>";
+};
+
+class {
+    name          = "users";
+    ping_time     = 90 seconds;
+    number_per_ip = 50;
+    max_local     = 100;
+    max_global    = 100;
+    max_number    = 1000;
+    sendq         = 100 kbytes;
+    recvq         = 2560 bytes;
+};
+
+class {
+    name          = "opers";
+    ping_time     = 90 seconds;
+    number_per_ip = 10;
+    max_number    = 100;
+    sendq         = 100 kbytes;
+    max_channels  = 60;
+    min_idle      = 3 hours;
+    max_idle      = 8 hours;
+    flags         = random_idle, hide_idle_from_opers;
+};
+
+class {
+    name        = "server";
+    ping_time   = 90 seconds;
+    connectfreq = 5 minutes;
+    max_number  = 1;
+    sendq       = 2 megabytes;
+};
+
+motd {
+    mask = "*.at";
+    mask = "*.de";
+    mask = "*.ch";
+    file = "/etc/ircd-hybrid/german.motd";
+};
+
+listen {
+    # host = "127.0.0.1"; # de-comment to limit access to localhost
+    port = 6665 .. 6669;
+};
+
+listen {
+    flags = ssl;
+    port = 6670, 6697;
+}
+
+auth {
+    user       = "*@localhost";
+    class      = "users";
+    have_ident = no;
+};
+
+auth {
+    user       = "*@127.0.0.1";
+    class      = "users";
+    have_ident = no;
+};
+
+auth {
+    user       = "*example@*";
+    password   = "cryptPassword";
+    class      = "users";
+    have_ident = no;
+    encrypted  = yes;
+    flags      = need_password;
+};
+
+# comment-out the following block to disallow non-passwd-auth-ed users
+auth {
+    user       = "*@*";
+    class      = "users";
+    have_ident = no;
+};
+
+# de-comment the below block to establish an operator
+# operator {
+#     name      = "{{ user }}";
+#     user      = "*example@*";
+#     password  = "cryptPassword";
+#     encrypted = yes;
+#
+#     ssl_connection_required = no;
+#
+#     class  = "opers";
+#     umodes = locops, servnotice, wallop;
+#     flags  = admin, connect, connect:remote, die, globops, kill, kill:remote,
+#        kline, module, rehash, restart, set, unkline, unxline, xline;
+# };
+
+connect {
+    name = "ircservices.{{ domain }}";
+    host = "127.0.0.1";
+
+    send_password   = "{{ irc_password }}";
+    accept_password = "{{ irc_password }}";
+
+    compressed = no;
+    hub_mask   = "*";
+    class      = "server";
+};
+
+shared {
+    name = "{{ domain }}";
+    user = "root@localhost";
+    type = kline, unkline, resv;
+};
+
+deny {
+    ip     = "10.0.1.0/24";
+    reason = "Reconnecting vhosted bots";
+};
+
+exempt {
+    ip = "192.168.0.0/16";
+};
+
+resv { mask = "clone*"; reason = "Clone bots"; };
+resv { mask = "Global"; reason = "Reserved for services"; };
+resv { mask = "ChanServ"; reason = "Reserved for services"; };
+resv { mask = "NickServ"; reason = "Reserved for services"; };
+resv { mask = "OperServ"; reason = "Reserved for services"; };
+resv { mask = "MemoServ"; reason = "Reserved for services"; };
+resv { mask = "BotServ"; reason = "Reserved for services"; };
+resv { mask = "HelpServ"; reason = "Reserved for services"; };
+resv { mask = "HostServ"; reason = "Reserved for services"; };
+resv { mask = "StatServ"; reason = "Reserved for services"; };
+resv { mask = "#*services*"; reason = "Reserved for services"; };
+
+channel {
+    disable_fake_channels = yes;
+
+    invite_client_count  = 10;
+    invite_client_time   = 5 minutes;
+    invite_delay_channel = 5 seconds;
+    invite_expire_time   = 1 hour;
+
+    knock_client_count = 1;
+    knock_client_time  = 5 minutes;
+
+    knock_delay_channel = 1 minute;
+
+    max_channels = 250;
+    max_invites  = 200;
+    max_bans     = 100;
+
+    default_join_flood_count = 18;
+    default_join_flood_time  = 6 seconds;
+};
+
+serverhide {
+    disable_remote_commands = no;
+    flatten_links           = no;
+    flatten_links_delay     = 5 minutes;
+    flatten_links_file      = "/var/cache/ircd-hybrid/links.txt";
+    hidden                  = no;
+    hide_servers            = no;
+    hide_services           = no;
+    hidden_name             = "*.example.net";
+    hide_server_ips         = no;
+};
+
+general {
+    cycle_on_host_change        = yes;
+    max_watch                   = 50;
+    max_accept                  = 50;
+    whowas_history_length       = 15000;
+    dline_min_cidr              = 16;
+    dline_min_cidr6             = 48;
+    kline_min_cidr              = 16;
+    kline_min_cidr6             = 48;
+    invisible_on_connect        = yes;
+    kill_chase_time_limit       = 30 seconds;
+    ignore_bogus_ts             = no;
+    disable_auth                = no;
+    tkline_expire_notices       = no;
+    default_floodcount          = 10;
+    default_floodtime           = 1 second;
+    failed_oper_notice          = yes;
+    dots_in_ident               = 2;
+    min_nonwildcard             = 4;
+    min_nonwildcard_simple      = 3;
+    anti_nick_flood             = yes;
+    max_nick_changes            = 5;
+    max_nick_time               = 20 seconds;
+    away_count                  = 2;
+    away_time                   = 10 seconds;
+    anti_spam_exit_message_time = 5 minutes;
+    ts_warn_delta               = 3 seconds;
+    ts_max_delta                = 15 seconds;
+    warn_no_connect_block       = yes;
+    stats_e_disabled            = no;
+    stats_m_oper_only           = yes;
+    stats_o_oper_only           = yes;
+    stats_P_oper_only           = yes;
+    stats_u_oper_only           = no;
+    stats_i_oper_only           = yes;
+    stats_k_oper_only           = yes;
+    caller_id_wait              = 1 minute;
+    opers_bypass_callerid       = no;
+    pace_wait_simple            = 1 second;
+    pace_wait                   = 10 seconds;
+    short_motd                  = no;
+    ping_cookie                 = no;
+    no_oper_flood               = yes;
+    max_targets                 = 4;
+
+    oper_only_umodes = bots, cconn, debug, external, farconnect, full, hidden,
+        locops, nchange, rej, skill, spy, unauth;
+
+    oper_umodes = bots, locops, servnotice, wallop;
+
+    throttle_count = 1;
+    throttle_time  = 2 seconds;
+};
+
+modules {
+    path = "/usr/lib/ircd-hybrid/modules";
+    path = "/usr/lib/ircd-hybrid/modules/autoload";
+
+    module = "m_tburst.so";
+};
+
+log {
+    use_logging = yes;
+
+    file {
+        type = oper;
+        name = "/var/log/ircd/ircd-hybrid-oper.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = user;
+        name = "/var/log/ircd/ircd-hybrid-user.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = kill;
+        name = "/var/log/ircd/ircd-hybrid-kill.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = kline;
+        name = "/var/log/ircd/ircd-hybrid-kline.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = dline;
+        name = "/var/log/ircd/ircd-hybrid-dline.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = xline;
+        name = "/var/log/ircd/ircd-hybrid-xline.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = resv;
+        name = "/var/log/ircd/ircd-hybrid-resv.log";
+        size = 10 megabytes;
+    };
+
+    file {
+        type = debug;
+        name = "/var/log/ircd/ircd-hybrid-debug.log";
+        size = 10 megabytes;
+    };
+};

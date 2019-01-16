@@ -5,7 +5,12 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'apt-transport-https', 'ca-certificates', 'gnupg2', 'curl', 'software-properties-common' ]
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - gnupg2
+      - curl
+      - software-properties-common
     state: latest
 
 - name: check if apt-key installed

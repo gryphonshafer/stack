@@ -5,7 +5,10 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'mysql-server', 'mysql-client', 'libmysql++-dev' ]
+    pkg:
+      - mysql-server
+      - mysql-client
+      - libmysql++-dev
     state: latest
   register: install_mysql
 

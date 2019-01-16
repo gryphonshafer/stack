@@ -25,7 +25,7 @@
 - name: bash.bashrc sources perlbrew bashrc
   lineinfile:
     dest: /etc/bash.bashrc
-    line: ". {{ perlbrew_root }}/etc/bashrc"
+    line: "builtin source {{ perlbrew_root }}/etc/bashrc"
 
 - name: perlbrew-cron
   template:
@@ -37,7 +37,7 @@
 
 - name: upgrade perlbrew, install cpanm, install stable
   shell: |
-    . {{ perlbrew_root }}/etc/bashrc
+    builtin source {{ perlbrew_root }}/etc/bashrc
     perlbrew self-upgrade >/dev/null 2>&1
     perlbrew -f install-cpanm >/dev/null 2>&1
     perlbrew install --notest {{ perl_version }} >/dev/null 2>&1
@@ -51,5 +51,16 @@
   file:
     path: /tmp/perlbrew
     state: absent
+
+- name: perlbrew lib create and switch for dev user
+  shell: |
+    builtin source {{ perlbrew_root }}/etc/bashrc
+    perlbrew lib create $(perlbrew list | head -1 | sed -e 's/[ ]*//g')@local
+    perlbrew switch $(perlbrew list | tail -1 | sed -e 's/[ ]*//g')
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: "{{ user }}"
+  when: user_executed is defined and perlbrew_installed is changed
 
 - import_tasks: ../../../end.yml

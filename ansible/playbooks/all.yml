@@ -32,6 +32,19 @@
   roles:
     - docker_gitlab
 
+- hosts: web_hosting_services
+  become: true
+  roles:
+    - perlbrew
+    - docker
+    - sqlite
+
+- hosts: web_hosting
+  become: true
+  roles:
+    - perlbrew_production_user
+    - irc
+
 - hosts: local
   become: true
   roles:
@@ -41,9 +54,6 @@
 - hosts: dev
   become: true
   roles:
-    - perlbrew
-    - docker
-    - sqlite
     - mysql
 
 - hosts: backup

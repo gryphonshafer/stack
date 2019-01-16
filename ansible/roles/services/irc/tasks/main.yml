@@ -1,0 +1,76 @@
+---
+- import_tasks: password.yml
+
+- name: install irc and services
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg:
+      - ircd-hybrid
+      - anope
+    state: latest
+  register: irc
+
+- name: irc conf
+  template:
+    src: ircd.conf.j2
+    dest: /etc/ircd-hybrid/ircd.conf
+    backup: yes
+  when: irc is changed
+
+- name: irc motd
+  template:
+    src: ircd.motd.j2
+    dest: /etc/ircd-hybrid/ircd.motd
+    backup: no
+  when: irc is changed
+
+- name: anope port
+  replace:
+    dest: /etc/anope/services.conf
+    regexp: 'port = 7000'
+    replace: 'port = 6667'
+  register: anope_port
+
+- name: anope type
+  replace:
+    dest: /etc/anope/services.conf
+    regexp: '"inspircd20"'
+    replace: '"hybrid"'
+  register: anope_type
+
+- name: anope connect password
+  replace:
+    dest: /etc/anope/services.conf
+    regexp: 'password = "mypassword"'
+    replace: 'password = "{{ irc_password }}"'
+  register: anope_password
+
+- name: anope serverinfo name
+  replace:
+    dest: /etc/anope/services.conf
+    regexp: 'services\.localhost\.net'
+    replace: 'ircservices.goldenguru.com'
+  register: anope_name
+
+- name: activate anope
+  replace:
+    dest: /etc/default/anope
+    regexp: 'START=no'
+    replace: 'START=yes'
+
+- name: restart irc
+  service:
+    name: ircd-hybrid
+    state: restarted
+  when: irc is changed
+
+- name: restart irc
+  service:
+    name: anope
+    state: restarted
+  when: irc is changed or anope_port is changed or anope_type is changed or anope_password is changed or anope_name is changed
+- import_tasks: shorewall.yml
+- import_tasks: ../../../end.yml

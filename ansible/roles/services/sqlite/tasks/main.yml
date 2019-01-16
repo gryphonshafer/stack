@@ -5,7 +5,10 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'sqlite3', 'sqlite3-pcre', 'libsqlite3-dev' ]
+    pkg:
+      - sqlite3
+      - sqlite3-pcre
+      - libsqlite3-dev
     state: latest
 
 - import_tasks: ../../../end.yml

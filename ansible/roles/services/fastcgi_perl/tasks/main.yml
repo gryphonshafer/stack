@@ -5,7 +5,9 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'fcgiwrap', 'spawn-fcgi' ]
+    pkg:
+      - fcgiwrap
+      - spawn-fcgi
     state: latest
 
 - name: install fcgiwrap default

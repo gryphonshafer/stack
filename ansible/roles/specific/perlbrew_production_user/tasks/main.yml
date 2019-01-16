@@ -1,0 +1,22 @@
+---
+- name: create perlbrew production user
+  user:
+    name: "{{ production_user }}"
+    shell: /bin/bash
+  register: create_production_user
+
+- import_tasks: password.yml
+  when: create_production_user is changed
+
+- name: perlbrew lib create and switch
+  shell: |
+    builtin source /opt/perl5/etc/bashrc
+    perlbrew lib create $(perlbrew list | head -1 | sed -e 's/[ ]*//g')@local
+    perlbrew switch $(perlbrew list | tail -1 | sed -e 's/[ ]*//g')
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: "{{ production_user }}"
+  when: create_production_user is changed and perlbrew_executed is defined
+
+- import_tasks: ../../../end.yml

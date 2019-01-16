@@ -5,7 +5,9 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'shorewall', 'shorewall-doc' ]
+    pkg: 
+      - shorewall
+      - shorewall-doc
     state: latest
 
 - name: copy shorewall/examples/one-interface

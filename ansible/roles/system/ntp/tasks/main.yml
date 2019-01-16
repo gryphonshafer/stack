@@ -5,7 +5,9 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: [ 'ntp', 'ntpdate' ]
+    pkg:
+      - ntp
+      - ntpdate
     state: latest
 
 - import_tasks: ../../../end.yml
