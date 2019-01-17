@@ -45,6 +45,7 @@
     - perlbrew_production_user
     - irc
     - wordpress
+    - trac
 
 - hosts: local
   become: true

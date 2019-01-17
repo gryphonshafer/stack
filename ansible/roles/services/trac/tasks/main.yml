@@ -1,0 +1,70 @@
+---
+- name: install trac and components
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg:
+      - trac
+      - trac-xmlrpc
+      - trac-httpauth
+      - trac-codecomments
+      - trac-jsgantt
+      - trac-roadmap
+      - trac-subcomponents
+      - trac-subtickets
+      - trac-tags
+      - trac-wysiwyg
+      - trac-xmlrpc
+    state: latest
+
+- name: create trac sites dir
+  file:
+    path: "/var/trac/{{ domain }}"
+    state: directory
+  register: trac_dir
+
+- name: trac admin domain setup
+  command: "env trac-admin /var/trac/{{ domain }} {{ item }}"
+  with_items:
+    - 'initenv "{{ domain }} Trac" "sqlite:db/trac.db"'
+    - 'permission add {{ user }} TRAC_ADMIN'
+  when: trac_dir is changed
+
+- name: tracd-fcgi init.d
+  copy:
+    src: tracd-fcgi
+    dest: /etc/init.d/tracd-fcgi
+    mode: 0755
+  register: init_d
+
+- name: update rc tracd-fcgi defaults
+  command: update-rc.d tracd-fcgi defaults
+  when: init_d is changed
+
+- name: ensure password set
+  set_fact:
+    user_password: password
+  when: user_password is not defined or user_password == ''
+  changed_when: false
+
+- name: build htaccess file
+  shell: |
+    echo "{{ user }}:`/bin/echo {{ user_password }} | /usr/bin/perl -lne 'print crypt( $_, rand() * 100 )'`" \
+    > /var/trac/{{ domain }}/conf/htaccess
+  args:
+    executable: /bin/bash
+  when: trac_dir is changed
+
+- import_tasks: perm-redirect.yml
+  when: trac_dir is changed
+
+- name: restart tracd-fcgi
+  service:
+    name: tracd-fcgi
+    state: restarted
+  when: init_d is changed
+
+- import_tasks: nginx.yml
+- import_tasks: ../../../end.yml

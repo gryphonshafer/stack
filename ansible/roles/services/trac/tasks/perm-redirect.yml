@@ -1,0 +1,39 @@
+---
+- name: download perm-redirect
+  get_url:
+    url: https://pypi.python.org/packages/source/T/TracPermRedirect/TracPermRedirect-3.0.tar.gz
+    dest: /tmp/TracPermRedirect-3.0.tar.gz
+
+- name: extract perm-redirect
+  unarchive:
+    src: /tmp/TracPermRedirect-3.0.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: remove download
+  file:
+    path: /tmp/TracPermRedirect-3.0.tar.gz
+    state: absent
+
+- name: build egg
+  command: python setup.py bdist_egg
+  args:
+    chdir: /tmp/TracPermRedirect-3.0
+
+- name: place egg
+  copy:
+    src: /tmp/TracPermRedirect-3.0/dist/TracPermRedirect-3.0-py2.7.egg
+    dest: "/var/trac/{{ domain }}/plugins/."
+    remote_src: yes
+
+- name: remove build dir
+  file:
+    path: /tmp/TracPermRedirect-3.0
+    state: absent
+
+- name: trac conf alteration
+  blockinfile:
+    path: "/var/trac/{{ domain }}/conf/trac.ini"
+    block: |
+      [components]
+      permredirect.* = enabled

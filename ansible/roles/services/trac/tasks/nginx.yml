@@ -1,0 +1,30 @@
+---
+- name: append trac block to upstreams.conf
+  blockinfile:
+    path: /etc/nginx/conf.d/upstreams.conf
+    marker: '# {mark} ANSIBLE MANAGED TRAC BLOCK'
+    block: |
+      upstream trac {
+          server 127.0.0.1:3050;
+      }
+
+- name: nginx conf alteration
+  blockinfile:
+    path: "/etc/nginx/sites-available/{{ domain }}"
+    insertbefore: '\} # 80'
+    block: |
+        rewrite ^/trac$  /trac/{{ domain }} redirect;
+        rewrite ^/trac/$ /trac/{{ domain }} redirect;
+        location /trac {
+            proxy_pass http://trac;
+            auth_basic "{{ domain }} Trac";
+            auth_basic_user_file "/var/trac/{{ domain }}/conf/htaccess";
+            proxy_pass_header Authorization;
+        }
+  register: nginx_conf
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  when: nginx_conf is changed

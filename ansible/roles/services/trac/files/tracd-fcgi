@@ -1,0 +1,71 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          trac
+# Required-Start:    nginx
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Trac
+# Description:       Trac web services
+### END INIT INFO
+
+PORT=3050
+PID_FILE=/var/run/tracd.pid
+ROOT_DIR=/var/trac
+BASE_PATH=/trac
+
+start() {
+    echo -n "Starting tracd: "
+
+    _auth=""
+    for i in $( /bin/ls -d /var/trac/* )
+    do
+        if [ -d $i ]
+        then
+            _instance=$( /usr/bin/basename $i )
+
+            _access=""
+            if [ -f $i/conf/htaccess ]
+            then
+                _access="$i/conf/htaccess"
+            fi
+
+            if [ ${#_access} -gt 0 ]
+            then
+                _auth="$_auth --basic-auth=$_instance,$_access,'$_instance Trac'"
+            fi
+        fi
+    done
+
+    /usr/bin/tracd -d \
+        -p $PORT --pidfile=$PID_FILE --protocol=http -e $ROOT_DIR \
+        --base-path=$BASE_PATH --hostname=127.0.0.1 \
+        $_auth
+
+    RETVAL=$?
+}
+stop() {
+    echo -n "Stopping tracd: "
+    PID="$(cat "$PID_FILE")"
+    /bin/kill $PID
+    RETVAL=$?
+}
+
+case "$1" in
+    start)
+      start
+  ;;
+    stop)
+      stop
+  ;;
+    restart)
+      stop
+      start
+  ;;
+    *)
+      echo "Usage: tracd {start|stop|restart}"
+      exit 1
+  ;;
+esac
+echo 'Done'
+exit $RETVAL
