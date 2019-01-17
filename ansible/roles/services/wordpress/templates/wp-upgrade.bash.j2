@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+/bin/echo 'Upgrading Wordpress...'
+
+cd /tmp
+wget https://wordpress.org/latest.zip
+unzip latest.zip
+rm latest.zip
+chown -R www-data. wordpress
+
+if [ -f /var/www/{{ domain }}/wordpress/wp-update.bash ]
+then
+    cp -p /var/www/{{ domain }}/wordpress/wp-update.bash wordpress/.
+fi
+
+if [ -f /var/www/{{ domain }}/wordpress/wp-upgrade.bash ]
+then
+    cp -p /var/www/{{ domain }}/wordpress/wp-upgrade.bash wordpress/.
+fi
+
+sed -i -e 's/<h1>/<h1 style="display: none">/' wordpress/wp-login.php
+cp -rp /var/www/{{ domain }}/wordpress/wp-content wordpress/.
+cp -p /var/www/{{ domain }}/wordpress/wp-config.php wordpress/.
+
+rm -rf /var/www/{{ domain }}/wordpress
+mv wordpress /var/www/{{ domain }}/wordpress
+
+service php-fcgi restart

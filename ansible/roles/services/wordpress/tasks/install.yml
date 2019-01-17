@@ -1,0 +1,73 @@
+---
+- name: download wordpress
+  get_url:
+    url: http://wordpress.org/latest.tar.gz
+    dest: /tmp/latest.tar.gz
+
+- name: extract wordpress
+  unarchive:
+    src: /tmp/latest.tar.gz
+    dest: "/var/www/{{ domain }}"
+    remote_src: yes
+
+- name: remove download
+  file:
+    path: /tmp/latest.tar.gz
+    state: absent
+
+- name: set wp-content writeable
+  file:
+    path: "/var/www/{{ domain }}/wordpress/wp-content"
+    mode: 0777
+
+- name: set wp-content writeable
+  copy:
+    src: "/var/www/{{ domain }}/wordpress/wp-config-sample.php"
+    dest: "/var/www/{{ domain }}/wordpress/wp-config.php"
+    remote_src: yes
+
+- name: set DB_DIR and DB_FILE
+  lineinfile:
+    path: "/var/www/{{ domain }}/wordpress/wp-config.php"
+    line: "{{ item }}"
+  with_items:
+    - "define('DB_DIR', '/var/www/{{ domain }}/wordpress/');"
+    - "define('DB_FILE', 'db_file_name');"
+
+- name: set wp-content writeable
+  file:
+    path: "/var/www/{{ domain }}"
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+- name: set wp-content writeable
+  file:
+    path: "/var/www/{{ domain }}/wordpress/wp-content/plugins/{{ item }}"
+    state: absent
+  with_items:
+    - akismet
+    - hello.php
+
+- name: update and upgrade scripts
+  template:
+    src: "wp-{{ item }}.bash.j2"
+    dest: "/var/www/{{ domain }}/wordpress/wp-{{ item }}.bash"
+    owner: root
+    group: root
+    mode: 0700
+  with_items:
+    - upgrade
+    - update
+
+- name: remove login header
+  replace:
+    path: "/var/www/{{ domain }}/wordpress/wp-login.php"
+    regexp: '<h1>'
+    replace: '<h1 style="display: none">'
+
+- name: execute update
+  shell: "./wp-update.bash"
+  args:
+    chdir: "/var/www/{{ domain }}/wordpress"
+    executable: /bin/bash

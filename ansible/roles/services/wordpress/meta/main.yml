@@ -1,0 +1,6 @@
+---
+dependencies:
+  - role: fastcgi_php
+    when: fastcgi_php_executed is not defined
+  - role: sqlite
+    when: sqlite_executed is not defined

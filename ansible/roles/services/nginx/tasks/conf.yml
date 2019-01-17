@@ -45,7 +45,7 @@
 
 - name: delete unused (and probably later overwritten) snippets
   file:
-    path: "/etc/nginx/{{ item }}"
+    path: "/etc/nginx/{{ item }}/snippets"
     state: absent
   with_items:
     - fastcgi.conf

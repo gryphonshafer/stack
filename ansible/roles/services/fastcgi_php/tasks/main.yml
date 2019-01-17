@@ -65,4 +65,10 @@
     src: fastcgi_php.conf
     dest: /etc/nginx/snippets/fastcgi_php.conf
 
+- name: index index.php
+  replace:
+    path: "/etc/nginx/sites-available/{{ domain }}"
+    regexp: '^(\s*index\s+.*);'
+    replace: '\1 index.php;'
+
 - import_tasks: ../../../end.yml

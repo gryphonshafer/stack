@@ -72,5 +72,6 @@
     name: anope
     state: restarted
   when: irc is changed or anope_port is changed or anope_type is changed or anope_password is changed or anope_name is changed
+
 - import_tasks: shorewall.yml
 - import_tasks: ../../../end.yml
