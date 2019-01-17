@@ -64,8 +64,8 @@
 - name: adjust nginx proxy_pass
   replace:
     path: "/etc/nginx/sites-available/{{ domain }}"
-    regexp: '^(\s+proxy_pass http://localhost);'
-    replace: '\1:5880;'
+    regexp: '^(\s+)(proxy_pass http://localhost);'
+    replace: '\1\2:5880;\n\1include snippets/proxy_websockets.conf;'
 
 - name: restart nginx
   service:
