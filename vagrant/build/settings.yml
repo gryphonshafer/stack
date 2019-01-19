@@ -66,4 +66,7 @@ configs:
                     manual:
                         - inventory: inventories/all.ini
                           playbook: playbooks/all.yml
+                          limit: www
+                        - inventory: inventories/all.ini
+                          playbook: playbooks/all.yml
                           limit: git
