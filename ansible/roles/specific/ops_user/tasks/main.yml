@@ -1,12 +1,12 @@
 ---
-- name: create perlbrew production user
+- name: create ops user
   user:
-    name: "{{ production_user }}"
+    name: "{{ ops_user }}"
     shell: /bin/bash
-  register: create_production_user
+  register: create_ops_user
 
 - import_tasks: password.yml
-  when: create_production_user is changed
+  when: create_ops_user is changed
 
 - name: perlbrew lib create and switch
   shell: |
@@ -16,7 +16,7 @@
   args:
     executable: /bin/bash
   become: true
-  become_user: "{{ production_user }}"
-  when: create_production_user is changed and perlbrew_executed is defined
+  become_user: "{{ ops_user }}"
+  when: create_ops_user is changed and perlbrew_executed is defined
 
 - import_tasks: ../../../end.yml

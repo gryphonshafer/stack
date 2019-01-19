@@ -42,7 +42,7 @@
 - hosts: web_hosting
   become: true
   roles:
-    - perlbrew_production_user
+    - ops_user
     - irc
     - wordpress
     - trac
