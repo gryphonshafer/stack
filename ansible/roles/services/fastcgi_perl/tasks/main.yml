@@ -10,15 +10,23 @@
       - spawn-fcgi
     state: latest
 
-- name: install fcgiwrap default
+- name: install fcgiwrap.env.sh
   copy:
-    src: default_fcgiwrap
-    dest: /etc/default/fcgiwrap
+    src: fcgiwrap.env.sh
+    dest: /usr/local/bin/fcgiwrap.env.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: install fcgiwrap.service
+  copy:
+    src: fcgiwrap.service
+    dest: /lib/systemd/system/fcgiwrap.service
     owner: root
     group: root
     mode: 0644
 
-- name: install fcgiwrap inid.d
+- name: install fcgiwrap init.d
   copy:
     src: init.d_fcgiwrap
     dest: /etc/init.d/fcgiwrap
@@ -27,8 +35,8 @@
     mode: 0755
   register: fcgiwrap_init
 
-- name: update rc fcgiwrap defaults
-  command: update-rc.d fcgiwrap defaults
+- name: update rc fcgiwrap defaults and systemctl daemon reload
+  command: 'update-rc.d fcgiwrap defaults && systemctl daemon-reload'
   when: fcgiwrap_init is changed
 
 - name: restart fcgiwrap

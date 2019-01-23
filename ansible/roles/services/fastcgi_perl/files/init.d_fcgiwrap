@@ -18,66 +18,29 @@ DESC="FastCGI wrapper"
 PIDFILE="/var/run/$NAME.pid"
 SPAWN_FCGI="/usr/bin/spawn-fcgi"
 DAEMON="/usr/sbin/fcgiwrap"
-DAEMON_OPTS="-f"
+FCGI_SOCKET="/var/run/fcgiwrap.socket"
 
-FCGI_CHILDREN="1"
-FCGI_SOCKET="/var/run/$NAME.socket"
-FCGI_USER="www-data"
-FCGI_GROUP="www-data"
+DAEMON_OPTS="-f -c 3"
+SPAWN_ARGS="-F 1 -s $FCGI_SOCKET -u www-data -U www-data -g www-data -G www-data"
 
-if [ -f /etc/default/$NAME ]
+export USER="www-data"
+export HOME="/var/www"
+export LOGNAME="www-data"
+export MAIL="/var/mail/www-data"
+
+if [ -d /opt/perl5 ]
 then
-    . /etc/default/$NAME
+    export PERLBREW_ROOT="/opt/perl5"
+    export PERLBREW_HOME="${HOME}/.perlbrew"
+    . ${PERLBREW_HOME}/init
+
+    __perlbrew_code="$(${PERLBREW_ROOT}/bin/perlbrew env ${PERLBREW_PERL}@${PERLBREW_LIB})"
+    eval "$__perlbrew_code"
+    unset __perlbrew_code
+
+    export PATH=${PERLBREW_PATH}:$PATH
+    export MANPATH=${PERLBREW_MANPATH}:$MANPATH
 fi
-
-set_args() {
-    ARGS="-P $PIDFILE"
-
-    if [ -n "$FCGI_CHILDREN" ]
-    then
-       ARGS="$ARGS -F $FCGI_CHILDREN"
-    fi
-
-    if [ -n "$FCGI_SOCKET" ]
-    then
-        ARGS="$ARGS -s $FCGI_SOCKET"
-    elif [ -n "$FCGI_PORT" ]
-    then
-        if [ -n "$FCGI_ADDR" ]
-        then
-            ARGS="$ARGS -a $FCGI_ADDR"
-        fi
-        ARGS="$ARGS -p $FCGI_PORT"
-    fi
-
-    if [ -n "$FCGI_USER" ]
-    then
-        ARGS="$ARGS -u $FCGI_USER"
-        if [ -n "$FCGI_SOCKET" ]
-        then
-            if [ -n "$FCGI_SOCKET_OWNER" ]
-            then
-                ARGS="$ARGS -U $FCGI_SOCKET_OWNER"
-            else
-                ARGS="$ARGS -U $FCGI_USER"
-            fi
-        fi
-    fi
-
-    if [ -n "$FCGI_GROUP" ]
-    then
-        ARGS="$ARGS -g $FCGI_GROUP"
-        if [ -n "$FCGI_SOCKET" ]
-        then
-            if [ -n "$FCGI_SOCKET_GROUP" ]
-            then
-                ARGS="$ARGS -G $FCGI_SOCKET_GROUP"
-            else
-                ARGS="$ARGS -G $FCGI_GROUP"
-            fi
-        fi
-    fi
-}
 
 case "$1" in
     start)
@@ -87,8 +50,7 @@ case "$1" in
         else
             echo "Starting $DESC..."
 
-            set_args
-            COMMAND="$SPAWN_FCGI $ARGS -- $DAEMON $DAEMON_OPTS"
+            COMMAND="$SPAWN_FCGI -P /var/run/fcgiwrap.pid $SPAWN_ARGS -- $DAEMON $DAEMON_OPTS"
             eval $(echo $COMMAND) > /dev/null
 
             if [ $? -gt "0" ]
@@ -101,15 +63,28 @@ case "$1" in
             echo "$DESC started"
         fi
         ;;
+    systemd)
+        echo "Starting $DESC..."
+
+        COMMAND="$SPAWN_FCGI -n $SPAWN_ARGS -- $DAEMON $DAEMON_OPTS"
+        eval $(echo $COMMAND) > /dev/null
+
+        if [ $? -gt "0" ]
+        then
+            echo "$DESC failed to start using command:"
+            echo $COMMAND
+            exit 1
+        fi
+        ;;
     stop)
         if [ ! -f $PIDFILE ]
         then
             echo "$PIDFILE does not exist, process is not running"
         else
-            PID=$(cat $PIDFILE)
             echo "Stopping $DESC..."
 
-            kill $PID
+            PID=$(cat $PIDFILE)
+            kill $PID $(pgrep -P $PID)
             unlink $FCGI_SOCKET
             unlink $PIDFILE
 

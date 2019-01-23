@@ -1,0 +1,14 @@
+[Unit]
+Description=FastCGI Server
+After=nss-user-lookup.target
+Requires=fcgiwrap.socket
+
+[Service]
+ExecStartPre=/bin/sh -c '/usr/local/bin/fcgiwrap.env.sh > /etc/default/fcgiwrap'
+ExecStart=/bin/sh -c '. /etc/default/fcgiwrap; exec /usr/sbin/fcgiwrap -f -c 3'
+User=www-data
+Group=www-data
+PermissionsStartOnly=true
+
+[Install]
+Also=fcgiwrap.socket
