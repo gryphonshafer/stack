@@ -7,22 +7,23 @@ wget https://wordpress.org/latest.zip
 unzip latest.zip
 rm latest.zip
 chown -R www-data. wordpress
+mv wordpress blog
 
-if [ -f /var/www/{{ domain }}/wordpress/wp-update.bash ]
+if [ -f /var/www/{{ domain }}/blog/wp-update.bash ]
 then
-    cp -p /var/www/{{ domain }}/wordpress/wp-update.bash wordpress/.
+    cp -p /var/www/{{ domain }}/blog/wp-update.bash blog/.
 fi
 
-if [ -f /var/www/{{ domain }}/wordpress/wp-upgrade.bash ]
+if [ -f /var/www/{{ domain }}/blog/wp-upgrade.bash ]
 then
-    cp -p /var/www/{{ domain }}/wordpress/wp-upgrade.bash wordpress/.
+    cp -p /var/www/{{ domain }}/blog/wp-upgrade.bash blog/.
 fi
 
-sed -i -e 's/<h1>/<h1 style="display: none">/' wordpress/wp-login.php
-cp -rp /var/www/{{ domain }}/wordpress/wp-content wordpress/.
-cp -p /var/www/{{ domain }}/wordpress/wp-config.php wordpress/.
+sed -i -e 's/<h1>/<h1 style="display: none">/' blog/wp-login.php
+cp -rp /var/www/{{ domain }}/blog/wp-content blog/.
+cp -p /var/www/{{ domain }}/blog/wp-config.php blog/.
 
-rm -rf /var/www/{{ domain }}/wordpress
-mv wordpress /var/www/{{ domain }}/wordpress
+rm -rf /var/www/{{ domain }}/blog
+mv blog /var/www/{{ domain }}/blog
 
 service php-fcgi restart

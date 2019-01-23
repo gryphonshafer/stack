@@ -10,6 +10,9 @@
     dest: "/var/www/{{ domain }}"
     remote_src: yes
 
+- name: rename extracted wordpress
+  command: "mv /var/www/{{ domain }}/wordpress /var/www/{{ domain }}/blog"
+
 - name: remove download
   file:
     path: /tmp/latest.tar.gz
@@ -17,21 +20,21 @@
 
 - name: set wp-content writeable
   file:
-    path: "/var/www/{{ domain }}/wordpress/wp-content"
+    path: "/var/www/{{ domain }}/blog/wp-content"
     mode: 0777
 
 - name: set wp-content writeable
   copy:
-    src: "/var/www/{{ domain }}/wordpress/wp-config-sample.php"
-    dest: "/var/www/{{ domain }}/wordpress/wp-config.php"
+    src: "/var/www/{{ domain }}/blog/wp-config-sample.php"
+    dest: "/var/www/{{ domain }}/blog/wp-config.php"
     remote_src: yes
 
 - name: set DB_DIR and DB_FILE
   lineinfile:
-    path: "/var/www/{{ domain }}/wordpress/wp-config.php"
+    path: "/var/www/{{ domain }}/blog/wp-config.php"
     line: "{{ item }}"
   with_items:
-    - "define('DB_DIR', '/var/www/{{ domain }}/wordpress/');"
+    - "define('DB_DIR', '/var/www/{{ domain }}/blog/');"
     - "define('DB_FILE', 'db_file_name');"
 
 - name: set wp-content writeable
@@ -43,7 +46,7 @@
 
 - name: set wp-content writeable
   file:
-    path: "/var/www/{{ domain }}/wordpress/wp-content/plugins/{{ item }}"
+    path: "/var/www/{{ domain }}/blog/wp-content/plugins/{{ item }}"
     state: absent
   with_items:
     - akismet
@@ -52,7 +55,7 @@
 - name: update and upgrade scripts
   template:
     src: "wp-{{ item }}.bash.j2"
-    dest: "/var/www/{{ domain }}/wordpress/wp-{{ item }}.bash"
+    dest: "/var/www/{{ domain }}/blog/wp-{{ item }}.bash"
     owner: root
     group: root
     mode: 0700
@@ -62,12 +65,12 @@
 
 - name: remove login header
   replace:
-    path: "/var/www/{{ domain }}/wordpress/wp-login.php"
+    path: "/var/www/{{ domain }}/blog/wp-login.php"
     regexp: '<h1>'
     replace: '<h1 style="display: none">'
 
 - name: execute update
   shell: "./wp-update.bash"
   args:
-    chdir: "/var/www/{{ domain }}/wordpress"
+    chdir: "/var/www/{{ domain }}/blog"
     executable: /bin/bash
