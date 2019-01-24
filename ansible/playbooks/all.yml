@@ -57,6 +57,7 @@
   become: true
   roles:
     - mysql
+    - irc
 
 - hosts: backup
   become: true
