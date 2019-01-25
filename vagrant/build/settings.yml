@@ -14,6 +14,21 @@ universal:
     synced_folder: /host
     ansible_user: true
 configs:
+    test:
+        hosts:
+            - test:
+                name: Test Dev VM
+                memory: 4096
+                cpus: 4
+                network:
+                    private_network: 10.42.0.13
+                    public_network: true
+                    remap_ssh: 2213
+                ansible:
+                    auto:
+                        - inventory: inventories/test.ini
+                          playbook: playbooks/test.yml
+                          limit: test
     taunton:
         hosts:
             - taunton:

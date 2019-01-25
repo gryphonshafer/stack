@@ -1,0 +1,30 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - base_system
+    - ansible_user
+    - exim
+    - user
+    - timezone
+    - shorewall
+    - fail2ban
+    - ssh_hardening
+    - nginx
+    - ntp
+    - letsencrypt
+    - nagios
+    - docker_gitlab
+    - perlbrew
+    - docker
+    - sqlite
+    - ops_user
+    - irc
+    - wordpress
+    - trac
+    - devagrant
+    - samba
+    - mysql
+    - backup_scripts
+    - host_drive_mount
+    - ansible_user_private

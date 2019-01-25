@@ -1,0 +1,61 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 2.2.2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.box                        = "bento/debian-9"
+    config.vm.box_version                = "201808.24.0"
+    config.vm.box_download_checksum      = "151ba928d7c14383fa59f3bda1018ecb5e01469063684c127beb192e2b78386e"
+    config.vm.box_download_checksum_type = "sha256"
+
+    config.vm.provider "virtualbox" do |vb|
+        vb.gui = false
+        vb.customize ["modifyvm", :id, "--vram", "20"]
+        vb.customize ["modifyvm", :id, "--vrde", "off"]
+    end
+
+    config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+    config.vm.provision "shell", inline:
+        "apt-get -q -y update && " +
+        "DEBIAN_FRONTEND=noninteractive apt-get -y " +
+        "-o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade"
+
+    config.vm.provision "shell",
+        name: "Ansible User",
+        path: "../../providers/ansible_user.bash",
+        env: { "LOCAL_DIR" => "/host/local" }
+
+    config.vm.define "test" do |node|
+        node.vm.hostname = "test"
+        node.vm.provider "virtualbox" do |vb|
+            vb.name   = "Test Dev VM"
+            vb.memory = 4096
+            vb.cpus   = 4
+        end
+
+        node.vm.network "private_network", ip: "10.42.0.13"
+        node.vm.network "public_network"
+        node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
+        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2213
+
+        node.vm.synced_folder "../../../", "/host", SharedFoldersEnableSymlinksCreate: false
+
+        node.vm.provision "shell",
+            name: "Ansible",
+            path: "../../providers/ansible.bash",
+            env: {
+                "HOSTS"     => "/host/vagrant/configs/test/hosts",
+                "LOCAL_DIR" => "/host/local",
+            }
+
+        node.vm.provision "shell",
+            name: "Ansible Auto Playbook: inventories/test.ini playbooks/test.yml",
+            inline:
+                "su -l ansible -c 'cd /host/ansible; " +
+                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
+                "LOCAL_DIR=/host/local SRC_DIR=/host " +
+                "ansible-playbook -i inventories/test.ini -l test " +
+                "playbooks/test.yml" + "'"
+
+    end
+end
