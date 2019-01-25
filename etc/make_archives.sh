@@ -1,15 +1,6 @@
 #!/bin/sh
 
-_basedir="/y"
-_outdir="$_basedir/Linode"
-
-if [ ! -d $_basedir ]
-then
-    echo "Cannot access $_basedir"
-    exit 1
-fi
-
-mkdir -p $_basedir/Linode
+_outdir="/d/Backups/Linode"
 
 # stty -echo
 # printf "Password: "
@@ -21,28 +12,28 @@ mkdir -p $_basedir/Linode
 
 #-----------------------------------------------------------------------------
 
-cd ~/rsyncs/ufda
-echo 'archive: ufda root'
-sudo tar -cf - etc root | gzip > $_outdir/ufda.etc-root.tar.gz
+cd ~/rsyncs/www
+echo 'archive: www root'
+sudo tar -cf - etc root | gzip > $_outdir/www.etc-root.tar.gz
 
-echo 'archive: ufda home'
-sudo tar -cf - home | gzip > $_outdir/ufda.home.tar.gz
+echo 'archive: www home'
+sudo tar -cf - home | gzip > $_outdir/www.home.tar.gz
 
-cd ~/rsyncs/ufda/var/spool/cron
-echo 'archive: ufda crontabs'
-sudo tar -cf - crontabs | gzip > $_outdir/ufda.crontabs.tar.gz
+cd ~/rsyncs/www/var/spool/cron
+echo 'archive: www crontabs'
+sudo tar -cf - crontabs | gzip > $_outdir/www.crontabs.tar.gz
 
-cd ~/rsyncs/ufda/var
-echo 'archive: ufda trac'
-sudo tar -cf - trac | gzip > $_outdir/ufda.trac.tar.gz
+cd ~/rsyncs/www/var
+echo 'archive: www trac'
+sudo tar -cf - trac | gzip > $_outdir/www.trac.tar.gz
 
-echo 'archive: ufda www'
-sudo rm $_outdir/ufda.www.gz.*
-sudo tar -cf - www | gzip | sudo split -d -b 1G - $_outdir/ufda.www.gz.
+echo 'archive: www www'
+sudo rm $_outdir/www.www.gz.*
+sudo tar -cf - www | gzip | sudo split -d -b 1G - $_outdir/www.www.gz.
 
-cd ~/rsyncs/ufda/usr/local
-echo 'archive: ufda hybserv'
-sudo tar -cf - hybserv | gzip > $_outdir/ufda.hybserv.tar.gz
+cd ~/rsyncs/www/opt/docker
+echo 'archive: www docker-mysql'
+sudo tar -cf - mysql | gzip > $_outdir/www.mysql.tar.gz
 
 #-----------------------------------------------------------------------------
 

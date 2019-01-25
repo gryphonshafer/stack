@@ -10,7 +10,7 @@ _settings_x="-chazvP -e \"$_e_x\" --rsync-path=\"sudo rsync\" --delete"
 
 #-----------------------------------------------------------------------------
 
-_this_home="$_home/rsyncs/ufda"
+_this_home="$_home/rsyncs/www"
 
 for _dir in \
     /etc \
@@ -19,10 +19,10 @@ for _dir in \
     /var/spool/cron/crontabs \
     /var/trac \
     /var/www \
-    /usr/local/hybserv
+    /opt/docker/mysql/data
 do
     mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings_x ufda:$_dir/ $_this_home$_dir
+    eval sudo rsync $_settings www:$_dir/ $_this_home$_dir
 done
 
 #-----------------------------------------------------------------------------
