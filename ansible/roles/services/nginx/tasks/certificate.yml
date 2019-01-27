@@ -14,7 +14,7 @@
   when: st.stat.exists == false
 
 - name: generate SSL certificate password
-  command: /usr/bin/openssl rand -base64 15
+  command: /usr/bin/openssl rand -base64 12
   register: ssl_password
   when: st.stat.exists == false
 

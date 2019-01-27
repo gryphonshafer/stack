@@ -1,0 +1,3 @@
+---
+smtp_user_name: "{{ user }}"
+smtp_user_password: "password"

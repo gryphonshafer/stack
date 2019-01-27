@@ -17,7 +17,7 @@ useradd -m ansible -s /bin/bash > /dev/null 2>&1
 usermod -a -G sudo ansible
 
 # set the ansible user's password to something random
-echo ansible:`/usr/bin/openssl rand -base64 15` | chpasswd
+echo ansible:`/usr/bin/openssl rand -base64 12` | chpasswd
 
 # add the ansible user to the sudoers list
 echo "ansible ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/98_ansible

@@ -16,7 +16,7 @@ fi
 
 userdb "$1@$2" set uid=vmail gid=vmail home=/var/vmail/$2/$1 mail=/var/vmail/$2/$1
 
-_password=$( /usr/bin/openssl rand -base64 15 )
+_password=$( /usr/bin/openssl rand -base64 12 )
 if [ $3 ]
 then
     _password=$3
