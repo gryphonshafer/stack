@@ -2,5 +2,12 @@
 - name: set timezone to Pacific time
   timezone:
     name: America/Los_Angeles
+  register: tz
+
+- name: restart cron
+  service:
+    name: cron
+    state: restarted
+  when: tz is changed
 
 - import_tasks: ../../../end.yml
