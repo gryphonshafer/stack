@@ -14,7 +14,7 @@
     - ntp
     - letsencrypt
     - nagios
-    # - docker_gitlab
+    - docker_gitlab
     - perlbrew
     - docker
     - sqlite
