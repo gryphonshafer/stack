@@ -8,9 +8,10 @@
     src: shorewall.rules
     dest: /etc/shorewall/rules.d/irc
   when: st.stat.exists == true
+  register: irc_rules
 
 - name: restart shorewall
   service:
     name: shorewall
     state: restarted
-  when: st.stat.exists == true
+  when: irc_rules is changed

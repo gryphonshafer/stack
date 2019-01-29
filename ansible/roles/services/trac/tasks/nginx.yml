@@ -11,16 +11,9 @@
 - name: nginx conf alteration
   blockinfile:
     path: "/etc/nginx/sites-available/{{ domain }}"
+    block: "{{ lookup( 'template', 'nginx_80_block.j2' ) }}"
+    marker: '    # {mark} ANSIBLE MANAGED TRAC BLOCK'
     insertbefore: '\} # 80'
-    block: |
-        rewrite ^/trac$  /trac/{{ domain }} redirect;
-        rewrite ^/trac/$ /trac/{{ domain }} redirect;
-        location /trac {
-            proxy_pass http://trac;
-            auth_basic "{{ domain }} Trac";
-            auth_basic_user_file "/var/trac/{{ domain }}/conf/htaccess";
-            proxy_pass_header Authorization;
-        }
   register: nginx_conf
 
 - name: restart nginx

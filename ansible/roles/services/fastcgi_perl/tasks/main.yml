@@ -71,9 +71,10 @@
     dest: /etc/nginx/snippets/fastcgi_perl.conf
 
 - name: index index.cgi
-  replace:
+  lineinfile:
     path: "/etc/nginx/sites-available/{{ domain }}"
-    regexp: '^(\s*index\s+.*);'
-    replace: '\1 index.cgi;'
+    regexp: '\bindex\s+index\.cgi;'
+    line: '    index index.cgi;'
+    insertafter: '^\s*index\s+'
 
 - import_tasks: ../../../end.yml

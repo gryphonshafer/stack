@@ -1,0 +1,8 @@
+    rewrite ^/trac$  /trac/{{ domain }} redirect;
+    rewrite ^/trac/$ /trac/{{ domain }} redirect;
+    location /trac {
+        proxy_pass http://trac;
+        auth_basic "{{ domain }} Trac";
+        auth_basic_user_file "/var/trac/{{ domain }}/conf/htaccess";
+        proxy_pass_header Authorization;
+    }

@@ -39,7 +39,6 @@
     dest: /home/{{ user }}/.conf
   become: yes
   become_user: "{{ user }}"
-  register: clone_conf_ssh
   changed_when: false
   failed_when: no
   when:
@@ -59,7 +58,6 @@
     dest: /home/{{ user }}/.conf
   become: yes
   become_user: "{{ user }}"
-  register: clone_conf_https
   changed_when: false
   failed_when: no
   when:

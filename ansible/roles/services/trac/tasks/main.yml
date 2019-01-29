@@ -32,6 +32,17 @@
     - 'permission add {{ user }} TRAC_ADMIN'
   when: trac_dir is changed
 
+- name: set trac domain directores and files permissions
+  command: "{{ item }}"
+  args:
+    warn: false
+  with_items:
+    - 'chown -R root.www-data /var/trac/{{ domain }}'
+    - 'find /var/trac/{{ domain }} -type f -exec chmod 0660 {} \;'
+    - 'find /var/trac/{{ domain }} -type d -exec chmod 2770 {} \;'
+  when: trac_dir is changed
+  changed_when: false
+
 - name: tracd-fcgi init.d
   copy:
     src: tracd-fcgi

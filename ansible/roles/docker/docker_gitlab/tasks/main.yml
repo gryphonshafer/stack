@@ -9,7 +9,7 @@
   file:
     path: /opt/gitlab/config
     state: directory
-    mode: 0755
+    mode: 0775
 
 - name: manual restart bash script
   template:
@@ -53,7 +53,7 @@
     path: "/etc/nginx/sites-available/{{ domain }}"
     block: "{{ lookup( 'template', 'nginx_80_block.j2' ) }}"
     insertbefore: '^\} # 80$'
-    marker: '    # {mark} ANSIBLE MANAGED BLOCK'
+    marker: '    # {mark} ANSIBLE MANAGED DOCKER GITLAB BLOCK'
 
 - name: adjust nginx server names
   replace:

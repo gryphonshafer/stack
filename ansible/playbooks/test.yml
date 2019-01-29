@@ -13,6 +13,8 @@
     - nginx
     - ntp
     - letsencrypt
+    - fastcgi_perl
+    - fastcgi_php
     - nagios
     - docker_gitlab
     - perlbrew

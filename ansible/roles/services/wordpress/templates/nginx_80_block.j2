@@ -1,0 +1,24 @@
+    location = / {
+        alias /var/www/{{ domain }}/blog/index.php;
+        include params/fastcgi_params;
+        fastcgi_intercept_errors on;
+        fastcgi_pass php;
+    }
+    location /blog {
+        root /var/www/{{ domain }};
+        include snippets/fastcgi_php.conf;
+        try_files $uri $uri/ /blog/index.php?$args;
+    }
+    location ~ ^/(feed|page|page-.+) {
+        alias /var/www/{{ domain }}/blog/index.php;
+        include params/fastcgi_params;
+        fastcgi_intercept_errors on;
+        fastcgi_pass php;
+    }
+    location ~ ^/wp-.+ {
+        root /var/www/{{ domain }}/blog;
+        include snippets/fastcgi_php.conf;
+    }
+    location /wp-content/database {
+        deny all;
+    }
