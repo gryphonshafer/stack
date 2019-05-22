@@ -11,12 +11,18 @@
     regexp: ' main$'
     replace: ' main contrib'
 
-- name: install system packages
+- name: install aptitude
   apt:
     update_cache: yes
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
+    pkg: '{{ dependency_packages }}'
+    state: latest
+    force_apt_get: yes
+
+- name: install system packages
+  apt:
     pkg: '{{ system_packages }}'
     state: latest
 
