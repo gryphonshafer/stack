@@ -70,16 +70,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "echo '" +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/all.ini -l www " +
-                "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
-
-        node.vm.provision "shell",
-            name: "Ansible Manual Playbook: inventories/all.ini playbooks/all.yml",
-            inline:
-                "echo '" +
-                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
-                "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/all.ini -l git " +
+                "ansible-playbook -i inventories/all.ini -l www|mail|git " +
                 "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
     end
 end

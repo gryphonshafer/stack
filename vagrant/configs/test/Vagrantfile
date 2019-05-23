@@ -49,13 +49,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             }
 
         node.vm.provision "shell",
-            name: "Ansible Auto Playbook: inventories/test.ini playbooks/test.yml",
+            name: "Ansible Manual Playbook: inventories/all.ini playbooks/all.yml",
             inline:
-                "su -l ansible -c 'cd /host/ansible; " +
+                "echo '" +
                 "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/test.ini -l test " +
-                "playbooks/test.yml" + "'"
-
+                "ansible-playbook -i inventories/all.ini -l test " +
+                "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
     end
 end
