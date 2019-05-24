@@ -1,0 +1,58 @@
+---
+- name: install sasl
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ sasl_packages }}'
+    state: latest
+  notify: restart saslauthd
+
+- name: saslauthd defaults
+  replace:
+    dest: /etc/default/saslauthd
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    - { regexp: 'START=no', replace: 'START=yes' }
+    - { regexp: 'OPTIONS="-c -m /var/run/saslauthd"', replace: 'OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd -r"' }
+  notify: restart saslauthd
+
+- name: add postfix user to sasl group
+  user:
+    name: postfix
+    groups: sasl
+    append: yes
+  notify: restart saslauthd
+
+- name: /var/spool/postfix/var/run/saslauthd
+  file:
+    path: /var/spool/postfix/var/run/saslauthd
+    state: directory
+    mode: '0710'
+    owner: root
+    group: sasl
+  notify: restart saslauthd
+
+- name: sasl/smtpd.conf
+  copy:
+    src: sasl_smtpd.conf
+    dest: /etc/postfix/sasl/smtpd.conf
+  notify: reload postfix
+
+- name: copy 02_sasl_main.cf
+  copy:
+    src: 02_sasl_main.cf
+    dest: /etc/postfix/main.cf.d/02_sasl_main.cf
+  notify: assemble main_cf
+
+- name: activate sasl in master.cf
+  replace:
+    dest: /etc/postfix/master.cf
+    regexp: '{{ item.regexp }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    - { regexp: '^#(submission.*?\n)#(.*?submission)', replace: '\1\2' }
+    - { regexp: '^#(smtps.*?\n)#(.*?smtps)', replace: '\1\2' }
+  notify: reload postfix

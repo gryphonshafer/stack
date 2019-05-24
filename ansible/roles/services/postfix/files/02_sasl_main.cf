@@ -1,0 +1,17 @@
+smtpd_sasl_auth_enable          = yes
+smtpd_sasl_security_options     = noanonymous
+smtpd_sasl_local_domain         = $myhostname
+broken_sasl_auth_clients        = yes
+smtpd_sasl_authenticated_header = yes
+smtpd_helo_restrictions         = permit_sasl_authenticated, permit_mynetworks, reject_unknown_helo_hostname
+smtpd_data_restrictions         = reject_unauth_pipelining
+smtpd_sender_restrictions       = permit_mynetworks, reject_non_fqdn_sender, reject_unknown_sender_domain
+smtpd_recipient_restrictions    =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_unauth_destination,
+    reject_invalid_hostname,
+    reject_rbl_client zen.spamhaus.org,
+    reject_rhsbl_reverse_client dbl.spamhaus.org,
+    reject_rhsbl_helo dbl.spamhaus.org,
+    reject_rhsbl_sender dbl.spamhaus.org

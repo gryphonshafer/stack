@@ -1,0 +1,7 @@
+---
+- import_tasks: core.yml
+- import_tasks: tls.yml
+- import_tasks: sasl.yml
+- import_tasks: courier.yml
+- import_tasks: shorewall.yml
+- import_tasks: ../../../end.yml

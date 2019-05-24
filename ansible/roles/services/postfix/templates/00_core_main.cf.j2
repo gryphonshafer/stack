@@ -1,0 +1,22 @@
+myorigin            = /etc/mailname
+myhostname          = {{ mailhost }}
+smtpd_banner        = $myhostname ESMTP $mail_name (Debian/GNU)
+biff                = no
+append_dot_mydomain = no
+delay_warning_time  = 4h
+
+readme_directory = /usr/share/doc/postfix
+html_directory   = /usr/share/doc/postfix/html
+
+alias_maps     = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination  = /etc/hostname, /etc/mailname, localhost, localhost.localdomain
+mynetworks     = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128,
+    /etc/hostname, /etc/mailname,
+    hash:/etc/postfix/mynetworks
+
+mailbox_command     = procmail -a "$EXTENSION"
+mailbox_size_limit  = 0
+message_size_limit  = 104857600 # 100M
+recipient_delimiter = +
+inet_interfaces     = all

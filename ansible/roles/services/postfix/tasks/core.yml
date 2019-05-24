@@ -1,0 +1,37 @@
+---
+- name: remove exim
+  apt:
+    pkg: '{{ exim_packages }}'
+    state: absent
+    purge: yes
+
+- name: install postfix
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ postfix_packages }}'
+    state: latest
+
+- name: setup mynetworks file
+  copy:
+    src: mynetworks
+    dest: /etc/postfix/mynetworks
+  register: mynetworks
+
+- name: postmap mynetworks
+  command: postmap /etc/postfix/mynetworks
+  when: mynetworks.changed
+  notify: reload postfix
+
+- name: create main.cf.d directory
+  file:
+    path: /etc/postfix/main.cf.d
+    state: directory
+
+- name: build 00_core_main.cf
+  template:
+    src: 00_core_main.cf.j2
+    dest: /etc/postfix/main.cf.d/00_core_main.cf
+  notify: assemble main_cf

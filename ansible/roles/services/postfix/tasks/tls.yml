@@ -1,0 +1,38 @@
+---
+- stat:
+    path: "{{ ssl_file_prefix }}.crt"
+  register: st
+
+- name: generate SSL certificate password
+  command: /usr/bin/openssl rand -base64 12
+  register: ssl_password
+  when: st.stat.exists == false
+
+- name: generate SSL certificate
+  command: "{{ item }}"
+  with_items:
+    - |
+      openssl genrsa -des3 -passout pass:{{ ssl_password.stdout }}
+        -out {{ ssl_file_prefix }}.key 2048
+    - |
+      openssl rsa -in {{ ssl_file_prefix }}.key
+        -passin pass:{{ ssl_password.stdout }} -out {{ ssl_file_prefix }}.key
+    - |
+      openssl req -new -key {{ ssl_file_prefix }}.key
+        -out {{ ssl_file_prefix }}.csr -passin pass:{{ ssl_password.stdout }} -subj "/"
+    - |
+      openssl x509 -req -days 9000 -in {{ ssl_file_prefix }}.csr
+        -signkey {{ ssl_file_prefix }}.key -out {{ ssl_file_prefix }}.crt
+  when: st.stat.exists == false
+  notify: assemble main_cf
+
+- name: remove csr file
+  file:
+    path: "{{ ssl_file_prefix }}.csr"
+    state: absent
+
+- name: copy 01_tls_main.cf
+  copy:
+    src: 01_tls_main.cf
+    dest: /etc/postfix/main.cf.d/01_tls_main.cf
+  notify: assemble main_cf

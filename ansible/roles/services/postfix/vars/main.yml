@@ -1,0 +1,21 @@
+exim_packages:
+  - exim4
+  - exim4-base
+  - exim4-config
+postfix_packages:
+  - postfix
+  - postfix-doc
+  - bsd-mailx
+ssl_file_prefix: /etc/postfix/smtpd
+sasl_packages:
+  - sasl2-bin
+  - libsasl2-2
+courier_packages:
+  - gamin
+  - libgamin0
+  - python-gamin
+  - courier-authdaemon
+  - courier-pop
+  - courier-pop-ssl
+  - courier-imap
+  - courier-imap-ssl

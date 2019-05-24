@@ -1,0 +1,36 @@
+---
+- name: reload postfix
+  service:
+    name: postfix
+    state: reloaded
+
+- name: restart saslauthd
+  service:
+    name: saslauthd
+    state: restarted
+
+- name: restart courier
+  service:
+    name: '{{ item }}'
+    state: restarted
+  with_items:
+    - courier-imap
+    - courier-imap-ssl
+
+- name: restart shorewall
+  service:
+    name: shorewall
+    state: restarted
+
+- name: restart fail2ban
+  service:
+    name: fail2ban
+    state: restarted
+
+- name: assemble main_cf
+  assemble:
+    remote_src: yes
+    src: /etc/postfix/main.cf.d
+    dest: /etc/postfix/main.cf
+    delimiter: "\n"
+  notify: reload postfix

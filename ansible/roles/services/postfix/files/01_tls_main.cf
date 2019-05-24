@@ -1,0 +1,6 @@
+smtpd_tls_cert_file       = /etc/postfix/smtpd.crt
+smtpd_tls_key_file        = /etc/postfix/smtpd.key
+smtpd_use_tls             = yes
+smtpd_tls_auth_only       = yes
+smtpd_tls_security_level  = may
+smtpd_tls_received_header = yes

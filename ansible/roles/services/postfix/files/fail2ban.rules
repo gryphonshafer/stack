@@ -1,0 +1,15 @@
+[postfix]
+enabled = true
+logpath = /var/log/mail.warn
+
+[couriersmtp]
+enabled = true
+logpath = /var/log/mail.warn
+
+[courierauth]
+enabled = true
+logpath = /var/log/mail.warn
+
+[sasl]
+enabled = true
+logpath = /var/log/mail.warn

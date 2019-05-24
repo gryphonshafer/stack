@@ -1,0 +1,16 @@
+---
+- name: install courier
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ courier_packages }}'
+    state: latest
+
+- name: /etc/courier/imapd
+  replace:
+    dest: /etc/courier/imapd
+    regexp: 'IMAP_MAILBOX_SANITY_CHECK=1'
+    replace: 'IMAP_MAILBOX_SANITY_CHECK=0'
+  notify: restart courier
