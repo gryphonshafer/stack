@@ -35,3 +35,6 @@ zor_packages:
   - xz-utils
   - razor
   - pyzor
+clamav_packages:
+  - clamav
+  - clamav-daemon

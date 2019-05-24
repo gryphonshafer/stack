@@ -5,4 +5,5 @@
 - import_tasks: courier.yml
 - import_tasks: shorewall.yml
 - import_tasks: anti_spam.yml
+- import_tasks: clamav.yml
 - import_tasks: ../../../end.yml

@@ -1,0 +1,33 @@
+---
+- name: install clamav packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ clamav_packages }}'
+    state: latest
+  register: install_clamav
+  notify: restart clamav
+
+- name: add clamav and amavis to each other's groups
+  user:
+    name: '{{ item.user }}'
+    groups: '{{ item.group }}'
+    append: yes
+  with_items:
+    - { user: 'clamav', group: 'clamav' }
+    - { user: 'clamav', group: 'amavis' }
+    - { user: 'amavis', group: 'clamav' }
+    - { user: 'amavis', group: 'amavis' }
+
+- name: bypass virus amavis conf
+  replace:
+    dest: /etc/amavis/conf.d/15-content_filter_mode
+    regexp: '#(\@bypass_virus.*?;)'
+    replace: '\1'
+  notify: restart amavis
+
+- name: freshclam
+  command: freshclam --quiet
+  when: install_clamav.changed
