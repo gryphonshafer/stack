@@ -1,0 +1,102 @@
+---
+- name: add vmail group
+  group:
+    name: vmail
+    gid: 5000
+    state: present
+
+- name: add vmail user
+  user:
+    name: vmail
+    uid: 5000
+    group: vmail
+    home: /var/vmail
+    create_home: yes
+
+- stat:
+    path: /var/vmail/mailbox_domains
+  register: mailbox_domains_file
+
+- name: mailbox_domains file
+  copy:
+    content: "{{ domain }}\n"
+    dest: /var/vmail/mailbox_domains
+    mode: '0644'
+  when: mailbox_domains_file.stat.exists == false
+
+- stat:
+    path: /var/vmail/aliases
+  register: aliases_file
+
+- name: aliases file
+  copy:
+    dest: /var/vmail/aliases
+    mode: '0644'
+    content: |
+      @example.com @{{ domain }}
+      dns@{{ domain }}        {{ user }}@{{ domain }}
+      postmaster@{{ domain }} {{ user }}@{{ domain }}
+      abuse@{{ domain }}      {{ user }}@{{ domain }}
+  when: aliases_file.stat.exists == false
+
+- name: postmap aliases
+  command: 'postmap /var/vmail/aliases'
+  when: aliases_file.stat.exists == false
+
+- stat:
+    path: /var/vmail/users
+  register: users_file
+
+- name: users file
+  copy:
+    dest: /var/vmail/users
+    mode: '0644'
+    content: ''
+  when: users_file.stat.exists == false
+
+- name: postmap users
+  command: 'postmap /var/vmail/users'
+  when: users_file.stat.exists == false
+
+- name: copy 04_vmail_main.cf
+  copy:
+    src: 04_vmail_main.cf
+    dest: /etc/postfix/main.cf.d/04_vmail_main.cf
+  notify: assemble main_cf
+  register: main_cf
+
+- name: authdaemonrc
+  replace:
+    dest: /etc/courier/authdaemonrc
+    regexp: 'authmodulelist="authpam"'
+    replace: 'authmodulelist="authuserdb"'
+  register: authdaemonrc
+
+- name: courier-authdaemon restart
+  command: invoke-rc.d courier-authdaemon restart
+  when: authdaemonrc.changed
+
+- name: saslauthd
+  replace:
+    dest: /etc/default/saslauthd
+    regexp: '{{ item.find }}'
+    replace: '{{ item.replace }}'
+  with_items:
+    - { find: 'MECHANISMS="pam"', replace: 'MECHANISMS="rimap"' }
+    - { find: 'MECH_OPTIONS=""', replace: 'MECH_OPTIONS="localhost"' }
+    - { find: '^OPTIONS="([^"]+/saslauthd)"', replace: 'OPTIONS="\1 -r"' }
+  notify: restart saslauthd
+
+- name: setup utility scripts
+  copy:
+    src: '{{ item }}'
+    dest: '/root/{{ item }}'
+    mode: '0744'
+  with_items:
+    - create-mail-user
+    - delete-mail-user
+    - chpwd-mail-user
+
+- name: create user email account
+  command: '/root/create-mail-user {{ user }} {{ domain }} {{ user_password }}'
+  when: users_file.stat.exists == false

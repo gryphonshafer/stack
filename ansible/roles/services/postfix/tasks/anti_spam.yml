@@ -115,7 +115,7 @@
   when: spamassassin_enabled.changed
   notify: restart spamassassin
 
-- name: setup mynetworks file
+- name: setup utility scripts
   copy:
     src: '{{ item }}'
     dest: '/root/{{ item }}'
@@ -124,5 +124,3 @@
     - clear-queue
     - spam-learn-clean
     - mail-action
-
-- import_tasks: ../../../end.yml

@@ -47,6 +47,11 @@
     name: clamav-freshclam
     state: restarted
 
+- name: restart saslauthd
+  service:
+    name: saslauthd
+    state: restarted
+
 - name: assemble main_cf
   assemble:
     remote_src: yes
