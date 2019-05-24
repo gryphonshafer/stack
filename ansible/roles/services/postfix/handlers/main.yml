@@ -27,6 +27,21 @@
     name: fail2ban
     state: restarted
 
+- name: restart rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+
+- name: restart spamassassin
+  service:
+    name: spamassassin
+    state: restarted
+
+- name: restart amavis
+  service:
+    name: amavis
+    state: restarted
+
 - name: assemble main_cf
   assemble:
     remote_src: yes

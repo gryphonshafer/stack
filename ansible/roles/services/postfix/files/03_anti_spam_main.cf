@@ -1,0 +1,2 @@
+content_filter           = amavis:[127.0.0.1]:10024
+receive_override_options = no_address_mappings

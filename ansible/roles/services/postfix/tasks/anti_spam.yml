@@ -1,0 +1,128 @@
+---
+- name: install anti-spam packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ anti_spam_packages }}'
+    state: latest
+
+- name: bypass spam amavis conf
+  replace:
+    dest: /etc/amavis/conf.d/15-content_filter_mode
+    regexp: '#(\@bypass_spam.*?;)'
+    replace: '\1'
+  notify: restart amavis
+
+- name: pax set in 50-user
+  lineinfile:
+    path: /etc/amavis/conf.d/50-user
+    insertafter: '^use strict;'
+    line: '$pax = q(pax);'
+  notify: restart amavis
+
+- name: myhostname set in 05-node_id
+  lineinfile:
+    path: /etc/amavis/conf.d/05-node_id
+    insertafter: '#\$myhostname'
+    line: '$myhostname = "{{ mailhost }}";'
+  notify: restart amavis
+
+- name: copy 03_anti_spam_main.cf
+  copy:
+    src: 03_anti_spam_main.cf
+    dest: /etc/postfix/main.cf.d/03_anti_spam_main.cf
+  notify: assemble main_cf
+
+- name: amavis in master.cf
+  blockinfile:
+    path: /etc/postfix/master.cf
+    block: |
+      amavis unix - - - - 2 smtp
+        -o smtp_data_done_timeout=1200
+        -o smtp_send_xforward_command=yes
+      127.0.0.1:10025 inet n - - - - smtpd
+        -o content_filter=
+        -o local_recipient_maps=
+        -o relay_recipient_maps=
+        -o smtpd_restriction_classes=
+        -o smtpd_client_restrictions=
+        -o smtpd_helo_restrictions=
+        -o smtpd_sender_restrictions=
+        -o smtpd_recipient_restrictions=permit_mynetworks,reject
+        -o mynetworks=127.0.0.0/8
+        -o strict_rfc821_envelopes=yes
+        -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks
+  notify: reload postfix
+
+- name: install zor packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ zor_packages }}'
+    state: latest
+  notify: restart rsyslog
+  register: install_zor
+
+- name: install dcc
+  apt:
+    deb: '{{ item }}'
+  with_items:
+    - http://launchpadlibrarian.net/11565552/dcc-common_1.3.42-5_amd64.deb
+    - http://launchpadlibrarian.net/11565554/dcc-server_1.3.42-5_amd64.deb
+  when: install_zor.changed
+  notify: restart rsyslog
+
+- name: spamassassin local.cf
+  blockinfile:
+    path: /etc/spamassassin/local.cf
+    block: |
+      #dcc
+      use_dcc 1
+      dcc_path /usr/bin/dccproc
+      #pyzor
+      use_pyzor 1
+      pyzor_path /usr/bin/pyzor
+      #razor
+      use_razor2 1
+      razor_config /etc/razor/razor-agent.conf
+      #bayes
+      use_bayes 1
+      use_bayes_rules 1
+      bayes_auto_learn 1
+  notify: restart spamassassin
+
+- name: spamassassin v310.pre
+  replace:
+    dest: /etc/spamassassin/v310.pre
+    regexp: '#(loadplugin Mail::SpamAssassin::Plugin::DCC)'
+    replace: '\1'
+  notify: restart spamassassin
+
+- name: spamassassin enabled
+  replace:
+    dest: /etc/default/spamassassin
+    regexp: 'ENABLED=0'
+    replace: 'ENABLED=1'
+  register: spamassassin_enabled
+  notify: restart spamassassin
+
+- name: refresh spamassassin mirrors
+  command: sa-update --no-gpg --refreshmirrors -v
+  when: spamassassin_enabled.changed
+  notify: restart spamassassin
+
+- name: setup mynetworks file
+  copy:
+    src: '{{ item }}'
+    dest: '/root/{{ item }}'
+    mode: '0744'
+  with_items:
+    - clear-queue
+    - spam-learn-clean
+    - mail-action
+
+- import_tasks: ../../../end.yml
