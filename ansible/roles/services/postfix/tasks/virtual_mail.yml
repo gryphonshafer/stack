@@ -25,6 +25,17 @@
   when: mailbox_domains_file.stat.exists == false
 
 - stat:
+    path: /var/vmail/alias_domains
+  register: alias_domains_file
+
+- name: alias_domains file
+  copy:
+    content: "example.com\n"
+    dest: /var/vmail/alias_domains
+    mode: '0644'
+  when: alias_domains_file.stat.exists == false
+
+- stat:
     path: /var/vmail/aliases
   register: aliases_file
 
