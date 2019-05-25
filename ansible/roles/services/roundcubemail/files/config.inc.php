@@ -1,24 +1,3 @@
-#!/usr/bin/env bash
-
-domain="example.com"
-
-cd /var/www/$domain
-rm -rf *
-
-# https://github.com/roundcube/roundcubemail/releases/latest
-wget http://files6.directadmin.com/services/all/roundcube/roundcubemail-1.1.0-complete.tar.gz
-
-tar xfz roundcubemail-1.1.0-complete.tar.gz
-rm roundcubemail-1.1.0-complete.tar.gz
-mv roundcubemail-1.1.0 roundcubemail
-chown -R root. roundcubemail
-
-mkdir roundcubemail/db
-touch roundcubemail/db/rcm.sqlite
-
-chown -R www-data. roundcubemail/temp roundcubemail/logs roundcubemail/db
-
-cat <<\RCM_CONFIG > roundcubemail/config/config.inc.php
 <?php
 
 $config = array();
@@ -28,7 +7,7 @@ $config = array();
 // Currently supported db_providers: mysql, pgsql, sqlite, mssql or sqlsrv
 // For examples see http://pear.php.net/manual/en/package.database.mdb2.intro-dsn.php
 // NOTE: for SQLite use absolute path: 'sqlite:////full/path/to/sqlite.db?mode=0646'
-$config['db_dsnw'] = 'sqlite:////var/www/goldenguru.com/roundcubemail/db/rcm.sqlite?mode=0646';
+$config['db_dsnw'] = 'sqlite:////var/www/roundcubemail/db/rcm.sqlite?mode=0646';
 
 // The mail host chosen to perform the log-in.
 // Leave blank to show a textbox at login, give a list of hosts
@@ -84,47 +63,3 @@ $config['skin'] = 'larry';
 $config['enable_installer'] = true;
 
 ?>
-RCM_CONFIG
-
-cd roundcubemail/db
-php-cgi index.php _step=3 > /dev/null
-
-cd ..
-perl -i -pe "s/config\['enable_installer'\] = true/config\['enable_installer'\] = false/" config/config.inc.php
-rm -rf installer
-
-#-----------------------------------------------------------------------------
-
-perl -i -pe 's/(server_name.*)\bwww\b/${1}mail/g' /etc/nginx/sites-available/$domain
-
-ex /etc/nginx/sites-available/$domain <<\CONF_FILE
-/        proxy_pass http:\/\/localhost;/
-d
-i
-        root /var/www/goldenguru.com/roundcubemail;
-        index index.html index.php;
-        include fastcgi_php;
-.
-wq
-CONF_FILE
-
-ex /etc/nginx/sites-available/$domain <<\CONF_FILE
-/    root \/var\/www\/goldenguru.com\/htdocs;/
-d
-d
-d
-.
-wq
-CONF_FILE
-
-ex /etc/nginx/sites-available/$domain <<\CONF_FILE
-/} # 80/
-i
-
-    rewrite ^/$     https://$host    redirect;
-    rewrite ^/(.*)$ https://$host/$1 redirect;
-.
-wq
-CONF_FILE
-
-service nginx restart

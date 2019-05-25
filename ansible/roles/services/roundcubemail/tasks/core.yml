@@ -1,0 +1,69 @@
+---
+- stat:
+    path: /var/www/roundcubemail
+  register: st
+
+- name: download and extract roundcubemail
+  unarchive:
+    src: https://github.com/roundcube/roundcubemail/releases/download/1.3.9/roundcubemail-1.3.9-complete.tar.gz
+    dest: /var/www
+    remote_src: yes
+    owner: root
+    group: root
+  when: st.stat.exists == false
+
+- name: rename roundcubemail dir
+  command: mv /var/www/roundcubemail-1.3.9 /var/www/roundcubemail
+  when: st.stat.exists == false
+
+- name: mkdir /var/www/roundcubemail/db
+  file:
+    path: /var/www/roundcubemail/db
+    state: directory
+    mode: '0755'
+
+- name: touch /var/www/roundcubemail/db/rcm.sqlite
+  file:
+    path: /var/www/roundcubemail/db/rcm.sqlite
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+
+- name: change ownership to www-data
+  file:
+    path: '/var/www/roundcubemail/{{ item }}'
+    recurse: yes
+    owner: www-data
+    group: www-data
+  with_items:
+    - temp
+    - logs
+    - db
+
+- name: config.inc.php
+  copy:
+    src: config.inc.php
+    dest: /var/www/roundcubemail/config/config.inc.php
+    mode: '0664'
+  when: st.stat.exists == false
+
+- name: install roundcubemail
+  shell: |
+    SCRIPT_FILENAME=/var/www/roundcubemail/installer/index.php \
+    /usr/bin/php-cgi \
+    /var/www/roundcubemail/installer/index.php \
+    _step=3
+  args:
+    chdir: /var/www/roundcubemail
+  when: st.stat.exists == false
+
+- name: deactivate installer
+  replace:
+    dest: /var/www/roundcubemail/config/config.inc.php
+    regexp: "(config\\['enable_installer'\\]) = true"
+    replace: '\1 = false'
+
+- name: remove installer
+  file:
+    path: /var/www/roundcubemail/installer
+    state: absent

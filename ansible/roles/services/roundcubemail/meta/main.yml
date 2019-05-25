@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: fastcgi_php
+    when: fastcgi_php_executed is not defined
