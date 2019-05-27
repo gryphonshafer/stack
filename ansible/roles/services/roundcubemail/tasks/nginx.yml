@@ -1,32 +1,5 @@
 ---
-- name: add mail node to nginx primary domain
-  replace:
-    dest: '/etc/nginx/sites-available/{{ domain }}'
-    regexp: '(server_name.*)\bwww\b'
-    replace: '\1mail'
-  notify: reload nginx
-
-- name: add roundcubemail root
-  replace:
-    dest: '/etc/nginx/sites-available/{{ domain }}'
-    regexp: '^\s*proxy_pass http://localhost;'
-    replace: |
-      root /var/www/goldenguru.com/roundcubemail;
-      index index.html index.php;
-      include fastcgi_php;
-  notify: reload nginx
-
-- name: remove root htdocs
-  replace:
-    dest: '/etc/nginx/sites-available/{{ domain }}'
-    regexp: '^\s*root /var/www/goldenguru.com/htdocs;'
-  notify: reload nginx
-
-- name: add rewrite rules
-  blockinfile:
-    path: '/etc/nginx/sites-available/{{ domain }}'
-    insertbefore: '} # 80'
-    block: |
-        rewrite ^/$     https://$host    redirect;
-        rewrite ^/(.*)$ https://$host/$1 redirect;
-  notify: reload nginx
+- name: setup nginx available site for roundcubemail
+  template:
+    src: roundcubemail.j2
+    dest: '/etc/nginx/sites-available/roundcubemail'

@@ -1,0 +1,21 @@
+server {
+    listen 80;
+    server_name {{ mailhost }};
+    include snippets/server.conf;
+
+    rewrite ^/$     https://$host    redirect;
+    rewrite ^/(.*)$ https://$host/$1 redirect;
+} # 80
+
+server {
+    listen 443;
+    server_name {{ mailhost }};
+    include snippets/server.conf;
+    include snippets/ssl.conf;
+
+    location / {
+        root /var/www/{{ domain }}/roundcubemail;
+        index index.html index.php;
+        include fastcgi_php;
+    }
+} # 443
