@@ -1,0 +1,8 @@
+---
+- name: setup snippets
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/nginx/snippets'
+  with_items:
+    - mailman_80_rewrites.conf
+    - mailman_443_cgi.conf

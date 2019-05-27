@@ -1,0 +1,39 @@
+---
+- name: install mailman
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ mailman_packages }}'
+    state: latest
+
+- name: check for mailman aliases
+  shell: "postconf virtual_alias_maps | sed -e 's/virtual_alias_maps = //' | grep -c '/etc/mailman/aliases' || true"
+  register: vam_aliases
+  changed_when: false
+
+- name: generate virtual_alias_maps
+  shell: postconf virtual_alias_maps | sed -e 's/virtual_alias_maps = //'
+  register: vam
+  changed_when: false
+  when: vam_aliases.stdout == '0'
+
+- name: set virtual_alias_maps
+  command: 'postconf -e "virtual_alias_maps = {{ "hash:/etc/mailman/aliases" if ( vam.stdout | length == 0 ) else "hash:/etc/mailman/aliases, " + vam.stdout }}"'
+  when: vam_aliases.stdout == '0'
+
+- name: reload postfix
+  service:
+    name: postfix
+    state: reloaded
+  when: vam_aliases.stdout == '0'
+
+- name: setup utility scripts
+  copy:
+    src: '{{ item }}'
+    dest: '/root/{{ item }}'
+    mode: '0744'
+  with_items:
+    - create-mailman-list
+    - export-mm-data

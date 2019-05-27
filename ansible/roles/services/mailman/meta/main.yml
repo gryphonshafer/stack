@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: fastcgi_perl
+    when: fastcgi_perl_executed is not defined

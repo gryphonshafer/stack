@@ -1,0 +1,4 @@
+---
+mailman_packages:
+  - mailman
+  - listadmin
