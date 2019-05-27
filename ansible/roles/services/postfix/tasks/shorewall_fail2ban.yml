@@ -1,0 +1,37 @@
+---
+- stat:
+    path: /etc/shorewall/rules.d
+  register: sw_st
+
+- name: install shorewall rules
+  copy:
+    src: shorewall.rules
+    dest: /etc/shorewall/rules.d/postfix
+  when: sw_st.stat.exists == true
+  notify: restart shorewall
+
+- stat:
+    path: /etc/fail2ban/jail.d
+  register: f2b_st
+
+- name: install fail2ban rules
+  copy:
+    src: fail2ban.rules
+    dest: /etc/fail2ban/jail.d/postfix.conf
+  when: f2b_st.stat.exists == true
+  notify: restart fail2ban
+
+- name: touch /etc/shorewall/rules.d/blacklist_auto
+  file:
+    path: /etc/shorewall/rules.d/blacklist_auto
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+  when: sw_st.stat.exists == true and f2b_st.stat.exists == true
+
+- name: install hourly cron shorewall.blacklist_auto.bash
+  copy:
+    src: shorewall.blacklist_auto.bash
+    dest: /etc/cron.hourly/shorewall.blacklist_auto.bash
+    mode: '0755'
+  when: sw_st.stat.exists == true and f2b_st.stat.exists == true

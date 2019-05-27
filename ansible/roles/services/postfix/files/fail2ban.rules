@@ -2,14 +2,14 @@
 enabled = true
 logpath = /var/log/mail.warn
 
-[couriersmtp]
+[courier-smtp]
 enabled = true
 logpath = /var/log/mail.warn
 
-[courierauth]
+[courier-auth]
 enabled = true
 logpath = /var/log/mail.warn
 
-[sasl]
+[postfix-sasl]
 enabled = true
 logpath = /var/log/mail.warn
