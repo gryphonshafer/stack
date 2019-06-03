@@ -16,6 +16,11 @@
   include: install.yml
   when: nagios_exists.stat.exists == false
 
+- name: set nagios.service file configuration file permissions
+  file:
+    path: /lib/systemd/system/nagios.service
+    mode: 0644
+
 - name: establish nagios log file
   copy:
     content: ""
