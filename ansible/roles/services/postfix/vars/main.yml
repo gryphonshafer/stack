@@ -39,3 +39,8 @@ zor_packages:
 clamav_packages:
   - clamav
   - clamav-daemon
+opendkim_packages:
+  - opendkim
+  - opendkim-tools
+  - postfix-policyd-spf-python
+  - postfix-pcre

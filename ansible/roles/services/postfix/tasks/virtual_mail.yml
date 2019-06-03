@@ -73,8 +73,20 @@
   copy:
     src: 04_vmail_main.cf
     dest: /etc/postfix/main.cf.d/04_vmail_main.cf
-  notify: assemble main_cf
+
+- name: assemble main_cf
+  assemble:
+    remote_src: yes
+    src: /etc/postfix/main.cf.d
+    dest: /etc/postfix/main.cf
+    delimiter: "\n"
   register: main_cf
+
+- name: restart postfix
+  service:
+    name: postfix
+    state: restarted
+  when: main_cf.changed
 
 - name: authdaemonrc
   replace:
@@ -96,7 +108,13 @@
     - { find: 'MECHANISMS="pam"', replace: 'MECHANISMS="rimap"' }
     - { find: 'MECH_OPTIONS=""', replace: 'MECH_OPTIONS="localhost"' }
     - { find: '^OPTIONS="([^"]+/saslauthd)"', replace: 'OPTIONS="\1 -r"' }
-  notify: restart saslauthd
+  register: saslauthd
+
+- name: restart saslauthd
+  service:
+    name: saslauthd
+    state: restarted
+  when: saslauthd.changed
 
 - name: setup utility scripts
   copy:
@@ -108,6 +126,26 @@
     - delete-mail-user
     - chpwd-mail-user
 
+- set_fact:
+    local_dir: "{{ lookup( 'env', 'LOCAL_DIR' ) }}"
+
+- name: ensure credentials.ini exists
+  ini_file:
+    dest: "{{ local_dir }}/credentials.ini"
+    section: global
+    option: answer
+    value: "42"
+  when: local_dir is defined
+
+- name: load user password
+  set_fact:
+    user_password: "{{ lookup( 'ini', 'user_password file={{ local_dir }}/credentials.ini' ) }}"
+  when: local_dir is defined
+
 - name: create user email account
   command: '/root/create-mail-user {{ user }} {{ domain }} {{ user_password }}'
-  when: users_file.stat.exists == false
+  when:
+    - users_file.stat.exists == false
+    - user_password is defined
+    - user_password != ''
+    - user_password != []

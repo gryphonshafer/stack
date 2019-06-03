@@ -52,6 +52,11 @@
     name: saslauthd
     state: restarted
 
+- name: restart opendkim
+  service:
+    name: opendkim
+    state: restarted
+
 - name: assemble main_cf
   assemble:
     remote_src: yes

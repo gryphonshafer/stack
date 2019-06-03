@@ -1,0 +1,21 @@
+# Command-line options specified here will override the contents of
+# /etc/opendkim.conf. See opendkim(8) for a complete list of options.
+
+# DAEMON_OPTS=""
+
+# Change to /var/spool/postfix/var/run/opendkim to use a Unix socket with
+# postfix in a chroot:
+
+# RUNDIR=/var/spool/postfix/var/run/opendkim
+RUNDIR=/var/run/opendkim
+
+SOCKET=local:$RUNDIR/opendkim.sock
+# SOCKET=inet:54321
+# SOCKET=inet:12345@localhost
+# SOCKET=inet:12345@192.0.2.1
+# SOCKET=inet:12301@localhost
+
+USER=opendkim
+GROUP=opendkim
+PIDFILE=$RUNDIR/$NAME.pid
+EXTRAAFTER=

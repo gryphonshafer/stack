@@ -1,4 +1,8 @@
 ---
+- stat:
+    path: /usr/sbin/postfix
+  register: postfix
+
 - name: install exim4
   apt:
     update_cache: yes
@@ -7,12 +11,14 @@
     autoremove: yes
     pkg: exim4
     state: latest
+  when: postfix.stat.exists == false
 
 - name: backup /etc/exim4/update-exim4.conf.conf dist file
   copy:
     src: /etc/exim4/update-exim4.conf.conf
     dest: /etc/exim4/update-exim4.conf.conf.dist
     force: no
+  when: postfix.stat.exists == false
 
 - name: build /etc/exim4/update-exim4.conf.conf file
   template:
@@ -21,6 +27,7 @@
     owner: root
     group: root
     mode: 0644
+  when: postfix.stat.exists == false
   register: exim_conf_change
 
 - name: update exim4 conf

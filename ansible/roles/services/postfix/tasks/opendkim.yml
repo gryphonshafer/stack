@@ -1,0 +1,136 @@
+---
+- name: install opendkim
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg: '{{ opendkim_packages }}'
+    state: latest
+
+- name: add postfix user to opendkim group
+  user:
+    name: postfix
+    group: opendkim
+    append: yes
+
+- name: spf in master.cf
+  blockinfile:
+    path: /etc/postfix/master.cf
+    marker: "# {mark} ANSIBLE MANAGED SPF BLOCK"
+    block: |
+      policyd-spf  unix  -       n       n       -       0       spawn
+        user=policyd-spf argv=/usr/bin/policyd-spf
+  notify: reload postfix
+
+- name: copy 05_opendkim_main.cf
+  copy:
+    src: 05_opendkim_main.cf
+    dest: /etc/postfix/main.cf.d/05_opendkim_main.cf
+  notify: assemble main_cf
+
+- name: opendkim.conf
+  copy:
+    src: opendkim.conf
+    dest: /etc/opendkim.conf
+    mode: '0644'
+  notify: restart opendkim
+
+- name: opendkim.default
+  copy:
+    src: opendkim.default
+    dest: /etc/default/opendkim
+    mode: '0644'
+  notify: restart opendkim
+
+- name: opendkim directory
+  file:
+    path: /etc/opendkim
+    state: directory
+    mode: '0755'
+
+- name: opendkim keys directory
+  file:
+    path: /etc/opendkim/keys
+    state: directory
+    mode: '0700'
+
+- stat:
+    path: /etc/opendkim/signing.table
+  register: st_signing
+
+- name: signing.table
+  copy:
+    dest: /etc/opendkim/signing.table
+    content: "*@{{ domain }} {{ domain }}\n"
+    owner: opendkim
+    group: opendkim
+  when: st_signing.stat.exists == false
+  notify: restart opendkim
+
+- stat:
+    path: /etc/opendkim/key.table
+  register: st_key_table
+
+- name: key.table
+  copy:
+    dest: /etc/opendkim/key.table
+    content: >
+      {{ domain }} {{ domain }}:{{
+      ansible_date_time.epoch }}:/etc/opendkim/keys/{{ domain }}.{{
+      ansible_date_time.epoch }}.private\n
+    owner: opendkim
+    group: opendkim
+  when: st_key_table.stat.exists == false
+  notify: restart opendkim
+
+- stat:
+    path: /etc/opendkim/trusted.hosts
+  register: st_trust
+
+- name: key.table
+  copy:
+    dest: /etc/opendkim/trusted.hosts
+    content: |
+      localhost
+      192.168.0.1/24
+      192.168.96.1/24
+      {{ domain }}
+      *.{{ domain }}
+    owner: opendkim
+    group: opendkim
+  when: st_trust.stat.exists == false
+  notify: restart opendkim
+
+- find:
+    paths: /etc/opendkim/keys
+    patterns: '^{{ domain | regex_escape() }}\.\d+\.private$'
+    use_regex: yes
+  register: find_key
+
+- name: generate key
+  command: '{{ item }}'
+  args:
+    chdir: /etc/opendkim/keys
+  with_items:
+    - 'opendkim-genkey -b 2048 -h rsa-sha256 -r -s {{ ansible_date_time.epoch }} -d {{ domain }}'
+    - 'mv {{ ansible_date_time.epoch }}.private {{ domain }}.{{ ansible_date_time.epoch }}.private'
+    - 'mv {{ ansible_date_time.epoch }}.txt {{ domain }}.{{ ansible_date_time.epoch }}.txt'
+  when: find_key.matched == 0 or st_key_table.stat.exists == false
+  notify: restart opendkim
+
+- name: notes file
+  copy:
+    dest: /etc/opendkim/notes
+    content: |
+      https://www.linode.com/docs/email/postfix/configure-spf-and-dkim-in-postfix-on-debian-8/
+      https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-dkim-with-postfix-on-debian-wheezy
+    owner: opendkim
+    group: opendkim
+
+- name: opendkim directories
+  file:
+    path: /etc/opendkim
+    recurse: yes
+    owner: opendkim
+    group: opendkim

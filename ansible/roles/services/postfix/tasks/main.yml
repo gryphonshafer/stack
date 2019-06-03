@@ -6,5 +6,6 @@
 - import_tasks: anti_spam.yml
 - import_tasks: clamav.yml
 - import_tasks: virtual_mail.yml
+- import_tasks: opendkim.yml
 - import_tasks: shorewall_fail2ban.yml
 - import_tasks: ../../../end.yml

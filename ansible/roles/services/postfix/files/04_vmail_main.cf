@@ -6,3 +6,6 @@ virtual_alias_domains   = /var/vmail/alias_domains
 virtual_minimum_uid     = 100
 virtual_uid_maps        = static:5000
 virtual_gid_maps        = static:5000
+virtual_mailbox_limit   = 104857600
+
+# 104857600 = 100M

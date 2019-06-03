@@ -27,7 +27,3 @@
     regexp: '#(\@bypass_virus.*?;)'
     replace: '\1'
   notify: restart amavis
-
-- name: freshclam
-  command: freshclam --quiet
-  when: install_clamav.changed

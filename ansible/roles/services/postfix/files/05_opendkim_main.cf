@@ -1,0 +1,17 @@
+policyd-spf_time_limit = 3600
+
+smtpd_recipient_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_unauth_destination,
+    reject_invalid_hostname,
+    reject_rbl_client zen.spamhaus.org,
+    reject_rhsbl_reverse_client dbl.spamhaus.org,
+    reject_rhsbl_helo dbl.spamhaus.org,
+    reject_rhsbl_sender dbl.spamhaus.org,
+    check_policy_service unix:private/policyd-spf
+
+milter_protocol       = 6
+milter_default_action = accept
+smtpd_milters         = inet:localhost:12301
+non_smtpd_milters     = inet:localhost:12301

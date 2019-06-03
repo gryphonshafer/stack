@@ -15,8 +15,10 @@
     regexp: '{{ item.regexp }}'
     replace: '{{ item.replace }}'
   with_items:
-    - { regexp: 'START=no', replace: 'START=yes' }
-    - { regexp: 'OPTIONS="-c -m /var/run/saslauthd"', replace: 'OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd -r"' }
+    - regexp: 'START=no'
+      replace: 'START=yes'
+    - regexp: 'OPTIONS="-c -m /var/run/saslauthd"'
+      replace: 'OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd -r"'
   notify: restart saslauthd
 
 - name: add postfix user to sasl group
@@ -53,6 +55,8 @@
     regexp: '{{ item.regexp }}'
     replace: '{{ item.replace }}'
   with_items:
-    - { regexp: '^#(submission.*?\n)#(.*?submission)', replace: '\1\2' }
-    - { regexp: '^#(smtps.*?\n)#(.*?smtps)', replace: '\1\2' }
+    - regexp: '^#(submission.*?\n)#(.*?submission)'
+      replace: '\1\2'
+    - regexp: '^#(smtps.*?\n)#(.*?smtps)'
+      replace: '\1\2'
   notify: reload postfix
