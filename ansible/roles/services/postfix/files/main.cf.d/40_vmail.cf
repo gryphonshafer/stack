@@ -1,7 +1,6 @@
 virtual_mailbox_base    = /var/vmail
 virtual_mailbox_domains = /var/vmail/mailbox_domains
 virtual_mailbox_maps    = hash:/var/vmail/users
-virtual_alias_maps      = hash:/var/vmail/aliases
 virtual_alias_domains   = /var/vmail/alias_domains
 virtual_minimum_uid     = 100
 virtual_uid_maps        = static:5000

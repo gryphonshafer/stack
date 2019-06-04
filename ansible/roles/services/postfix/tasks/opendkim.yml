@@ -23,10 +23,16 @@
         user=policyd-spf argv=/usr/bin/policyd-spf
   notify: reload postfix
 
-- name: copy 05_opendkim_main.cf
+- name: copy main.cf.d/50_opendkim.cf
   copy:
-    src: 05_opendkim_main.cf
-    dest: /etc/postfix/main.cf.d/05_opendkim_main.cf
+    src: main.cf.d/50_opendkim.cf
+    dest: /etc/postfix/main.cf.d/50_opendkim.cf
+  notify: assemble main_cf
+
+- name: copy main.cf.d/21_recp_restr_dkim.cf
+  copy:
+    src: main.cf.d/21_recp_restr_dkim.cf
+    dest: /etc/postfix/main.cf.d/21_recp_restr.cf
   notify: assemble main_cf
 
 - name: opendkim.conf

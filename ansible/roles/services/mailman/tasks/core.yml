@@ -8,26 +8,11 @@
     pkg: '{{ mailman_packages }}'
     state: latest
 
-- name: check for mailman aliases
-  shell: "postconf virtual_alias_maps | sed -e 's/virtual_alias_maps = //' | grep -c '/etc/mailman/aliases' || true"
-  register: vam_aliases
-  changed_when: false
-
-- name: generate virtual_alias_maps
-  shell: postconf virtual_alias_maps | sed -e 's/virtual_alias_maps = //'
-  register: vam
-  changed_when: false
-  when: vam_aliases.stdout == '0'
-
-- name: set virtual_alias_maps
-  command: 'postconf -e "virtual_alias_maps = {{ "hash:/etc/mailman/aliases" if ( vam.stdout | length == 0 ) else "hash:/etc/mailman/aliases, " + vam.stdout }}"'
-  when: vam_aliases.stdout == '0'
-
-- name: reload postfix
-  service:
-    name: postfix
-    state: reloaded
-  when: vam_aliases.stdout == '0'
+- name: copy 41_valias_maps_mailman.cf
+  copy:
+    src: 41_valias_maps_mailman.cf
+    dest: /etc/postfix/main.cf.d/41_valias_maps.cf
+  notify: assemble main_cf
 
 - name: setup utility scripts
   copy:

@@ -29,10 +29,10 @@
     line: '$myhostname = "{{ mailhost }}";'
   notify: restart amavis
 
-- name: copy 03_anti_spam_main.cf
+- name: copy main.cf.d/30_anti_spam.cf
   copy:
-    src: 03_anti_spam_main.cf
-    dest: /etc/postfix/main.cf.d/03_anti_spam_main.cf
+    src: main.cf.d/30_anti_spam.cf
+    dest: /etc/postfix/main.cf.d/30_anti_spam.cf
   notify: assemble main_cf
 
 - name: amavis in master.cf

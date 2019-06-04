@@ -1,7 +1,4 @@
 ---
-dependency_packages:
-  - python-apt
-  - aptitude
 system_packages:
   - at
   - libexpat1-dev

@@ -69,10 +69,17 @@
   command: 'postmap /var/vmail/users'
   when: users_file.stat.exists == false
 
-- name: copy 04_vmail_main.cf
+- name: copy main.cf.d/40_vmail.cf
   copy:
-    src: 04_vmail_main.cf
-    dest: /etc/postfix/main.cf.d/04_vmail_main.cf
+    src: main.cf.d/40_vmail.cf
+    dest: /etc/postfix/main.cf.d/40_vmail.cf
+
+- name: copy main.cf.d/41_valias_maps.cf
+  copy:
+    src: main.cf.d/41_valias_maps.cf
+    dest: /etc/postfix/main.cf.d/41_valias_maps.cf
+    force: no
+  notify: assemble main_cf
 
 - name: assemble main_cf
   assemble:

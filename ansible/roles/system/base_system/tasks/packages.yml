@@ -11,13 +11,24 @@
     regexp: ' main$'
     replace: ' main contrib'
 
+- name: check if python-apt installed
+  shell: "dpkg -l python-apt | grep '^ii' || true"
+  changed_when: no
+  register: pacheck
+
+- name: install python-apt
+  command: apt-get -q -y install python-apt
+  args:
+    warn: no
+  when: pacheck.stdout_lines | length == 0
+
 - name: install aptitude
   apt:
     update_cache: yes
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: '{{ dependency_packages }}'
+    pkg: aptitude
     state: latest
     force_apt_get: yes
 

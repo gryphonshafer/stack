@@ -43,10 +43,17 @@
     dest: /etc/postfix/sasl/smtpd.conf
   notify: reload postfix
 
-- name: copy 02_sasl_main.cf
+- name: copy main.cf.d/20_sasl.cf
   copy:
-    src: 02_sasl_main.cf
-    dest: /etc/postfix/main.cf.d/02_sasl_main.cf
+    src: main.cf.d/20_sasl.cf
+    dest: /etc/postfix/main.cf.d/20_sasl.cf
+  notify: assemble main_cf
+
+- name: copy main.cf.d/21_recp_restr.cf
+  copy:
+    src: main.cf.d/21_recp_restr.cf
+    dest: /etc/postfix/main.cf.d/21_recp_restr.cf
+    force: no
   notify: assemble main_cf
 
 - name: activate sasl in master.cf

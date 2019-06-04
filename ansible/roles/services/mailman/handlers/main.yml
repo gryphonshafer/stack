@@ -1,0 +1,13 @@
+---
+- name: reload postfix
+  service:
+    name: postfix
+    state: reloaded
+
+- name: assemble main_cf
+  assemble:
+    remote_src: yes
+    src: /etc/postfix/main.cf.d
+    dest: /etc/postfix/main.cf
+    delimiter: "\n"
+  notify: reload postfix

@@ -31,8 +31,8 @@
     path: "{{ ssl_file_prefix }}.csr"
     state: absent
 
-- name: copy 01_tls_main.cf
+- name: copy main.cf.d/10_tls.cf
   copy:
-    src: 01_tls_main.cf
-    dest: /etc/postfix/main.cf.d/01_tls_main.cf
+    src: main.cf.d/10_tls.cf
+    dest: /etc/postfix/main.cf.d/10_tls.cf
   notify: assemble main_cf
