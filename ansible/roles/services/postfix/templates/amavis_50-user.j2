@@ -1,0 +1,46 @@
+use strict;
+$pax = q(pax);
+
+#
+# Place your configuration directives here.  They will override those in
+# earlier files.
+#
+# See /usr/share/doc/amavisd-new/ for documentation and examples of
+# the directives you can use in this file
+#
+
+@local_domains_acl = map {
+    if ( open( my $in, '<', $_ ) ) {
+        map { chomp; $_ } <$in>;
+    }
+} (
+    '/var/vmail/mailbox_domains',
+    '/var/vmail/alias_domains',
+);
+
+push( @local_domains_acl, '{{ domain }}', '{{ inventory_hostname }}.{{ domain }}', '{{ inventory_hostname }}' );
+
+$sa_tag_level_deflt  = -9999; # add spam info headers if at, or above that level
+$sa_tag2_level_deflt = 4.0;   # add 'spam detected' headers at that level (default: 6.31)
+$sa_kill_level_deflt = 6.0;   # triggers spam evasive actions (default: 6.31)
+
+# (NOTE: positive: black, negative: white)
+@score_sender_maps = ({
+    '.' => [
+        new_RE(
+            [ qr'@stocktwits.com'i => -10.0 ],
+            [ qr'@sendgrid.net'i   => -10.0 ],
+            [ qr'@stage32.com'i    => -10.0 ],
+            [ qr'@calendly.com'i   => -10.0 ],
+        ),
+        {
+            'trac@{{ domain }}' => -10.0,
+        }
+    ],
+});
+
+$admin_maps_by_ccat{+CC_UNCHECKED.',1'} = undef;
+$undecipherable_subject_tag             = '';
+
+#------------ Do not modify anything below this line -------------
+1;  # ensure a defined return

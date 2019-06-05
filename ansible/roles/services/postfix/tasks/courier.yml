@@ -14,3 +14,24 @@
     regexp: 'IMAP_MAILBOX_SANITY_CHECK=1'
     replace: 'IMAP_MAILBOX_SANITY_CHECK=0'
   notify: restart courier
+
+- name: imapd-ssl
+  blockinfile:
+    path: /etc/courier/imapd-ssl
+    block: |
+      TLS_PROTOCOL="TLS1_2:TLS1_1:TLS1"
+      TLS_CIPHER_LIST="AES128+EECDH:AES128+EDH:AES128-SHA:AES256-SHA:RC4-SHA:DES-CBC3-SHA:RC4-MD5"
+      TLS_KX_LIST=ALL
+      TLS_COMPRESSION=ALL
+      TLS_CERTS=X509
+  notify: restart courier
+
+- name: pop3d-ssl
+  blockinfile:
+    path: /etc/courier/pop3d-ssl
+    block: |
+      TLS_STARTTLS_PROTOCOL=TLS1
+      TLS_KX_LIST=ALL
+      TLS_COMPRESSION=ALL
+      TLS_CERTS=X509
+  notify: restart courier

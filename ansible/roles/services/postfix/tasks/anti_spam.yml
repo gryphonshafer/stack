@@ -15,11 +15,10 @@
     replace: '\1'
   notify: restart amavis
 
-- name: pax set in 50-user
-  lineinfile:
-    path: /etc/amavis/conf.d/50-user
-    insertafter: '^use strict;'
-    line: '$pax = q(pax);'
+- name: copy amavis/50-user
+  template:
+    src: amavis_50-user.j2
+    dest: /etc/amavis/conf.d/50-user
   notify: restart amavis
 
 - name: myhostname set in 05-node_id
@@ -101,6 +100,13 @@
     dest: /etc/spamassassin/v310.pre
     regexp: '#(loadplugin Mail::SpamAssassin::Plugin::DCC)'
     replace: '\1'
+  notify: restart spamassassin
+
+- name: spamassassin 65_debian.cf
+  replace:
+    dest: /etc/spamassassin/65_debian.cf
+    regexp: '(^score RCVD_IN_BRBL_LASTEXT 0)'
+    replace: '#\1'
   notify: restart spamassassin
 
 - name: spamassassin enabled
