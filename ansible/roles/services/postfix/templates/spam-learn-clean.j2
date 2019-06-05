@@ -6,21 +6,21 @@ use Date::Calc qw( Delta_Days Today );
 
 use constant {
     ACCOUNTS    => [
-        'example@example.com',
+        '{{ user }}@{{ domain }}',
     ],
     DEL_FOLDERS => {
-        'Trash' => 21, # 3 weeks
-        'Sent'  => 56, # 8 weeks
+        #'Trash' => 21,  # 3 weeks
+        #'Sent'  => 112, # 16 weeks
     },
     SA_DIR      => '/var/lib/amavis/.spamassassin',
     #DB_PATH     => '/var/lib/amavis/.spamassassin/bayes_seen',
     LEARNING    => {
         'spam' => [
-            '/var/vmail/example.com/EXAMPLE_USERNAME/.Junk/cur',
+            '/var/vmail/{{ domain }}/{{ user }}/.Junk/cur',
          ],
         'ham' => [
-            '/var/vmail/example.com/EXAMPLE_USERNAME/cur',
-            '/var/vmail/example.com/EXAMPLE_USERNAME/.Trash/cur',
+            '/var/vmail/{{ domain }}/{{ user }}/cur',
+            '/var/vmail/{{ domain }}/{{ user }}/.Trash/cur',
         ],
     },
     MONTHS => { qw(
@@ -28,8 +28,8 @@ use constant {
         Jul 7 Aug 8 Sep 9 Oct 10 Nov 11 Dec 12
     ) },
     LOGGING  => 1,
-    SERVER   => 'EXAMPLE_SERVER_NAME',
-    PASSWORD => 'EXAMPLE_PASSWORD_THAT_IS_NOT_REAL',
+    SERVER   => '{{ mailhost }}',
+    PASSWORD => '{{ user_password }}',
 };
 
 foreach my $type ( keys %{ (LEARNING) } ) {

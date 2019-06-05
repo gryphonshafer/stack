@@ -15,7 +15,6 @@ for (@data) {
   }
 }
 
-#open(POSTSUPER,"|cat") || die "couldn't open postsuper" ;
 open(POSTSUPER,"|postsuper -d -") || die "couldn't open postsuper" ;
 
 foreach (keys %Q) {
