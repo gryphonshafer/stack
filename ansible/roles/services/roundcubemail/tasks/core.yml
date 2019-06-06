@@ -40,9 +40,19 @@
     - logs
     - db
 
+- name: generate des key
+  command: /usr/bin/openssl rand -base64 12
+  register: generated_password
+  when: st.stat.exists == false
+
+- name: set des key variable
+  set_fact:
+    rcmail_des_key: "{{ generated_password.stdout }}"
+  when: st.stat.exists == false
+
 - name: config.inc.php
-  copy:
-    src: config.inc.php
+  template:
+    src: config.inc.php.j2
     dest: /var/www/roundcubemail/config/config.inc.php
     mode: '0664'
   when: st.stat.exists == false

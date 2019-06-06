@@ -14,8 +14,8 @@ server {
     include snippets/ssl.conf;
 
     location / {
-        root /var/www/{{ domain }}/roundcubemail;
+        root /var/www/roundcubemail;
         index index.html index.php;
-        include fastcgi_php;
+        include snippets/fastcgi_php.conf;
     }
 } # 443

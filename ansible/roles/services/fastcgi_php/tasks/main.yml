@@ -11,6 +11,7 @@
       - php
       - php-sqlite3
       - php-curl
+      - php-xml
     state: latest
 
 - name: fix_pathinfo set to 0 in php.ini
