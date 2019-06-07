@@ -1,0 +1,78 @@
+---
+- name: install roundcube packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg:
+      - roundcube
+      - roundcube-core
+      - roundcube-plugins
+      - roundcube-sqlite3
+    state: latest
+
+- name: mkdir /var/lib/roundcube/db
+  file:
+    path: /var/lib/roundcube/db
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: adm
+
+- stat:
+    path: /var/lib/roundcube/src
+  register: rc_src
+
+- name: determine current roundcube version
+  shell: >
+    dpkg --list roundcube | grep '^ii\s*roundcube' | perl -pe 's/^.*roundcube\s+//; s/\+.*$//'
+  register: rc_version
+  when: rc_src.stat.exists == false
+
+- name: unarchive roundcube source
+  unarchive:
+    src: 'https://github.com/roundcube/roundcubemail/archive/{{ rc_version.stdout }}.tar.gz'
+    dest: /var/lib/roundcube
+    remote_src: yes
+  when: rc_src.stat.exists == false
+
+- name: rename source directory
+  command: 'mv /var/lib/roundcube/roundcubemail-{{ rc_version.stdout }} /var/lib/roundcube/src'
+  when: rc_src.stat.exists == false
+
+- stat:
+    path: /var/lib/roundcube/db/rcm.sqlite
+  register: rcm_db
+
+- name: build sqlite database
+  shell: 'cat /var/lib/roundcube/src/SQL/sqlite.initial.sql | sqlite3 /var/lib/roundcube/db/rcm.sqlite'
+  when: rcm_db.stat.exists == false
+
+- name: set database file owner and group
+  file:
+    path: /var/lib/roundcube/db/rcm.sqlite
+    owner: www-data
+    group: adm
+
+- stat:
+    path: /etc/roundcubemail/config.inc.php
+  register: config_php
+
+- name: generate des key
+  command: /usr/bin/openssl rand -base64 12
+  register: generated_password
+  when: config_php.stat.exists == false
+
+- name: set des key variable
+  set_fact:
+    rcmail_des_key: "{{ generated_password.stdout }}"
+  when: config_php.stat.exists == false
+
+- name: config.inc.php
+  template:
+    src: config.inc.php.j2
+    dest: /etc/roundcube/config.inc.php
+    mode: '0640'
+    group: www-data
+  when: config_php.stat.exists == false

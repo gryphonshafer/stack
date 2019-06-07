@@ -1,5 +1,0 @@
----
-- name: setup nginx available site for roundcubemail
-  template:
-    src: roundcubemail.j2
-    dest: '/etc/nginx/sites-available/roundcubemail'
