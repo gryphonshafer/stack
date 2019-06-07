@@ -9,7 +9,7 @@ $config = array();
 // NOTE: for SQLite use absolute path (Linux): 'sqlite:////full/path/to/sqlite.db?mode=0646'
 //       or (Windows): 'sqlite:///C:/full/path/to/sqlite.db'
 #$config['db_dsnw'] = 'mysql://roundcube:pass@localhost/roundcubemail';
-$config['db_dsnw'] = 'sqlite:////var/www/roundcubemail/db/rcm.sqlite?mode=0646';
+$config['db_dsnw'] = 'sqlite:////var/lib/roundcube/db/rcm.sqlite?mode=0646';
 
 // The IMAP host chosen to perform the log-in.
 // Leave blank to show a textbox at login, give a list of hosts
@@ -66,17 +66,14 @@ $config['des_key'] = '{{ rcmail_des_key }}';
 $config['plugins'] = array(
     'additional_message_headers',
     'archive',
-    'attachment_reminder',
     'emoticons',
     'help',
-    'identicon',
-    'identity_select',
     'jqueryui',
     'markasjunk',
     'newmail_notifier',
+    'show_additional_headers',
     'userinfo',
     'vcard_attachments',
-    'zipdownload',
 );
 
 // skin name: folder from skins/
