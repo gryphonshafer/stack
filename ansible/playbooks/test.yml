@@ -31,5 +31,5 @@
     - host_drive_mount
     - ansible_user_private
     - postfix
-    - roundcubemail
+    - roundcube
     - mailman
