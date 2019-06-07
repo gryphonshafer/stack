@@ -14,14 +14,11 @@
     group: opendkim
     append: yes
 
-- name: spf in master.cf
-  blockinfile:
-    path: /etc/postfix/master.cf
-    marker: "# {mark} ANSIBLE MANAGED SPF BLOCK"
-    block: |
-      policyd-spf  unix  -       n       n       -       0       spawn
-        user=policyd-spf argv=/usr/bin/policyd-spf
-  notify: reload postfix
+- name: copy master.cf.d/02_opendkim.cf
+  copy:
+    src: master.cf.d/02_opendkim.cf
+    dest: /etc/postfix/master.cf.d/02_opendkim.cf
+  notify: assemble master_cf
 
 - name: copy main.cf.d/50_opendkim.cf
   copy:
@@ -84,7 +81,7 @@
     content: >
       {{ domain }} {{ domain }}:{{
       ansible_date_time.epoch }}:/etc/opendkim/keys/{{ domain }}.{{
-      ansible_date_time.epoch }}.private\n
+      ansible_date_time.epoch }}.private
     owner: opendkim
     group: opendkim
   when: st_key_table.stat.exists == false

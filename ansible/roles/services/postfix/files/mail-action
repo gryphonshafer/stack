@@ -13,7 +13,10 @@ for service in \
     courier-imap-ssl \
     courier-pop-ssl \
     postfix \
-    spamassassin
+    spamassassin \
+    dcc-server \
+    mailman \
+    opendkim
 do
     service $service $action
 done

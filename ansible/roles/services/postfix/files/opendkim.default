@@ -9,11 +9,11 @@
 # RUNDIR=/var/spool/postfix/var/run/opendkim
 RUNDIR=/var/run/opendkim
 
-SOCKET=local:$RUNDIR/opendkim.sock
+# SOCKET=local:$RUNDIR/opendkim.sock
 # SOCKET=inet:54321
 # SOCKET=inet:12345@localhost
 # SOCKET=inet:12345@192.0.2.1
-# SOCKET=inet:12301@localhost
+SOCKET=inet:12301@localhost
 
 USER=opendkim
 GROUP=opendkim

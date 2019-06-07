@@ -11,6 +11,13 @@
       - roundcube-plugins
       - roundcube-sqlite3
     state: latest
+  register: install_rcm
+
+- name: remove default config.inc.php
+  file:
+    path: /etc/roundcube/config.inc.php
+    state: absent
+  when: install_rcm.changed
 
 - name: mkdir /var/lib/roundcube/db
   file:
@@ -56,7 +63,7 @@
     group: adm
 
 - stat:
-    path: /etc/roundcubemail/config.inc.php
+    path: /etc/roundcube/config.inc.php
   register: config_php
 
 - name: generate des key
@@ -75,4 +82,10 @@
     dest: /etc/roundcube/config.inc.php
     mode: '0640'
     group: www-data
+  when: config_php.stat.exists == false
+
+- name: restart php-fcgi
+  service:
+    name: php-fcgi
+    state: restarted
   when: config_php.stat.exists == false

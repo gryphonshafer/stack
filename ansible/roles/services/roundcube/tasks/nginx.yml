@@ -3,3 +3,17 @@
   template:
     src: roundcube.j2
     dest: '/etc/nginx/sites-available/roundcube'
+  register: rcm_available
+
+- name: set example web site conf active
+  file:
+    src: /etc/nginx/sites-available/roundcube
+    dest: /etc/nginx/sites-enabled/roundcube
+    state: link
+  register: rcm_enabled
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  when: rcm_available.changed or rcm_enabled.changed

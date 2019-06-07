@@ -64,3 +64,11 @@
     dest: /etc/postfix/main.cf
     delimiter: "\n"
   notify: reload postfix
+
+- name: assemble master_cf
+  assemble:
+    remote_src: yes
+    src: /etc/postfix/master.cf.d
+    dest: /etc/postfix/master.cf
+    delimiter: "\n"
+  notify: reload postfix

@@ -1,6 +1,6 @@
 server {
     listen 80 default_server;
-    server_name {{ domain }} www.{{ domain }} *.{{ domain }} localhost localhost.localdomain;
+    server_name {{ domain }} www.{{ domain }};
     include snippets/server.conf;
 
     root /var/www/{{ domain }}/htdocs;
@@ -9,7 +9,7 @@ server {
 
 server {
     listen 443 default_server;
-    server_name {{ domain }} www.{{ domain }} *.{{ domain }} localhost localhost.localdomain;
+    server_name {{ domain }} www.{{ domain }};
     include snippets/server.conf;
     include snippets/ssl.conf;
 

@@ -89,11 +89,19 @@
     delimiter: "\n"
   register: main_cf
 
+- name: assemble master_cf
+  assemble:
+    remote_src: yes
+    src: /etc/postfix/master.cf.d
+    dest: /etc/postfix/master.cf
+    delimiter: "\n"
+  register: master_cf
+
 - name: restart postfix
   service:
     name: postfix
     state: restarted
-  when: main_cf.changed
+  when: main_cf.changed or master_cf.changed
 
 - name: authdaemonrc
   replace:

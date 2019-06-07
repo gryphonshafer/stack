@@ -30,8 +30,19 @@
     path: /etc/postfix/main.cf.d
     state: directory
 
-- name: build 00_core_main.cf
+- name: build main.cf.d/00_core.cf
   template:
     src: 00_core_main.cf.j2
-    dest: /etc/postfix/main.cf.d/00_core_main.cf
+    dest: /etc/postfix/main.cf.d/00_core.cf
   notify: assemble main_cf
+
+- name: create master.cf.d directory
+  file:
+    path: /etc/postfix/master.cf.d
+    state: directory
+
+- name: copy master.cf.d/00_core.cf
+  copy:
+    src: master.cf.d/00_core.cf
+    dest: /etc/postfix/master.cf.d/00_core.cf
+  notify: assemble master_cf
