@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-certbox renew
+certbot renew
 
 {% if nginx_executed is defined -%}
 service nginx reload
