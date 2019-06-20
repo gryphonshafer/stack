@@ -36,7 +36,7 @@
   become: true
   roles:
     - postfix
-    - roundcubemail
+    - roundcube
     - mailman
 
 - hosts: web_hosting_services

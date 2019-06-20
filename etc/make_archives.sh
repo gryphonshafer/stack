@@ -37,31 +37,28 @@ sudo tar -cf - mysql | gzip > $_outdir/www.mysql.tar.gz
 
 #-----------------------------------------------------------------------------
 
-cd ~/rsyncs/uber
-echo 'archive: uber root'
-sudo tar -cf - etc root | gzip > $_outdir/uber.etc-root.tar.gz
+cd ~/rsyncs/mail
+echo 'archive: mail root'
+sudo tar -cf - etc root | gzip > $_outdir/mail.etc-root.tar.gz
 
-echo 'archive: uber home'
-sudo tar -cf - home | gzip > $_outdir/uber.home.tar.gz
+echo 'archive: mail home'
+sudo tar -cf - home | gzip > $_outdir/mail.home.tar.gz
 
-cd ~/rsyncs/uber/var/spool/cron
-echo 'archive: uber crontabs'
-sudo tar -cf - crontabs | gzip > $_outdir/uber.crontabs.tar.gz
+cd ~/rsyncs/mail/var/spool/cron
+echo 'archive: mail crontabs'
+sudo tar -cf - crontabs | gzip > $_outdir/mail.crontabs.tar.gz
 
-cd ~/rsyncs/uber/var
-echo 'archive: uber www'
-sudo tar -cf - www | gzip > $_outdir/uber.www.tar.gz
+cd ~/rsyncs/mail/var
+echo 'archive: mail vmail'
+sudo tar -cf - vmail | gzip > $_outdir/mail.vmail.tar.gz
 
-echo 'archive: uber vmail'
-sudo tar -cf - vmail | gzip > $_outdir/uber.vmail.tar.gz
+cd ~/rsyncs/mail/var/lib
+echo 'archive: mail mailman'
+sudo tar -cf - mailman | gzip > $_outdir/mail.mailman.tar.gz
 
-cd ~/rsyncs/uber/var/lib
-echo 'archive: uber mailman'
-sudo tar -cf - mailman | gzip > $_outdir/uber.mailman.tar.gz
-
-cd ~/rsyncs/uber/var/lib/amavis
-echo 'archive: uber spamassassin'
-sudo tar -cf - .spamassassin | gzip > $_outdir/uber.spamassassin.tar.gz
+cd ~/rsyncs/mail/var/lib/amavis
+echo 'archive: mail spamassassin'
+sudo tar -cf - .spamassassin | gzip > $_outdir/mail.spamassassin.tar.gz
 
 #-----------------------------------------------------------------------------
 
