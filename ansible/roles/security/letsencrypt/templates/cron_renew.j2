@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+certbox renew
+
+{% if nginx_executed is defined -%}
+service nginx reload
+{%- endif %}
+
+{% if irc_executed is defined -%}
+cp /etc/letsencrypt/live/irc.{{ domain }}/privkey.pem   /etc/ircd-hybrid/key/ircd.key
+cp /etc/letsencrypt/live/irc.{{ domain }}/fullchain.pem /etc/ircd-hybrid/key/ircd.pem
+chown irc.  /etc/ircd-hybrid/key/ircd.key
+chown root. /etc/ircd-hybrid/key/ircd.pem
+chmod 600   /etc/ircd-hybrid/key/ircd.key
+chmod 644   /etc/ircd-hybrid/key/ircd.pem
+service ircd-hybrid reload
+{%- endif %}
+
+{% if postfix_executed is defined -%}
+cp /etc/letsencrypt/live/{{ mailhost }}/fullchain.pem /etc/postfix/smtpd.crt
+cp /etc/letsencrypt/live/{{ mailhost }}/privkey.pem   /etc/postfix/smtpd.key
+
+cat \
+    /etc/letsencrypt/live/{{ mailhost }}/privkey.pem \
+    /etc/letsencrypt/live/{{ mailhost }}/fullchain.pem \
+    > /etc/courier/imapd.pem
+
+cat \
+    /etc/letsencrypt/live/{{ mailhost }}/privkey.pem \
+    /etc/letsencrypt/live/{{ mailhost }}/fullchain.pem \
+    > /etc/courier/pop3d.pem
+
+service postfix restart
+service courier-imap-ssl restart
+service courier-pop-ssl restart
+{%- endif %}

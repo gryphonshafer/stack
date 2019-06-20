@@ -24,7 +24,6 @@
   become: true
   roles:
     - ntp
-    - letsencrypt
     - nagios
 
 - hosts: gitlab
@@ -65,6 +64,11 @@
   roles:
     - mysql
     - irc
+
+- hosts: certs
+  become: true
+  roles:
+    - letsencrypt
 
 - hosts: backup
   become: true

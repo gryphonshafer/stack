@@ -12,7 +12,6 @@
     - ssh_hardening
     - nginx
     - ntp
-    - letsencrypt
     - fastcgi_perl
     - fastcgi_php
     - nagios
@@ -33,3 +32,4 @@
     - postfix
     - roundcube
     - mailman
+    - letsencrypt
