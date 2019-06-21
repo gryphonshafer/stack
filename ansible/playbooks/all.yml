@@ -64,6 +64,9 @@
   roles:
     - mysql
     - irc
+    - fastcgi_perl
+    - fastcgi_php
+    - host_drive_mount
 
 - hosts: certs
   become: true
