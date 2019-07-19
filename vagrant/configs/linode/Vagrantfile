@@ -34,7 +34,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
 
         node.vm.network "private_network", ip: "10.42.0.3"
-        node.vm.network "public_network"
+        node.vm.network "public_network", bridge: [
+            "Private Internet Access Network Adapter",
+            "Realtek PCIe GBE Family Controller",
+            "Marvell AVASTAR Wireless-AC Network Controller",
+        ]
         node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
         node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2203
 
