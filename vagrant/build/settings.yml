@@ -25,7 +25,7 @@ configs:
                     public_network: true
                     remap_ssh: 2213
                 ansible:
-                    auto:
+                    manual:
                         - inventory: inventories/test.ini
                           playbook: playbooks/test.yml
                           limit: test
@@ -81,7 +81,4 @@ configs:
                     manual:
                         - inventory: inventories/all.ini
                           playbook: playbooks/all.yml
-                          limit: www
-                        - inventory: inventories/all.ini
-                          playbook: playbooks/all.yml
-                          limit: git
+                          limit: www|mail|git
