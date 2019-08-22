@@ -1,5 +1,4 @@
 # mail
-ACCEPT net $FW tcp 25  # smtp
 ACCEPT net $FW tcp 993 # imap-ssl
 ACCEPT net $FW tcp 995 # pop-ssl
 ACCEPT net $FW tcp 465 # smtps
