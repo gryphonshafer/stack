@@ -6,12 +6,18 @@
 # MAILTO=you@example.com
 # PATH=$PATH:/usr/local/bin
 # 0 * * * * perlbrew-cron ~/path/to/perl_cron.pl arg1 'arg 2' arg3
+# 1 * * * * PERLBREW_CRON_USE="perl-5.28.1@local" perlbrew-cron ~/path/to/perl_cron.pl arg1 'arg 2' arg3
 
 export PERLBREW_ROOT=${PERLBREW_ROOT:=/opt/perl5}
 export PERLBREW_HOME=${PERLBREW_HOME:=$HOME/.perlbrew}
 builtin source ${PERLBREW_HOME}/init
 export PATH=$PERLBREW_PATH:$PATH:/bin
 builtin source ${PERLBREW_ROOT}/etc/bashrc
+
+if [ "${#PERLBREW_CRON_USE}" -gt 0 ]
+then
+    perlbrew use $PERLBREW_CRON_USE
+fi
 
 _cmd="$1"
 shift
