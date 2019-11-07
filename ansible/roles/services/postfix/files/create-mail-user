@@ -10,7 +10,7 @@
 
 if [ ! $1 ] || [ ! $2 ]
 then
-    echo 'Usage: $( basename $0 ) USERNAME DOMAIN_NAME [PASSWORD]'
+    echo "Usage: $( basename $0 ) USERNAME DOMAIN_NAME [PASSWORD]"
     exit 1
 fi
 

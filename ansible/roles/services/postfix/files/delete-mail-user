@@ -1,21 +1,13 @@
 #!/bin/bash
 
-# userdb fred@example.com set uid=vmail gid=vmail home=/var/vmail/example.com/fred mail=/var/vmail/example.com/fred
-# echo 'password' | userdbpw -md5 | userdb fred@example.com set systempw
-# makeuserdb
-# echo 'fred@example.com example.com/fred/' >> /var/vmail/users
-# postmap /var/vmail/users
-# echo 'Your email account is now created and usable.' | mailx -s 'Account Created' "$1@$2"
-# perl -MMIME::Base64 -e "print 'auth plain ', encode_base64(\"fred\@example.com\0fred\@example.com\0password\");"
-
 if [ ! $1 ] || [ ! $2 ]
 then
-    echo 'Usage: $( basename $0 ) USERNAME DOMAIN_NAME'
+    echo "Usage: $( basename $0 ) USERNAME DOMAIN_NAME"
     exit 1
 fi
 
 sed -i "/^$1@$2/d" /etc/courier/userdb /var/vmail/users
 makeuserdb
 postmap /var/vmail/users
-rm -rf /var/vmail/users/$2/$1
-rmdir --ignore-fail-on-non-empty /var/vmail/users/$2
+rm -rf /var/vmail/$2/$1
+rmdir --ignore-fail-on-non-empty /var/vmail/$2
