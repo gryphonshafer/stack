@@ -4,88 +4,97 @@ use warnings;
 use Net::IMAP::Simple;
 use Date::Calc qw( Delta_Days Today );
 
-use constant {
-    ACCOUNTS    => [
-        '{{ user }}@{{ domain }}',
+my $conf = {
+    execute  => 1,
+    logging  => 1,
+    progress => 0,
+    server   => '{{ mailhost }}',
+    accounts => [
+        {
+            user    => '{{ user }}',
+            passwd  => '{{ user_password }}',
+            domains => [ '{{ domain }}' ],
+        },
     ],
-    DEL_FOLDERS => {
-        #'Trash' => 21,  # 3 weeks
-        #'Sent'  => 112, # 16 weeks
+    del_folders => {
+        Trash => 91,  # 13 weeks
+        Sent  => 364, # 52 weeks
     },
-    SA_DIR      => '/var/lib/amavis/.spamassassin',
-    #DB_PATH     => '/var/lib/amavis/.spamassassin/bayes_seen',
-    LEARNING    => {
-        'spam' => [
-            '/var/vmail/{{ domain }}/{{ user }}/.Junk/cur',
-         ],
-        'ham' => [
-            '/var/vmail/{{ domain }}/{{ user }}/cur',
-            '/var/vmail/{{ domain }}/{{ user }}/.Trash/cur',
-        ],
+    mail_dir => '/var/vmail',
+    learning => {
+        spam => ['.Junk/cur'],
+        ham  => [ 'cur', '.Trash/cur' ],
     },
-    MONTHS => { qw(
+    months => { qw(
         Jan 1 Feb 2 Mar 3 Apr  4 May  5 Jun  6
         Jul 7 Aug 8 Sep 9 Oct 10 Nov 11 Dec 12
     ) },
-    LOGGING  => 1,
-    SERVER   => '{{ mailhost }}',
-    PASSWORD => '{{ user_password }}',
 };
 
-foreach my $type ( keys %{ (LEARNING) } ) {
-    foreach my $folder ( @{ LEARNING->{$type} } ) {
-        print "sa-learn $type $folder\n" if (LOGGING);
-        system( join( ' ',
-            '/usr/bin/sa-learn',
-            '--' . $type,
-            #'--dbpath',
-            #DB_PATH,
-            $folder,
-            #'> /dev/null 2>&1',
-            '> /dev/null',
-        ) );
+$| = 1 if ( $conf->{progress} );
+
+for my $account ( @{ $conf->{accounts} } ) {
+    for my $domain ( @{ $account->{domains} } ) {
+        for my $type ( keys %{ $conf->{learning} } ) {
+            for my $suffix ( @{ $conf->{learning}{$type} } ) {
+                my $command = join( ' ',
+                    'sa-learn',
+                    '--' . $type,
+                    join( '/', $conf->{mail_dir}, $domain, $account->{user}, $suffix ),
+                );
+                print $command, "\n" if ( $conf->{logging} );
+                system($command) if ( $conf->{execute} );
+           }
+        }
+
+        my $user = $account->{user} . '@' . $domain;
+        my $imap;
+        while ( not $imap ) {
+            eval { $imap = Net::IMAP::Simple->new( $conf->{server} ) };
+            if ($@) {
+                warn $@;
+                sleep 1;
+            }
+        }
+        $imap->login( $user, $account->{passwd} ) or die "Failed to login to IMAP server\n";
+
+        print "Deleting out of $user Junk\n" if ( $conf->{logging} );
+        for ( 1 .. $imap->select('INBOX.Junk') ) {
+            print '.' if ( $conf->{progress} );
+            $imap->delete($_) if ( $conf->{execute} );
+        }
+        print "\n" if ( $conf->{progress} );
+
+        for my $folder ( keys %{ $conf->{del_folders} } ) {
+            print "Pruning $user $folder\n" if ( $conf->{logging} );
+            for my $email_id ( 1 .. $imap->select( 'INBOX.' . $folder ) ) {
+                print '`' if ( $conf->{progress} );
+
+                my $lines   = '';
+                my $flagged = $imap->_process_cmd(
+                    cmd     => [ 'FETCH' => $email_id . ' (FLAGS)' ],
+                    final   => sub { $lines =~ /\bFlagged\b/ },
+                    process => sub { $lines .= $_[0] },
+                ) || 0;
+                next if ($flagged);
+
+                my ($date) = grep { /^Date: /i } @{ $imap->top($email_id) };
+                next unless ($date);
+
+                my ( $day, $month, $year ) = $date =~ /\s(\d{1,2})\s(\w{3})\s(\d{4})\s/;
+                next unless ( $month and $conf->{months}{$month} );
+
+                my $days = Delta_Days( $year, $conf->{months}{$month}, $day, Today() );
+                if ( $days and $days > $conf->{del_folders}{$folder} ) {
+                    print '.' if ( $conf->{progress} );
+                    $imap->delete($email_id) if ( $conf->{execute} );
+                }
+            }
+            print "\n" if ( $conf->{progress} );
+        }
+
+        $imap->quit();
     }
 }
 
-system( 'chown -R amavis:amavis ' . SA_DIR );
-system('sa-update --no-gpg');
-
-foreach my $account ( @{ (ACCOUNTS) } ) {
-    my $imap = undef;
-    while ( not $imap ) {
-        eval { $imap = Net::IMAP::Simple->new(SERVER) };
-        if ($@) {
-            warn $@;
-            sleep 1;
-        }
-    }
-    $imap->login( $account, PASSWORD ) or die "Failed to login to IMAP server";
-
-    print "Deleting out of $account Junk\n" if (LOGGING);
-    $imap->delete($_) foreach ( 1 .. $imap->select('INBOX.Junk') );
-
-    foreach my $folder ( keys %{ (DEL_FOLDERS) } ) {
-        print "Pruning $account $folder\n" if (LOGGING);
-        foreach my $email_id ( 1 .. $imap->select( 'INBOX.' . $folder ) ) {
-
-            my $lines   = '';
-            my $flagged = $imap->_process_cmd(
-                'cmd'     => [ 'FETCH' => $email_id . ' (FLAGS)' ],
-                'final'   => sub { $lines =~ /\bFlagged\b/ },
-                'process' => sub { $lines .= $_[0] },
-            ) || 0;
-            next if ($flagged);
-
-            my ($date) = grep { /^Date: /i } @{ $imap->top($email_id) };
-            next unless ($date);
-
-            my ( $day, $month, $year ) = $date =~ /\s(\d{1,2})\s(\w{3})\s(\d{4})\s/;
-            next unless ( $month and MONTHS->{$month} );
-
-            my $days = Delta_Days( $year, MONTHS->{$month}, $day, Today() );
-            $imap->delete($email_id) if ( $days and $days > DEL_FOLDERS->{$folder} );
-        }
-    }
-
-    $imap->quit();
-}
+system('sa-update --no-gpg') if ( $conf->{execute} );
