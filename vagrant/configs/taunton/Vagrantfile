@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         node.vm.network "private_network", ip: "10.42.0.42"
         node.vm.network "public_network", bridge: [
-            "Private Internet Access Network Adapter",
+            # "Private Internet Access Network Adapter",
             "Realtek PCIe GBE Family Controller",
             "Marvell AVASTAR Wireless-AC Network Controller",
         ]
@@ -53,6 +53,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             }
 
         node.vm.provision "shell",
+            name: "Ansible Auto Playbook: inventories/all.ini playbooks/all.yml",
+            inline:
+                "su -l ansible -c 'cd /host/ansible; " +
+                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
+                "LOCAL_DIR=/host/local SRC_DIR=/host " +
+                "ansible-playbook -i inventories/all.ini -l taunton " +
+                "playbooks/all.yml" + "'"
+
+        node.vm.provision "shell",
             name: "Ansible Manual Playbook Setup",
             inline:
                 "echo -e '#!/usr/bin/env bash\ncd /host/ansible' " +
@@ -67,14 +76,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 "LOCAL_DIR=/host/local SRC_DIR=/host " +
                 "ansible-playbook -i inventories/all.ini -l taunton " +
                 "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
-
-        node.vm.provision "shell",
-            name: "Ansible Auto Playbook: inventories/all.ini playbooks/all.yml",
-            inline:
-                "su -l ansible -c 'cd /host/ansible; " +
-                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
-                "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/all.ini -l taunton " +
-                "playbooks/all.yml" + "'"
     end
 end

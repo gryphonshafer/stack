@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         node.vm.network "private_network", ip: "10.42.0.13"
         node.vm.network "public_network", bridge: [
-            "Private Internet Access Network Adapter",
+            # "Private Internet Access Network Adapter",
             "Realtek PCIe GBE Family Controller",
             "Marvell AVASTAR Wireless-AC Network Controller",
         ]
