@@ -37,6 +37,12 @@
     - "define('DB_DIR', '/var/www/{{ domain }}/blog/');"
     - "define('DB_FILE', 'db_file_name');"
 
+- name: deactivate mysql versions check
+  replace:
+    path: "/var/www/{{ domain }}/blog/wp-settings.php"
+    regexp: '^wp_check_php_mysql_versions();'
+    replace: '// wp_check_php_mysql_versions();'
+
 - name: set wp-content writeable
   file:
     path: "/var/www/{{ domain }}"
