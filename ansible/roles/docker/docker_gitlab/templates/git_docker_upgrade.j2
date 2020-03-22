@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
-_results=`docker pull gitlab/gitlab-ce:latest`
-if [[ $( echo $_results | grep 'Image is up to date' | wc -l ) == 0 ]]
+#!/bin/sh
+docker pull gitlab/gitlab-ce:latest
+if [[ $( docker images | egrep '^gitlab/gitlab-ce' | grep '<none>' | wc -l ) >= 0 ]]
 then
     docker stop gitlab
     docker rm gitlab
@@ -15,4 +15,5 @@ then
         --volume /opt/gitlab/logs:/var/log/gitlab \
         --volume /opt/gitlab/data:/var/opt/gitlab \
         gitlab/gitlab-ce:latest
+    docker images | egrep '^gitlab/gitlab-ce' | grep '<none>' | awk '{print $3}' | xargs docker rmi
 fi

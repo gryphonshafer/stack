@@ -43,7 +43,7 @@
 - name: manual restart bash script
   template:
     src: docker_gitlab_upgrade.bash.j2
-    dest: /etc/cron.daily/docker_run_gitlab.bash
+    dest: /etc/cron.daily/git_docker_upgrade
     owner: root
     group: root
     mode: 0744
