@@ -1,6 +1,6 @@
 #!/bin/sh
 docker pull gitlab/gitlab-ce:latest
-if [[ $( docker images | egrep '^gitlab/gitlab-ce' | grep '<none>' | wc -l ) >= 0 ]]
+if [ $( docker images | egrep '^gitlab/gitlab-ce' | grep '<none>' | wc -l ) -ge 0 ]
 then
     docker stop gitlab
     docker rm gitlab
