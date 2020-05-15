@@ -20,6 +20,8 @@ then
 fi
 
 sed -i -e 's/<h1>/<h1 style="display: none">/' blog/wp-login.php
+sed -i -e 's|^wp_check_php_mysql_versions();|// wp_check_php_mysql_versions();|' wp-settings.php
+
 cp -rp /var/www/{{ domain }}/blog/wp-content blog/.
 cp -p /var/www/{{ domain }}/blog/wp-config.php blog/.
 
