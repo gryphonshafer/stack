@@ -21,6 +21,13 @@
   when: f2b_st.stat.exists == true
   notify: restart fail2ban
 
+- name: updated courier-auth filter
+  replace:
+    dest: /etc/fail2ban/filter.d/courier-auth.conf
+    regexp: 'user'
+    replace: '(?:user|method)'
+  notify: restart fail2ban
+
 - name: touch /etc/shorewall/rules.d/blacklist_auto
   file:
     path: /etc/shorewall/rules.d/blacklist_auto

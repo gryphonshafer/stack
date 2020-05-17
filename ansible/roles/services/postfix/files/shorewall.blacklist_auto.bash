@@ -20,3 +20,5 @@ rm \
     /tmp/blacklist_auto_new \
     /tmp/shorewall_blacklist_auto \
     /tmp/shorewall_blacklist_auto_sort_uniq
+
+/usr/sbin/service shorewall reload

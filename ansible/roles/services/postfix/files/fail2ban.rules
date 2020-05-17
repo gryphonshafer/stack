@@ -8,7 +8,7 @@ logpath = /var/log/mail.warn
 
 [courier-auth]
 enabled = true
-logpath = /var/log/mail.warn
+logpath = /var/log/mail.log
 
 [postfix-sasl]
 enabled = true
