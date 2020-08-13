@@ -28,8 +28,8 @@
     line: "builtin source {{ perlbrew_root }}/etc/bashrc"
 
 - name: perlbrew-cron
-  template:
-    src: perlbrew-cron.j2
+  copy:
+    src: perlbrew-cron
     dest: /usr/local/bin/perlbrew-cron
     owner: root
     group: root
@@ -62,5 +62,8 @@
   become: true
   become_user: "{{ user }}"
   when: user_executed is defined and perlbrew_installed is changed
+
+- import_tasks: www-data.yml
+  when: nginx_executed is defined
 
 - import_tasks: ../../../end.yml

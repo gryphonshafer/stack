@@ -17,11 +17,13 @@
   template:
     src: error_pages.conf.j2
     dest: /etc/nginx/snippets/error_pages.conf
+    mode: 0644
   notify: restart nginx
 
 - name: build error_pages HTML files
   template:
     src: error.html.j2
     dest: "/etc/nginx/error_pages/{{ item.code }}.html"
+    mode: 0644
   with_items: "{{ errors }}"
   notify: restart nginx

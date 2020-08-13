@@ -2,10 +2,8 @@ VAGRANTFILE_API_VERSION = "[% vagrant.api_version %]"
 Vagrant.require_version ">= [% vagrant.require_version %]"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box                        = "[% image.name %]"
-    config.vm.box_version                = "[% image.version %]"
-    config.vm.box_download_checksum      = "[% image.checksum %]"
-    config.vm.box_download_checksum_type = "[% image.checksum_type %]"
+    config.vm.box         = "[% image.name %]"
+    config.vm.box_version = "[% image.version %]"
 
     [%- IF virtualbox %]
     config.vm.provider "virtualbox" do |vb|

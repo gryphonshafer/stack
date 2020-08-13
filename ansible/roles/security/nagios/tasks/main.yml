@@ -26,6 +26,7 @@
     content: ""
     dest: /var/log/nagios.log
     force: no
+    mode: 0644
 
 - name: nagios log file settings
   file:
@@ -39,6 +40,7 @@
     dest: "{{ item }}"
     regexp: '\bnagios\@localhost'
     replace: "{{ nagios_email }}"
+    mode: 0644
   with_items:
     - /etc/nagios/objects/contacts.cfg
     - /etc/nagios/nagios.cfg

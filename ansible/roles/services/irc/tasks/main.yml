@@ -61,17 +61,25 @@
     regexp: 'START=no'
     replace: 'START=yes'
 
-- name: restart irc
+- name: restart ircd-hybrid
   service:
     name: ircd-hybrid
     state: restarted
   when: irc is changed
+  register: result
+  retries: 3
+  delay: 2
+  until: result is not failed
 
-- name: restart irc
+- name: restart anope
   service:
     name: anope
     state: restarted
   when: irc is changed or anope_port is changed or anope_type is changed or anope_password is changed or anope_name is changed
+  register: result
+  retries: 3
+  delay: 2
+  until: result is not failed
 
 - import_tasks: shorewall.yml
 - import_tasks: ../../../end.yml

@@ -1,19 +1,11 @@
 #!/usr/bin/env bash
 
 export DEBIAN_FRONTEND=noninteractive
-apt-get -q -y install build-essential libssl-dev libffi-dev python-dev
 
-# install pip
-wget -q https://bootstrap.pypa.io/get-pip.py
-python ./get-pip.py -q
-rm ./get-pip.py
-apt-get -q -y install python-pip
+apt-get -q -y update
+apt-get -q -y install python3 python3-pip python3-setuptools
 
-# update pip with pip
-pip install --upgrade setuptools pip
-
-# install latest Ansible stable version
-pip install ansible --upgrade
+pip3 install -q ansible
 
 # append to local /etc/hosts
 if ! grep -q "^# Appended automatically from host-based local hosts file" /etc/hosts

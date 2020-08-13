@@ -2,34 +2,44 @@
 - hosts: all
   become: true
   roles:
-    - base_system
-    - ansible_user
-    - exim
-    - user
-    - timezone
-    - shorewall
-    - fail2ban
-    - ssh_hardening
-    - nginx
-    - ntp
-    - fastcgi_perl
-    - fastcgi_php
-    - nagios
-    - docker_gitlab
-    - perlbrew
-    - docker
-    - sqlite
-    - ops_user
-    - irc
-    - wordpress
-    - trac
-    - devagrant
-    - samba
-    - mysql
-    - backup_scripts
-    - host_drive_mount
-    - ansible_user_private
-    - postfix
-    - roundcube
-    - mailman
-    - letsencrypt
+    - base_system          # system
+    - ansible_user         # system
+    - ansible_user_private # system
+    - timezone             # system
+    - ntp                  # system
+
+    - ssh_hardening        # security
+    - shorewall            # security
+    - fail2ban             # security
+    - nagios               # security
+
+    - user                 # dev
+    - samba                # services (user)
+
+    - exim                 # services
+    - irc                  # services
+    - mysql                # services
+    - sqlite               # services
+
+    - nginx                # services
+    - fastcgi_perl         # services (nginx)
+    - fastcgi_php          # services (nginx)
+    - letsencrypt          # security (nginx)
+    - trac                 # services (nginx)
+    - wordpress            # services (fastcgi_php, sqlite)
+
+    - postfix              # services
+    - mailman              # services (fastcgi_perl)
+    - roundcube            # services (fastcgi_php)
+
+    - docker               # services
+    - docker_gitlab        # docker (nginx, docker)
+    - docker_mysql         # docker (docker)
+    - docker_perl          # docker (docker)
+
+    - backup_scripts       # specific (user)
+    - host_drive_mount     # specific (user, samba)
+    - ops_user             # specific
+
+    - perlbrew             # dev
+    - devagrant            # system

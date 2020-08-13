@@ -22,6 +22,7 @@
 - name: pull latest gitlab image
   docker_image:
     name: gitlab/gitlab-ce:latest
+    source: pull
   register: pull_image
 
 - name: gitlab container run
@@ -42,7 +43,7 @@
 
 - name: manual restart bash script
   template:
-    src: docker_gitlab_upgrade.bash.j2
+    src: git_docker_upgrade.j2
     dest: /etc/cron.daily/git_docker_upgrade
     owner: root
     group: root

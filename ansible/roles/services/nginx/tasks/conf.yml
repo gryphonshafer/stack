@@ -11,42 +11,49 @@
   copy:
     src: nginx.conf
     dest: /etc/nginx/nginx.conf
+    mode: 0644
   notify: restart nginx
 
 - name: install proxy.conf file
   copy:
     src: proxy.conf
     dest: /etc/nginx/conf.d/proxy.conf
+    mode: 0644
   notify: restart nginx
 
 - name: install proxy_websockets.conf file
   copy:
     src: proxy_websockets.conf
     dest: /etc/nginx/snippets/proxy_websockets.conf
+    mode: 0644
   notify: restart nginx
 
 - name: install server.conf file
   copy:
     src: server.conf
     dest: /etc/nginx/snippets/server.conf
+    mode: 0644
   notify: restart nginx
 
 - name: install ssl_params.conf file
   copy:
     src: ssl_params.conf
     dest: /etc/nginx/snippets/ssl_params.conf
+    mode: 0644
   notify: restart nginx
 
 - name: build ssl_conf file
   template:
     src: ssl.conf.j2
     dest: /etc/nginx/snippets/ssl.conf
+    mode: 0644
   notify: restart nginx
 
 - name: install fastcgi_params file
   copy:
     src: fastcgi_params
     dest: /etc/nginx/params/fastcgi_params
+    mode: 0644
   notify: restart nginx
 
 - name: delete unused (and probably later overwritten) snippets

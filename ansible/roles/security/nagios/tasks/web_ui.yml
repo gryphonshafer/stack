@@ -59,6 +59,7 @@
   copy:
     src: "{{ item }}"
     dest: "/etc/nginx/snippets/{{ item }}"
+    mode: 0644
   with_items:
     - nagios_ui_80.conf
     - nagios_ui_443.conf

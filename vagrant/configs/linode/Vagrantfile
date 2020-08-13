@@ -2,10 +2,8 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 2.2.2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box                        = "bento/debian-9"
-    config.vm.box_version                = "201808.24.0"
-    config.vm.box_download_checksum      = "151ba928d7c14383fa59f3bda1018ecb5e01469063684c127beb192e2b78386e"
-    config.vm.box_download_checksum_type = "sha256"
+    config.vm.box         = "bento/debian-10.4"
+    config.vm.box_version = "202007.17.0"
 
     config.vm.provider "virtualbox" do |vb|
         vb.gui = false

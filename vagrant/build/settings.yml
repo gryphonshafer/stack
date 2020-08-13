@@ -4,10 +4,8 @@ universal:
         api_version: 2
         require_version: 2.2.2
     image:
-        name: bento/debian-9
-        version: 201808.24.0
-        checksum: 151ba928d7c14383fa59f3bda1018ecb5e01469063684c127beb192e2b78386e
-        checksum_type: sha256
+        name: bento/debian-10.4
+        version: 202007.17.0
     virtualbox:
         - vram: 20
         - vrde: off

@@ -7,5 +7,6 @@
   copy:
     src: fail2ban.rules
     dest: /etc/fail2ban/jail.d/nginx.conf
+    mode: 0644
   when: st.stat.exists == true
   notify: restart fail2ban

@@ -16,11 +16,13 @@
     src: /etc/samba/smb.conf
     dest: /etc/samba/smb.conf.dist
     force: no
+    mode: 0644
 
 - name: install smb.conf file
   copy:
     src: smb.conf
     dest: /etc/samba/smb.conf
+    mode: 0644
   register: smb_file
 
 - name: set dev user's samba access

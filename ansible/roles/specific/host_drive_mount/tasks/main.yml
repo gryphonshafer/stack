@@ -15,5 +15,6 @@
     line: ". ~/.hdmountrc"
     owner: "{{ user }}"
     group: "{{ user }}"
+    mode: 0644
 
 - import_tasks: ../../../end.yml

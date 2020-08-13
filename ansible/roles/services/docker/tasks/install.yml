@@ -22,6 +22,7 @@
   get_url:
     url: https://download.docker.com/linux/debian/gpg
     dest: /tmp/docker_aptkey_fingerprint
+    mode: 0600
   when: aptkey_fingerprint.stdout == ""
   register: download_apt_key
 
@@ -48,11 +49,12 @@
   apt:
     update_cache: yes
     cache_valid_time: 86400
-    pkg: [ 'docker-ce', 'python-pip' ]
+    pkg: docker-ce
     state: latest
     force: yes
   register: docker_engine_installed
 
 - name: install docker-py
-  command: pip install docker-py
+  pip:
+    name: docker-py
   when: docker_engine_installed is changed

@@ -21,6 +21,7 @@ echo ansible:`/usr/bin/openssl rand -base64 12` | chpasswd
 
 # add the ansible user to the sudoers list
 echo "ansible ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/98_ansible
+chmod 440 /etc/sudoers.d/98_ansible
 
 # setup the ansible user's ~/.ssh directory
 mkdir /home/ansible/.ssh > /dev/null 2>&1

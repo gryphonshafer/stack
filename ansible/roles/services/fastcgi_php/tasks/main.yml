@@ -14,9 +14,15 @@
       - php-xml
     state: latest
 
+- name: find php version directory
+  find:
+    paths: /etc/php
+    file_type: directory
+  register: php_version
+
 - name: fix_pathinfo set to 0 in php.ini
   lineinfile:
-    path: /etc/php/7.0/cgi/php.ini
+    path: "{{ php_version.files[-1].path }}/cgi/php.ini"
     line: 'cgi.fix_pathinfo = 0;'
 
 - name: install php-fcgi default
@@ -65,6 +71,7 @@
   copy:
     src: fastcgi_php.conf
     dest: /etc/nginx/snippets/fastcgi_php.conf
+    mode: 0644
 
 - name: index index.php
   lineinfile:

@@ -5,7 +5,7 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: 
+    pkg:
       - shorewall
       - shorewall-doc
     state: latest
@@ -16,6 +16,7 @@
     dest: /etc/shorewall/{{ item }}
     force: no
     remote_src: true
+    mode: 0644
   with_items:
     - policy
     - zones
@@ -25,6 +26,7 @@
   copy:
     src: "{{ item }}"
     dest: "/etc/shorewall/{{ item }}"
+    mode: 0644
   notify: restart shorewall
   with_items:
     - rules
@@ -41,6 +43,7 @@
   copy:
     src: "{{ item }}"
     dest: /etc/shorewall/rules.d/
+    mode: 0644
   with_items:
     - network
     - ssh
@@ -59,6 +62,7 @@
   template:
     src: interfaces.j2
     dest: /etc/shorewall/interfaces.f/0.net
+    mode: 0644
 
 - name: assemble shorewall/interfaces
   assemble:

@@ -50,6 +50,7 @@
     content: ""
     dest: /etc/nginx/conf.d/upstreams.conf
     force: no
+    mode: 0644
 
 - name: append to nginx upstreams.conf
   blockinfile:
@@ -64,11 +65,13 @@
   copy:
     src: fastcgi_perl_params
     dest: /etc/nginx/params/fastcgi_perl_params
+    mode: 0644
 
 - name: install nginx fastcgi_perl.conf
   copy:
     src: fastcgi_perl.conf
     dest: /etc/nginx/snippets/fastcgi_perl.conf
+    mode: 0644
 
 - name: index index.cgi
   lineinfile:

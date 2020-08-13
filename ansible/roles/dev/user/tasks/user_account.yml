@@ -20,8 +20,9 @@
 
 - name: add user to nopasswd sudoers
   copy:
-    content: "{{ user }} ALL=(ALL) NOPASSWD:ALL"
+    content: "{{ user }} ALL=(ALL) NOPASSWD:ALL\n"
     dest: /etc/sudoers.d/42_{{ user }}
+    mode: 0440
 
 - name: setup email alias for dev user
   replace:

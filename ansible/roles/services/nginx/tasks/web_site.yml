@@ -3,6 +3,7 @@
   template:
     src: web_site.j2
     dest: /etc/nginx/sites-available/{{ domain }}
+    mode: 0644
     force: "{{ rebuild_web_conf }}"
 
 - name: remove default nginx web site stuff
@@ -29,6 +30,7 @@
   template:
     src: web_page.j2
     dest: /var/www/{{ domain }}/htdocs/index.html
+    mode: 0644
   notify: restart nginx
 
 - name: chown /var/www/* stuff

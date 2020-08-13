@@ -8,6 +8,7 @@
   get_url:
     url: "{{ item.src }}"
     dest: "/tmp/nagios/{{ item.dest }}"
+    mode: 0644
   with_items:
     - { src: 'https://github.com/NagiosEnterprises/nagioscore/archive/master.tar.gz', dest: 'nagioscore.tar.gz' }
     - { src: 'https://github.com/nagios-plugins/nagios-plugins/archive/master.tar.gz', dest: 'nagios-plugins.tar.gz' }

@@ -1,0 +1,20 @@
+---
+- name: www-data user shell is bash
+  user:
+    name: www-data
+    shell: /bin/bash
+
+- stat:
+    path: /var/www-data/.perlbrew
+  register: pb_www
+
+- name: perlbrew lib create and switch for www-data user
+  shell: |
+    builtin source {{ perlbrew_root }}/etc/bashrc
+    perlbrew lib create $(perlbrew list | head -1 | sed -e 's/[ ]*//g')@local
+    perlbrew switch $(perlbrew list | tail -1 | sed -e 's/[ ]*//g')
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: www-data
+  when: pb_www.stat.exists == false

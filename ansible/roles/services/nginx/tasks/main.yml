@@ -9,6 +9,9 @@
     state: latest
   notify: restart nginx
 
+- import_tasks: ../../../dev/perlbrew/tasks/www-data.yml
+  when: perlbrew_executed is defined
+
 - import_tasks: certificate.yml
 - import_tasks: error_pages.yml
 - import_tasks: conf.yml

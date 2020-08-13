@@ -19,6 +19,7 @@
     src: "/home/ansible/.ssh/id_rsa"
     dest: "{{ local_dir }}/ansible.id_rsa"
     remote_src: true
+    mode: 0777
   when: local_dir is defined
 
 - import_tasks: ../../../end.yml

@@ -6,9 +6,8 @@
     autoclean: yes
     autoremove: yes
     pkg:
-      - mysql-server
-      - mysql-client
-      - libmysql++-dev
+      - mariadb-server
+      - mariadb-client
     state: latest
   register: install_mysql
 

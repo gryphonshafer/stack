@@ -22,6 +22,7 @@
     path: /home/{{ user }}/.ssh/known_hosts
     line: "{{ ssh_keyscan.stdout }}"
     create: yes
+    mode: 0644
   when:
     - conf_dir.stat.exists == false
     - git_available.stdout | length != 4

@@ -7,6 +7,7 @@
   copy:
     content: "dock docker0 - dhcp,tcpflags,logmartians,nosmurfs,sourceroute=0"
     dest: /etc/shorewall/interfaces.f/1.dock
+    mode: 0644
   register: docker_interface
   when: st.stat.exists == true
 
