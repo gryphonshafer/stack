@@ -17,3 +17,4 @@
   with_items:
     - { path: '/usr/bin/screen', mode: '2755' }
     - { path: '/var/run/screen', mode: '0775' }
+    - { path: '/run/screen',     mode: '0777' }
