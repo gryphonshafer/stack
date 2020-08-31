@@ -45,5 +45,8 @@ $undecipherable_subject_tag             = '';
 $final_bad_header_destiny = D_BOUNCE;
 $enable_dkim_verification = 1;
 
+@bypass_virus_checks_maps = ( \%bypass_virus_checks, \@bypass_virus_checks_acl, \$bypass_virus_checks_re );
+@bypass_spam_checks_maps  = ( \%bypass_spam_checks,  \@bypass_spam_checks_acl,  \$bypass_spam_checks_re  );
+
 #------------ Do not modify anything below this line -------------
 1;  # ensure a defined return
