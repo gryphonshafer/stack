@@ -5,6 +5,7 @@ RUN apt-get update && \
     apt-get -y install curl perl-modules build-essential libssl-dev git vim
 
 ENV PERLBREW_ROOT="/opt/perl5"
+ENV PERL_CPANM_OPT="-M https://cpan.metacpan.org/ --verify"
 
 RUN curl -skL http://install.perlbrew.pl | bash && \
     echo ". $PERLBREW_ROOT/etc/bashrc" >> /etc/bash.bashrc && \

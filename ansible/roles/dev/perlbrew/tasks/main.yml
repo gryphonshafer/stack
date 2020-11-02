@@ -27,6 +27,11 @@
     dest: /etc/bash.bashrc
     line: "builtin source {{ perlbrew_root }}/etc/bashrc"
 
+- name: bash.bashrc sets PERL_CPANM_OPT
+  lineinfile:
+    dest: /etc/bash.bashrc
+    line: 'export PERL_CPANM_OPT="-M https://cpan.metacpan.org/ --verify"'
+
 - name: perlbrew-cron
   copy:
     src: perlbrew-cron

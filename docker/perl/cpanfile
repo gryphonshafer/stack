@@ -1,3 +1,17 @@
+feature 'cpan', 'cpan Modules' => sub {
+    requires 'App::cpanminus';
+    requires 'App::cpanoutdated';
+    requires 'Module::Signature';
+    requires 'Digest::SHA';
+};
+
+feature 'exact', 'exact Modules' => sub {
+    requires 'exact';
+    requires 'exact::class';
+    requires 'exact::cli';
+    requires 'exact::conf';
+};
+
 feature 'develop', 'Development Tools' => sub {
     requires 'Benchmark';
     requires 'Data::Printer';
@@ -7,13 +21,6 @@ feature 'develop', 'Development Tools' => sub {
     requires 'Term::ReadLine::Perl';
     requires 'Term::ANSIColor';
     requires 'Devel::NYTProf';
-};
-
-feature 'best', 'Best Practices' => sub {
-    requires 'exact';
-    requires 'Modern::Perl';
-    requires 'Try::Tiny';
-    requires 'Carp';
 };
 
 feature 'test', 'Testing Tools' => sub {
@@ -72,19 +79,23 @@ feature 'datetime', 'Dates and Times' => sub {
 
 feature 'moose', 'Moose Development' => sub {
     requires 'Moose';
-    requires 'MooseX::MarkAsMethods', '>= 0.13';
-    requires 'MooseX::NonMoose', '>= 0.16';
+    requires 'MooseX::MarkAsMethods';
+    requires 'MooseX::NonMoose';
     requires 'MooseX::ClassAttribute';
     requires 'Throwable::Error';
     requires 'Test::Moose';
 };
 
 feature 'mojo', 'Mojolicious Development' => sub {
-    requires 'Mojolicious', '>= 4.27';
+    requires 'Mojolicious';
     requires 'Mojolicious::Plugin::AccessLog';
-    requires 'Mojolicious::Plugin::ToolkitRenderer', '>= 1.01';
+    requires 'Mojolicious::Plugin::ToolkitRenderer';
     requires 'MojoX::Log::Dispatch::Simple';
-    requires 'Template', '>= 2.25';
+
+    requires 'Mojolicious::Plugin::Directory';
+    requires 'Text::MultiMarkdown';
+
+    requires 'Template';
     requires 'Input::Validator';
 };
 
@@ -125,7 +136,7 @@ feature 'cli', 'CLI Utilities' => sub {
 };
 
 feature 'deploy', 'Deployment Tools' => sub {
-    requires 'App::Dest', '>= 1.14';
+    requires 'App::Dest';
     requires 'Sub::Versions';
 };
 
