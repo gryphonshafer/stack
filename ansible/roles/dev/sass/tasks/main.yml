@@ -1,0 +1,29 @@
+---
+- stat:
+    path: /usr/local/bin/sass
+  register: sass
+
+- name: get dart-sass latest release download url
+  shell: |
+    curl -s https://api.github.com/repos/sass/dart-sass/releases/latest | \
+    grep browser_download_url | grep linux-x64 | perl -ne '/:\s+"([^"]+)"/; print "$1\n"'
+  register: download_url
+  when: sass.stat.exists == false
+  args:
+    warn: false
+
+- name: unarchive latest dart-sass
+  unarchive:
+    src: "{{ download_url.stdout }}"
+    dest: /usr/local/lib
+    remote_src: yes
+  become: yes
+  when: sass.stat.exists == false
+
+- name: create symbolic link
+  file:
+    src: /usr/local/lib/dart-sass/sass
+    dest: /usr/local/bin/sass
+    state: link
+
+- import_tasks: ../../../end.yml

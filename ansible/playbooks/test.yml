@@ -42,4 +42,7 @@
     - ops_user             # specific
 
     - perlbrew             # dev
+    - sass                 # dev
     - devagrant            # system
+
+    - node

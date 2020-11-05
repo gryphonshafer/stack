@@ -1,0 +1,27 @@
+---
+- name: git clone node source
+  git:
+    repo: 'https://github.com/nodejs/node.git'
+    version: master
+    dest: /tmp/node
+
+- name: configure node
+  command: './configure'
+  args:
+    chdir: /tmp/node
+
+- name: build node
+  command: make
+  args:
+    chdir: /tmp/node
+
+- name: install node
+  command: make install
+  args:
+    chdir: /tmp/node
+  become: yes
+
+- name: remove node source
+  file:
+    path: /tmp/node
+    state: absent

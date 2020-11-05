@@ -67,6 +67,7 @@
     - fastcgi_perl
     - fastcgi_php
     - host_drive_mount
+    - sass
 
 - hosts: certs
   become: true

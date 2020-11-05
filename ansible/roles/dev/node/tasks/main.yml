@@ -1,0 +1,24 @@
+---
+- name: install node-compile-required tooling
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    autoclean: yes
+    autoremove: yes
+    pkg:
+      - git-core
+      - curl
+      - build-essential
+      - openssl
+      - libssl-dev
+      - python
+    state: latest
+
+- stat:
+    path: /usr/local/bin/node
+  register: node
+
+- import_tasks: install_node.yml
+  when: node.stat.exists == false
+
+- import_tasks: ../../../end.yml
