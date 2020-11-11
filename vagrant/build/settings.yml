@@ -4,8 +4,8 @@ universal:
         api_version: 2
         require_version: 2.2.2
     image:
-        name: bento/debian-10.4
-        version: 202007.17.0
+        name: bento/debian-10.6
+        version: 202010.24.0
     virtualbox:
         - vram: 20
         - vrde: off
