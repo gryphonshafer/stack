@@ -46,21 +46,6 @@ configs:
                         - inventory: inventories/all.ini
                           playbook: playbooks/all.yml
                           limit: taunton
-    backups:
-        hosts:
-            - backups:
-                name: Backup Manager VM
-                memory: 1024
-                cpus: 1
-                network:
-                    private_network: 10.42.0.2
-                    public_network: true
-                    remap_ssh: 2202
-                ansible:
-                    auto:
-                        - inventory: inventories/all.ini
-                          playbook: playbooks/all.yml
-                          limit: backups
     linode:
         hosts:
             - linode:

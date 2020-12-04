@@ -1,25 +1,36 @@
 ---
 - stat:
-    path: "/home/{{ user }}/pull_backups.sh"
+    path: "/home/{{ user }}/backups"
   register: st
 
-- name: link pull backups script
+- name: backup directory
   file:
-    src: "/host/etc/pull_backups.sh"
-    dest: "/home/{{ user }}/pull_backups.sh"
+    path: "/home/{{ user }}/backups"
+    state: directory
+    mode: '0775'
+  when: st.stat.exists == false
+
+- stat:
+    path: "/home/{{ user }}/backups/rsync.sh"
+  register: st
+
+- name: link rsync script
+  file:
+    src: "/host/etc/backups/rsync.sh"
+    dest: "/home/{{ user }}/backups/rsync.sh"
     owner: "{{ user }}"
     group: "{{ user }}"
     state: link
   when: st.stat.exists == false
 
 - stat:
-    path: "/home/{{ user }}/make_archives.sh"
+    path: "/home/{{ user }}/backups/archive.sh"
   register: st
 
-- name: link pull backups script
+- name: link archive script
   file:
-    src: "/host/etc/make_archives.sh"
-    dest: "/home/{{ user }}/make_archives.sh"
+    src: "/host/etc/backups/archive.sh"
+    dest: "/home/{{ user }}/backups/archive.sh"
     owner: "{{ user }}"
     group: "{{ user }}"
     state: link

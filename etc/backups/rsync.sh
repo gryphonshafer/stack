@@ -1,15 +1,20 @@
 #!/bin/sh
 
-_home="/home/gryphon"
+_rsyncs="$HOME/backups/rsyncs"
+_ssh_env="ssh -p 22 -l $USER -i $HOME/.ssh/id_rsa"
+_settings="-chazvP -e \"$_ssh_env\" --rsync-path=\"sudo rsync\" --delete"
 
-_e="ssh -p 22 -l gryphon -i $_home/.ssh/id_rsa"
-_settings="-chazvP -e \"$_e\" --rsync-path=\"sudo rsync\" --delete"
+_pull_backup()
+{
+    mkdir -p $_rsyncs/$_server$_component_dir
+    eval sudo rsync $_settings $_server:$_component_dir/ $_rsyncs/$_server$_component_dir
+}
 
 #-----------------------------------------------------------------------------
 
-_this_home="$_home/rsyncs/www"
+_server="www"
 
-for _dir in \
+for _component_dir in \
     /etc \
     /root \
     /home \
@@ -18,15 +23,14 @@ for _dir in \
     /var/www \
     /opt/docker/mysql/data
 do
-    mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings www:$_dir/ $_this_home$_dir
+    _pull_backup
 done
 
 #-----------------------------------------------------------------------------
 
-_this_home="$_home/rsyncs/mail"
+_server="mail"
 
-for _dir in \
+for _component_dir in \
     /etc \
     /root \
     /home \
@@ -35,17 +39,15 @@ for _dir in \
     /var/lib/mailman \
     /var/lib/amavis/.spamassassin
 do
-    mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings mail:$_dir/ $_this_home$_dir
+    _pull_backup
 done
 
 #-----------------------------------------------------------------------------
 
-_this_home="$_home/rsyncs/git"
+_server="git"
 
-for _dir in \
+for _component_dir in \
     /opt/gitlab
 do
-    mkdir -p $_this_home$_dir
-    eval sudo rsync $_settings git:$_dir/ $_this_home$_dir
+    _pull_backup
 done
