@@ -1,12 +1,16 @@
 #!/bin/sh
 
+# MAILTO=...
+# 15 3 * * * { $HOME/backups/rsync.sh; $HOME/backups/archive.sh; } 2>&1 | mail -s 'Daily Backup' $MAILTO
+
 _rsyncs="$HOME/backups/rsyncs"
-_ssh_env="ssh -p 22 -l $USER -i $HOME/.ssh/id_rsa"
-_settings="-chazvP -e \"$_ssh_env\" --rsync-path=\"sudo rsync\" --delete"
+_ssh_env="ssh -p 22 -l $LOGNAME -i $HOME/.ssh/id_rsa -F $HOME/.ssh/config"
+_settings="-chazqP -e \"$_ssh_env\" --rsync-path=\"sudo rsync\" --delete"
 
 _pull_backup()
 {
     mkdir -p $_rsyncs/$_server$_component_dir
+    echo 'rsync: $_server$_component_dir'
     eval sudo rsync $_settings $_server:$_component_dir/ $_rsyncs/$_server$_component_dir
 }
 

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# MAILTO=...
+# 15 3 * * * { $HOME/backups/rsync.sh; $HOME/backups/archive.sh; } 2>&1 | mail -s 'Daily Backup' $MAILTO
+
 _rsyncs="$HOME/backups/rsyncs"
 _archives="$HOME/backups/archives"
 
