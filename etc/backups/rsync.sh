@@ -10,7 +10,7 @@ _settings="-chazqP -e \"$_ssh_env\" --rsync-path=\"sudo rsync\" --delete"
 _pull_backup()
 {
     mkdir -p $_rsyncs/$_server$_component_dir
-    echo 'rsync: $_server$_component_dir'
+    echo rsync: $_server$_component_dir
     eval sudo rsync $_settings $_server:$_component_dir/ $_rsyncs/$_server$_component_dir
 }
 
