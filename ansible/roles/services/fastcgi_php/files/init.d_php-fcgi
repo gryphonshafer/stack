@@ -1,6 +1,6 @@
 #!/bin/bash
 ### BEGIN INIT INFO
-# Provides:          php-fcgi
+# Provides:          php-cgi
 # Required-Start:    nginx
 # Required-Stop:
 # Default-Start:     2 3 4 5

@@ -3,13 +3,10 @@
 /bin/echo 'Installing plugins...'
 for i in \
     author-avatars.zip \
-    custom-sidebars.3.2.3.zip \
-    flickr-me.zip \
     foobox-image-lightbox.zip \
-    wp-twitter-feeds.zip \
     amr-shortcode-any-widget.zip \
     captcha.4.4.5.zip \
-    classic-editor.1.5.zip \
+    classic-editor.1.6.zip \
     sqlite-integration.1.8.1.zip
 do
     echo "  $i"
@@ -26,7 +23,9 @@ done
 
 /bin/echo 'Installing themes...'
 for i in \
-    twentyfourteen.2.8.zip
+    twentyfourteen.3.0.zip \
+    twentynineteen.1.9.zip \
+    twentytwentyone.1.1.zip
 do
     echo "  $i"
     /usr/bin/wget -N -q http://wordpress.org/themes/download/$i
