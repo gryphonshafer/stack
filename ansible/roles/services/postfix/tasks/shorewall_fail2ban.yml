@@ -28,17 +28,17 @@
     replace: '(?:user|method)'
   notify: restart fail2ban
 
-- name: touch /etc/shorewall/rules.d/blacklist_auto
+- name: touch /etc/shorewall/rules.d/blacklists/fail2ban_repeaters
   file:
-    path: /etc/shorewall/rules.d/blacklist_auto
+    path: /etc/shorewall/rules.d/blacklists/fail2ban_repeaters
     state: touch
     modification_time: preserve
     access_time: preserve
   when: sw_st.stat.exists == true and f2b_st.stat.exists == true
 
-- name: install hourly cron shorewall.blacklist_auto.bash
+- name: install daily cron shorewall_fail2ban
   copy:
-    src: shorewall.blacklist_auto.bash
-    dest: /etc/cron.hourly/shorewall.blacklist_auto.bash
+    src: shorewall_fail2ban.cron
+    dest: /etc/cron.daily/shorewall_fail2ban
     mode: '0755'
   when: sw_st.stat.exists == true and f2b_st.stat.exists == true

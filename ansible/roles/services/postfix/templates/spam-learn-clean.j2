@@ -17,8 +17,8 @@ my $conf = {
         },
     ],
     del_folders => {
-        Trash => 91,  # 13 weeks
-        Sent  => 364, # 52 weeks
+        Trash => 91,  # 13 weeks (quarter of a year)
+        Sent  => 182, # 26 weeks (half a year)
     },
     mail_dir => '/var/vmail',
     learning => {
@@ -58,17 +58,50 @@ for my $account ( @{ $conf->{accounts} } ) {
         }
         $imap->login( $user, $account->{passwd} ) or die "Failed to login to IMAP server\n";
 
+        my @scores = ();
+        my $record_score = sub {
+            my ($score) = map { /: ([\d\.]+)/; $1 } grep { /^X-Spam-Score:/ } @{ $imap->top( $_[0] ) };
+            push( @scores, $score ) if ($score);
+        };
+        my $report_score = sub {
+            if ( @scores > 1 ) {
+                my $total = 0;
+                $total += $_ for (@scores);
+                my $mean = $total / @scores;
+
+                my $sqtotal = 0;
+                $sqtotal += ( $mean - $_ ) ** 2 for (@scores);
+                my $std = ( $sqtotal / ( @scores - 1 ) ) ** 0.5;
+
+                @scores = sort { $a <=> $b } @scores;
+                my $median = $scores[ int( @scores / 2 ) ];
+
+                printf( "%8s: %6.3f\n", @$_ ) for (
+                    [   'Min.' => $scores[0]  ],
+                    [   'Mean' => $mean       ],
+                    [   'STD.' => $std        ],
+                    [ 'Median' => $median     ],
+                    [   'Max.' => $scores[-1] ],
+                );
+            }
+
+            @scores = ();
+        };
+
         print "Deleting out of $user Junk\n" if ( $conf->{logging} );
         for ( 1 .. $imap->select('INBOX.Junk') ) {
             print '.' if ( $conf->{progress} );
+            $record_score->($_);
             $imap->delete($_) if ( $conf->{execute} );
         }
         print "\n" if ( $conf->{progress} );
+        $report_score->();
 
         for my $folder ( keys %{ $conf->{del_folders} } ) {
             print "Pruning $user $folder\n" if ( $conf->{logging} );
             for my $email_id ( 1 .. $imap->select( 'INBOX.' . $folder ) ) {
                 print '`' if ( $conf->{progress} );
+                $record_score->($email_id) if ( $folder eq 'Trash' );
 
                 my $lines   = '';
                 my $flagged = $imap->_process_cmd(
@@ -91,6 +124,7 @@ for my $account ( @{ $conf->{accounts} } ) {
                 }
             }
             print "\n" if ( $conf->{progress} );
+            $report_score->() if ( $folder eq 'Trash' );
         }
 
         $imap->quit();

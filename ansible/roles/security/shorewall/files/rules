@@ -1,1 +1,1 @@
-SHELL cat /etc/shorewall/rules.d/*
+SHELL find /etc/shorewall/rules.d -type f -exec cat {} \;
