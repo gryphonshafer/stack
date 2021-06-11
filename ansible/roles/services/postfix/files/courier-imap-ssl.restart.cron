@@ -1,0 +1,2 @@
+#!/bin/sh
+service courier-imap-ssl restart

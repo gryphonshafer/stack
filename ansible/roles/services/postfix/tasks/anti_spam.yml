@@ -136,3 +136,11 @@
     src: spam-learn-clean.j2
     dest: /root/spam-learn-clean
     mode: '0700'
+
+- name: anti-spam.cron
+  copy:
+    src: anti-spam.cron
+    dest: /etc/cron.monthly/anti-spam
+    owner: root
+    group: root
+    mode: '0755'

@@ -35,3 +35,11 @@
       TLS_COMPRESSION=ALL
       TLS_CERTS=X509
   notify: restart courier
+
+- name: courier-imap-ssl.restart.cron
+  copy:
+    src: courier-imap-ssl.restart.cron
+    dest: /etc/cron.hourly/courier-imap-ssl.restart
+    owner: root
+    group: root
+    mode: '0755'

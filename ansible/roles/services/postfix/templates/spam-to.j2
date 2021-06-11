@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Net::IMAP::Simple;
+
+my $conf = {
+    server   => '{{ mailhost }}',
+    accounts => [
+        {
+            user    => '{{ user }}',
+            passwd  => '{{ user_password }}',
+            domains => [ '{{ domain }}' ],
+        },
+    ],
+};
+
+my %to;
+
+for my $account ( @{ $conf->{accounts} } ) {
+    for my $domain ( @{ $account->{domains} } ) {
+        my $user = $account->{user} . '@' . $domain;
+        my $imap;
+        while ( not $imap ) {
+            eval { $imap = Net::IMAP::Simple->new( $conf->{server} ) };
+            if ($@) {
+                warn $@;
+                sleep 1;
+            }
+        }
+        $imap->login( $user, $account->{passwd} ) or die "Failed to login to IMAP server\n";
+
+        for my $email_id ( 1 .. $imap->select('INBOX.Junk') ) {
+            my @headers = $imap->top($email_id);
+            my ($to) = grep { /^To:/ } @headers;
+
+            $to //= '>undef<';
+            $to =~ s/\r?\n//g;
+            $to =~ s/^To:\s+//i;
+            $to = $1 if ( $to =~ /<([^>]+)>/ );
+
+            $to{$to}++;
+        }
+
+        $imap->quit();
+    }
+}
+
+printf "%3d %s\n", @$_ for ( sort { $b->[0] <=> $a->[0] } map { [ $to{$_}, $_ ] } keys %to );

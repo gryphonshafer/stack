@@ -1,1 +1,1 @@
-SHELL find /etc/shorewall/rules.d -type f -exec cat {} \;
+SHELL find /etc/shorewall/rules.d -type f | sort | xargs cat

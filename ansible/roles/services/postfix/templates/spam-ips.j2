@@ -1,0 +1,91 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Net::IMAP::Simple;
+
+my $conf = {
+    filter => {
+        single => 5,
+        group  => 15,
+    },
+    server   => '{{ mailhost }}',
+    accounts => [
+        {
+            user    => '{{ user }}',
+            passwd  => '{{ user_password }}',
+            domains => [ '{{ domain }}' ],
+        },
+    ],
+};
+
+my ( $ham, $singles, $groups );
+
+for my $account ( @{ $conf->{accounts} } ) {
+    for my $domain ( @{ $account->{domains} } ) {
+        my $user = $account->{user} . '@' . $domain;
+        my $imap;
+        while ( not $imap ) {
+            eval { $imap = Net::IMAP::Simple->new( $conf->{server} ) };
+            if ($@) {
+                warn $@;
+                sleep 1;
+            }
+        }
+        $imap->login( $user, $account->{passwd} ) or die "Failed to login to IMAP server\n";
+
+        for my $email_id ( 1 .. $imap->select('INBOX.Trash') ) {
+            my @headers = $imap->top($email_id);
+
+            my ($spf) = grep { /^Received-SPF:/ } @headers;
+            next unless ( $spf and $spf =~ /^Received-SPF: Pass / );
+            my ($ip) = $spf =~ /client-ip=([\d\.]+);/;
+
+            $ham->{$ip}++;
+        }
+
+        my @ham_singles = keys %$ham;
+        my @ham_groups  = map { s/\.\d+$//; $_ } @ham_singles;
+
+        for my $email_id ( 1 .. $imap->select('INBOX.Junk') ) {
+            my @headers = $imap->top($email_id);
+
+            my ($spf) = grep { /^Received-SPF:/ } @headers;
+            next unless ( $spf and $spf =~ /^Received-SPF: Pass / );
+            my ($ip) = $spf =~ /client-ip=([\d\.]+);/;
+
+            next if ( grep { $ip eq $_ } @ham_singles );
+            $singles->{$ip}++;
+
+            $ip =~ s/\.\d+$//;
+            next if ( grep { $ip eq $_ } @ham_groups );
+            $groups->{$ip}++;
+        }
+
+        $imap->quit();
+    }
+}
+
+my @groups =
+    sort { $a->[0] cmp $b->[0] }
+    grep { $_->[1] > $conf->{filter}{group} }
+    map { [ $_, $groups->{$_} ] }
+    keys %$groups;
+
+my @group_ips = map { $_->[0] } @groups;
+
+my @singles =
+    sort { $a->[0] cmp $b->[0] }
+    grep { $_->[1] > $conf->{filter}{single} }
+    map { [ $_, $singles->{$_} ] }
+    grep {
+        my $single = $_;
+        not grep { index( $single, $_ ) == 0 } @group_ips;
+    }
+    keys %$singles;
+
+print "\n";
+print '# group IPs (' . scalar(localtime) . ")\n";
+printf "DROP net:%-16s all # %4d\n", $_->[0] . '.0/24', $_->[1] for (@groups);
+print "\n";
+print '# single IPs (' . scalar(localtime) . ")\n";
+printf "DROP net:%-16s all # %4d\n", @$_ for (@singles);
