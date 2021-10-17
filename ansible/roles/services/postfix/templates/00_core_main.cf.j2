@@ -23,3 +23,8 @@ mailbox_size_limit  = 0
 message_size_limit  = 104857600
 
 # 104857600 = 100M
+
+smtpd_restriction_classes = mua_sender_restrictions, mua_client_restrictions, mua_helo_restrictions
+mua_client_restrictions   = permit_sasl_authenticated, reject
+mua_sender_restrictions   = permit_sasl_authenticated, reject
+mua_helo_restrictions     = permit_mynetworks, reject_non_fqdn_hostname, reject_invalid_hostname, permit
