@@ -131,10 +131,15 @@
     state: restarted
   when: saslauthd.changed
 
+- name: mkdir mail-tools
+  file:
+    path: /root/mail-tools
+    state: directory
+
 - name: setup utility scripts
   copy:
-    src: '{{ item }}'
-    dest: '/root/{{ item }}'
+    src: 'mail-tools/{{ item }}'
+    dest: '/root/mail-tools/{{ item }}'
     mode: '0744'
   with_items:
     - create-mail-user

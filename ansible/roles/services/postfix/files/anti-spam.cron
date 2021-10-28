@@ -1,6 +1,0 @@
-#!/bin/sh
-mkdir -p /etc/shorewall/rules.d/blacklists
-/root/spam-ips >> /etc/shorewall/rules.d/blacklists/spam_ips
-service shorewall reload
-service fail2ban restart
-/root/spam-learn-clean

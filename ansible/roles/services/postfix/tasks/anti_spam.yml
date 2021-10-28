@@ -106,10 +106,15 @@
   when: spamassassin_enabled.changed
   notify: restart spamassassin
 
+- name: mkdir mail-tools
+  file:
+    path: /root/mail-tools
+    state: directory
+
 - name: setup utility scripts
   copy:
-    src: '{{ item }}'
-    dest: '/root/{{ item }}'
+    src: 'mail-tools/{{ item }}'
+    dest: '/root/mail-tools/{{ item }}'
     mode: '0744'
   with_items:
     - clear-queue
@@ -131,16 +136,22 @@
     user_password: "{{ lookup( 'ini', 'user_password file={{ local_dir }}/credentials.ini' ) }}"
   when: local_dir is defined
 
+- stat:
+    path: /usr/local/bin/cpanm
+  register: cpanm
+
+- name: install cpamn
+  shell: curl -L https://cpanmin.us | perl - --sudo App::cpanminus
+  when: sw_st.stat.exists == true and f2b_st.stat.exists == true and cpanm.stat.exists == false
+  args:
+    warn: false
+
+- name: install Net::IMAP::Simple and Date::Calc
+  shell: cpanm -n -f Net::IMAP::Simple Date::Calc
+  when: sw_st.stat.exists == true and f2b_st.stat.exists == true and cpanm.stat.exists == false
+
 - name: spam-learn-clean
   template:
-    src: spam-learn-clean.j2
-    dest: /root/spam-learn-clean
+    src: spam-learn-clean.pl.j2
+    dest: /etc/cron.monthly/spam-learn-clean.pl
     mode: '0700'
-
-- name: anti-spam.cron
-  copy:
-    src: anti-spam.cron
-    dest: /etc/cron.monthly/anti-spam
-    owner: root
-    group: root
-    mode: '0755'

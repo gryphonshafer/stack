@@ -14,10 +14,15 @@
     dest: /etc/postfix/main.cf.d/41_valias_maps.cf
   notify: assemble main_cf
 
+- name: mkdir mail-tools
+  file:
+    path: /root/mail-tools
+    state: directory
+
 - name: setup utility scripts
   copy:
-    src: '{{ item }}'
-    dest: '/root/{{ item }}'
+    src: 'mail-tools/{{ item }}'
+    dest: '/root/mail-tools/{{ item }}'
     mode: '0744'
   with_items:
     - create-mailman-list

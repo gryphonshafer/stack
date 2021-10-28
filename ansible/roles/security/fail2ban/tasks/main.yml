@@ -43,4 +43,32 @@
     - sendmail-whois-lines
   notify: restart fail2ban
 
+- name: delete defaults-debian.conf
+  file:
+    state: absent
+    path: /etc/fail2ban/jail.d/defaults-debian.conf
+  notify: restart fail2ban
+
+- stat:
+    path: /etc/shorewall/rules.d
+  register: sw_st
+
+- name: copy blacklist.pl
+  copy:
+    src: blacklist.pl
+    dest: /etc/cron.hourly/blacklist.pl
+    owner: root
+    group: root
+    mode: '0700'
+  when: sw_st.stat.exists == true
+
+- name: copy unblacklist.pl
+  copy:
+    src: unblacklist.pl
+    dest: /etc/cron.monthly/unblacklist.pl
+    owner: root
+    group: root
+    mode: '0700'
+  when: sw_st.stat.exists == true
+
 - import_tasks: ../../../end.yml

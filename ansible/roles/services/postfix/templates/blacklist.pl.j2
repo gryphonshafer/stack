@@ -1,0 +1,94 @@
+use Net::IMAP::Simple;
+
+$conf->{postfix} = {
+    blacklist => 'spammers',
+    threshold => 5,
+    server    => '{{ mailhost }}',
+    accounts  => [
+        {
+            user    => '{{ user }}',
+            passwd  => '{{ user_password }}',
+            domains => [ '{{ domain }}' ],
+        },
+    ],
+};
+
+push( @{ $conf->{fail2ban} }, {
+    name      => 'sasl-fails',
+    threshold => 10,
+    command   => q{zgrep -E '\[postfix\-sasl\]' /var/log/fail2ban.log /var/log/fail2ban.log.1},
+} );
+
+push( @{ $conf->{restart} }, 'courier-imap-ssl' );
+
+push( @{ $conf->{actions} }, sub {
+    my ( $ham, %ips );
+
+    for my $account ( @{ $conf->{postfix}{accounts} } ) {
+        for my $domain ( @{ $account->{domains} } ) {
+            my $user = $account->{user} . '@' . $domain;
+
+            my $imap;
+            while ( not $imap ) {
+                eval { $imap = Net::IMAP::Simple->new( $conf->{postfix}{server} ) };
+                if ($@) {
+                    warn $@;
+                    sleep 1;
+                }
+            }
+            $imap->login( $user, $account->{passwd} ) or die "Failed to login to IMAP server\n";
+
+            for my $email_id ( 1 .. $imap->select('INBOX.Trash') ) {
+                my @headers = $imap->top($email_id);
+
+                my ($spf) = grep { /^Received-SPF:/ } @headers;
+                next unless ( $spf and $spf =~ /^Received-SPF: Pass / );
+                my ($ip) = $spf =~ /client-ip=([\d\.]+);/;
+
+                $ham->{$ip}++;
+            }
+
+            my @ham_ips = keys %$ham;
+
+            for my $email_id ( 1 .. $imap->select('INBOX.Junk') ) {
+                my @headers = $imap->top($email_id);
+
+                my ($spf) = grep { /^Received-SPF:/ } @headers;
+                next unless ( $spf and $spf =~ /^Received-SPF: Pass / );
+                my ($ip) = $spf =~ /client-ip=([\d\.]+);/;
+
+                next if ( grep { $ip eq $_ } @ham_ips );
+                $ips{$ip}++;
+
+                $ip =~ s/\.\d+$//;
+            }
+
+            $imap->quit;
+        }
+    }
+
+    my $blacklist = $conf->{blacklist_dir} . '/' . $conf->{postfix}{blacklist};
+    my @blacklist;
+    if ( open( my $blacklist, '<', $blacklist ) ) {
+        @blacklist = grep { defined } map { /\b(\d+\.\d+\.\d+\.\d+)\b/; $1 } <$blacklist>;
+    }
+
+    my %rdns;
+    open( my $blacklist_w, '>>', $blacklist ) or die $!;
+    printf $blacklist_w "DROP net:%-15s all # %4d - %s - %s\n",
+        $_, $ips{$_}, $time, ( $rdns{$_} || '(no host)' )
+        for (
+            map {
+                my $ip = $_;
+                my $dns = `host $ip`;
+                $rdns{$ip} = $1 if ( $dns =~ /domain name pointer (.+?)\.?$/ );
+                $ip;
+            }
+            sort grep {
+                my $this_ip = $_;
+                $ips{$this_ip} >= $conf->{postfix}{threshold}
+                    and not grep { $this_ip eq $_ } @whitelist
+                    and not grep { $this_ip eq $_ } @blacklist;
+            } keys %ips
+        );
+} );

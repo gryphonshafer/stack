@@ -22,7 +22,7 @@
     - zones
   notify: restart shorewall
 
-- name: copy shorewall config files
+- name: copy shorewall config files and whitelist file
   copy:
     src: "{{ item }}"
     dest: "/etc/shorewall/{{ item }}"
@@ -33,6 +33,7 @@
     - init
     - start
     - stop
+    - whitelist
 
 - name: mkdir rules.d
   file:

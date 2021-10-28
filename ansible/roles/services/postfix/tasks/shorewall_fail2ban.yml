@@ -36,9 +36,11 @@
     access_time: preserve
   when: sw_st.stat.exists == true and f2b_st.stat.exists == true
 
-- name: install daily cron shorewall_fail2ban
-  copy:
-    src: shorewall_fail2ban.cron
-    dest: /etc/cron.daily/shorewall_fail2ban
-    mode: '0755'
+- name: append to blacklist.pl hourly cron
+  blockinfile:
+    block: "{{ lookup( 'template', 'blacklist.pl.j2' ) }}"
+    path: /etc/cron.hourly/blacklist.pl
+    owner: root
+    group: root
+    mode: '0700'
   when: sw_st.stat.exists == true and f2b_st.stat.exists == true
