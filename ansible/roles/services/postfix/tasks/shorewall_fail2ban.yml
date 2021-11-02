@@ -36,10 +36,10 @@
     access_time: preserve
   when: sw_st.stat.exists == true and f2b_st.stat.exists == true
 
-- name: append to blacklist.pl hourly cron
+- name: append to blacklist hourly cron
   blockinfile:
-    block: "{{ lookup( 'template', 'blacklist.pl.j2' ) }}"
-    path: /etc/cron.hourly/blacklist.pl
+    block: "{{ lookup( 'template', 'blacklist.j2' ) }}"
+    path: /etc/cron.hourly/blacklist
     owner: root
     group: root
     mode: '0700'

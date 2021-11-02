@@ -152,6 +152,6 @@
 
 - name: spam-learn-clean
   template:
-    src: spam-learn-clean.pl.j2
-    dest: /etc/cron.monthly/spam-learn-clean.pl
+    src: spam-learn-clean.j2
+    dest: /etc/cron.monthly/spam-learn-clean
     mode: '0700'

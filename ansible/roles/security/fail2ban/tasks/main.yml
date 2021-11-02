@@ -53,19 +53,19 @@
     path: /etc/shorewall/rules.d
   register: sw_st
 
-- name: copy blacklist.pl
+- name: copy blacklist
   copy:
-    src: blacklist.pl
-    dest: /etc/cron.hourly/blacklist.pl
+    src: blacklist
+    dest: /etc/cron.hourly/blacklist
     owner: root
     group: root
     mode: '0700'
   when: sw_st.stat.exists == true
 
-- name: copy unblacklist.pl
+- name: copy unblacklist
   copy:
-    src: unblacklist.pl
-    dest: /etc/cron.monthly/unblacklist.pl
+    src: unblacklist
+    dest: /etc/cron.monthly/unblacklist
     owner: root
     group: root
     mode: '0700'
