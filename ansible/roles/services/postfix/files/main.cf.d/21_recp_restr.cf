@@ -1,4 +1,4 @@
-smtpd_recipient_restrictions    =
+smtpd_recipient_restrictions =
     permit_mynetworks,
     permit_sasl_authenticated,
     reject_unauth_destination,
