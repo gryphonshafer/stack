@@ -42,8 +42,10 @@ $sa_kill_level_deflt = 6.0;   # triggers spam evasive actions (default: 6.31)
 $admin_maps_by_ccat{+CC_UNCHECKED.',1'} = undef;
 $undecipherable_subject_tag             = '';
 
-$final_bad_header_destiny = D_PASS; # D_BOUNCE for more aggressive but will filter some legitimate Yahoo mail
 $enable_dkim_verification = 1;
+$final_bad_header_destiny = D_PASS; # D_BOUNCE for more aggressive but will filter some legitimate Yahoo mail
+$final_spam_destiny       = D_DISCARD;
+$QUARANTINEDIR            = undef;
 
 @bypass_virus_checks_maps = ( \%bypass_virus_checks, \@bypass_virus_checks_acl, \$bypass_virus_checks_re );
 @bypass_spam_checks_maps  = ( \%bypass_spam_checks,  \@bypass_spam_checks_acl,  \$bypass_spam_checks_re  );
