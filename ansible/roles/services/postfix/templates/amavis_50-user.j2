@@ -28,10 +28,10 @@ $sa_kill_level_deflt = 6.0;   # triggers spam evasive actions (default: 6.31)
 @score_sender_maps = ({
     '.' => [
         new_RE(
-            [ qr'@stocktwits.com'i => -10.0 ],
-            [ qr'@sendgrid.net'i   => -10.0 ],
-            [ qr'@stage32.com'i    => -10.0 ],
-            [ qr'@calendly.com'i   => -10.0 ],
+            [ qr'\@sendgrid\.net$'i   => -10.0 ],
+            [ qr'\@calendly\.com$'i   => -10.0 ],
+            [ qr'\@pobox\.com$'i      =>   2.0 ],
+            [ qr'\@ru\.com$'i         =>   6.0 ],
         ),
         {
             'trac@{{ domain }}' => -10.0,
