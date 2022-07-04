@@ -2,7 +2,7 @@ use Net::IMAP::Simple;
 
 $conf->{postfix} = {
     blacklist => 'spammers',
-    threshold => 5,
+    threshold => 10,
     server    => '{{ mailhost }}',
     accounts  => [
         {
@@ -15,7 +15,7 @@ $conf->{postfix} = {
 
 push( @{ $conf->{fail2ban} }, {
     name      => 'sasl-fails',
-    threshold => 10,
+    threshold => 6,
     command   => q{zgrep -E '\[postfix\-sasl\]' /var/log/fail2ban.log /var/log/fail2ban.log.1},
 } );
 

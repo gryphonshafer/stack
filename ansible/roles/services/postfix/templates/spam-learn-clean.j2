@@ -6,8 +6,7 @@ use Date::Calc qw( Delta_Days Today );
 
 my $conf = {
     execute  => 1,
-    logging  => 1,
-    progress => 0,
+    log_file => '/root/spam-learn-clean.log',
     server   => '{{ mailhost }}',
     accounts => [
         {
@@ -17,13 +16,13 @@ my $conf = {
         },
     ],
     del_folders => {
-        Trash => 91,  # 13 weeks (quarter of a year)
+        Trash => 0,
         Sent  => 182, # 26 weeks (half a year)
     },
     mail_dir => '/var/vmail',
     learning => {
         spam => ['.Junk/cur'],
-        ham  => [ 'cur', '.Trash/cur' ],
+        ham  => ['.Trash/cur'],
     },
     months => { qw(
         Jan 1 Feb 2 Mar 3 Apr  4 May  5 Jun  6
@@ -31,7 +30,7 @@ my $conf = {
     ) },
 };
 
-$| = 1 if ( $conf->{progress} );
+open( my $log_file, '>', $conf->{log_file} ) if ( $conf->{log_file} );
 
 for my $account ( @{ $conf->{accounts} } ) {
     for my $domain ( @{ $account->{domains} } ) {
@@ -42,7 +41,7 @@ for my $account ( @{ $conf->{accounts} } ) {
                     '--' . $type,
                     join( '/', $conf->{mail_dir}, $domain, $account->{user}, $suffix ),
                 );
-                print $command, "\n" if ( $conf->{logging} );
+                print $log_file $command, "\n" if ( $conf->{log_file} );
                 system($command) if ( $conf->{execute} );
            }
         }
@@ -64,7 +63,7 @@ for my $account ( @{ $conf->{accounts} } ) {
             push( @scores, $score ) if ($score);
         };
         my $report_score = sub {
-            if ( @scores > 1 ) {
+            if ( $conf->{log_file} and @scores > 1 ) {
                 my $total = 0;
                 $total += $_ for (@scores);
                 my $mean = $total / @scores;
@@ -76,7 +75,7 @@ for my $account ( @{ $conf->{accounts} } ) {
                 @scores = sort { $a <=> $b } @scores;
                 my $median = $scores[ int( @scores / 2 ) ];
 
-                printf( "%8s: %6.3f\n", @$_ ) for (
+                printf $log_file "%8s: %6.3f\n", @$_ for (
                     [   'Min.' => $scores[0]  ],
                     [   'Mean' => $mean       ],
                     [   'STD.' => $std        ],
@@ -88,19 +87,16 @@ for my $account ( @{ $conf->{accounts} } ) {
             @scores = ();
         };
 
-        print "Deleting out of $user Junk\n" if ( $conf->{logging} );
+        print $log_file "Deleting out of $user Junk\n" if ( $conf->{log_file} );
         for ( 1 .. $imap->select('INBOX.Junk') ) {
-            print '.' if ( $conf->{progress} );
             $record_score->($_);
             $imap->delete($_) if ( $conf->{execute} );
         }
-        print "\n" if ( $conf->{progress} );
         $report_score->();
 
         for my $folder ( keys %{ $conf->{del_folders} } ) {
-            print "Pruning $user $folder\n" if ( $conf->{logging} );
+            print $log_file "Pruning $user $folder\n" if ( $conf->{log_file} );
             for my $email_id ( 1 .. $imap->select( 'INBOX.' . $folder ) ) {
-                print '`' if ( $conf->{progress} );
                 $record_score->($email_id) if ( $folder eq 'Trash' );
 
                 my $lines   = '';
@@ -119,11 +115,9 @@ for my $account ( @{ $conf->{accounts} } ) {
 
                 my $days = Delta_Days( $year, $conf->{months}{$month}, $day, Today() );
                 if ( $days and $days > $conf->{del_folders}{$folder} ) {
-                    print '.' if ( $conf->{progress} );
                     $imap->delete($email_id) if ( $conf->{execute} );
                 }
             }
-            print "\n" if ( $conf->{progress} );
             $report_score->() if ( $folder eq 'Trash' );
         }
 

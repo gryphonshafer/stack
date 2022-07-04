@@ -12,7 +12,7 @@ my $conf = {
             command   => q{zgrep -E '\[ssh\]' /var/log/fail2ban.log /var/log/fail2ban.log.1},
         },
     ],
-    restart => [ qw( shorewall fail2ban ) ],
+    restart => [ qw( shorewall ) ],
 };
 
 my $time = scalar(localtime);

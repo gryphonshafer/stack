@@ -29,13 +29,19 @@ $sa_kill_level_deflt = 6.0;   # triggers spam evasive actions (default: 6.31)
     '.' => [
         new_RE(
             [ qr'\@sendgrid\.net$'i   => -10.0 ],
+            [ qr'\@stocktwits\.com$'i => -10.0 ],
+            [ qr'\@sendgrid\.net$'i   => -10.0 ],
+            [ qr'\@stage32\.com$'i    => -10.0 ],
             [ qr'\@calendly\.com$'i   => -10.0 ],
+            [ qr'\@perl\.org$'i       => -10.0 ],
             [ qr'\@pobox\.com$'i      =>   2.0 ],
-            [ qr'\@ru\.com$'i         =>   6.0 ],
+            [ qr'\@ru\.com$'i         =>  10.0 ],
+            [ qr'\.click$'i           =>  10.0 ],
         ),
         {
-            'trac@{{ domain }}' => -10.0,
-        }
+            'trac@{{ domain }}'                => -10.0,
+            '{{ user }}@localhost.localdomain' => -10.0,
+        },
     ],
 });
 
