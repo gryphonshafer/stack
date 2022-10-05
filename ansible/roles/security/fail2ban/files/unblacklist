@@ -1,20 +1,38 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use Date::Parse 'str2time';
 
-my $blocks;
-$blocks->{$_}++ for (
-    map { /SRC=(\d+\.\d+\.\d+\.\d+)\b/; $1 }
-        `zgrep 'net-fw DROP' /var/log/messages*`
-);
+my ( $singles, $groups );
+for ( map { /SRC=(\d+\.\d+\.\d+\.\d+)\b/; $1 } `zgrep 'net-fw DROP' /var/log/messages*` ) {
+    $singles->{$_}++;
+    ( my $group = $_ ) =~ s/\d+$//;
+    $groups->{$group}++;
+}
+
+my $now = time();
 
 opendir( my $blacklists, '/etc/shorewall/rules.d/blacklists' );
 for my $blacklist ( grep { not /^\./ and not /\.manual$/ } readdir($blacklists) ) {
     open( my $list_in, '<', '/etc/shorewall/rules.d/blacklists/' . $blacklist );
 
     my $data = join( '', grep { defined } map {
-        /\b(\d+\.\d+\.\d+\.\d+)\b/;
-        ( $1 and $blocks->{$1} and $blocks->{$1} >= 3 ) ? $_ : undef;
+        /\b(\d+\.\d+\.\d+\.)(\d+)\s+\w+\s+#\s+\d+\s+on\s+(.+)/;
+
+        my $ipg  = ( $1 || '' );
+        my $ip   = $ipg . ( $2 || '' );
+        my $date = ( $3 || '' );
+
+        unless ( $ip and $date ) {
+            undef;
+        }
+        else {
+            (
+                str2time($date) > $now - 60 * 60 * 24 * 7 * 4 or
+                $ip and $singles->{$ip} and $singles->{$ip} >= 3 or
+                $ip and $groups->{$ip} and $groups->{$ip} >= 3
+            ) ? $_ : undef;
+        }
     } <$list_in> );
 
     close($list_in);

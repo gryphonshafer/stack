@@ -1,8 +1,11 @@
 use Net::IMAP::Simple;
 
 $conf->{postfix} = {
-    blacklist => 'spammers',
-    threshold => 10,
+    blacklist  => 'spammers',
+    thresholds => {
+        single => 6,
+        multi  => 6,
+    },
     server    => '{{ mailhost }}',
     accounts  => [
         {
@@ -22,7 +25,14 @@ push( @{ $conf->{fail2ban} }, {
 push( @{ $conf->{restart} }, 'courier-imap-ssl' );
 
 push( @{ $conf->{actions} }, sub {
-    my ( $ham, %ips );
+    my $blacklist = $conf->{blacklist_dir} . '/' . $conf->{postfix}{blacklist};
+    my @blacklist;
+    if ( open( my $blacklist, '<', $blacklist ) ) {
+        @blacklist = grep { defined } map { /\b(\d+\.\d+\.\d+\.[\d\/]+)\b/; $1 } <$blacklist>;
+    }
+
+    my ( %ips, %rdns );
+    my $append_to_blacklist = '';
 
     for my $account ( @{ $conf->{postfix}{accounts} } ) {
         for my $domain ( @{ $account->{domains} } ) {
@@ -38,18 +48,6 @@ push( @{ $conf->{actions} }, sub {
             }
             $imap->login( $user, $account->{passwd} ) or die "Failed to login to IMAP server\n";
 
-            for my $email_id ( 1 .. $imap->select('INBOX.Trash') ) {
-                my @headers = $imap->top($email_id);
-
-                my ($spf) = grep { /^Received-SPF:/ } @headers;
-                next unless ( $spf and $spf =~ /^Received-SPF: Pass / );
-                my ($ip) = $spf =~ /client-ip=([\d\.]+);/;
-
-                $ham->{$ip}++;
-            }
-
-            my @ham_ips = keys %$ham;
-
             for my $email_id ( 1 .. $imap->select('INBOX.Junk') ) {
                 my @headers = $imap->top($email_id);
 
@@ -57,9 +55,7 @@ push( @{ $conf->{actions} }, sub {
                 next unless ( $spf and $spf =~ /^Received-SPF: Pass / );
                 my ($ip) = $spf =~ /client-ip=([\d\.]+);/;
 
-                next if ( grep { $ip eq $_ } @ham_ips );
                 $ips{$ip}++;
-
                 $ip =~ s/\.\d+$//;
             }
 
@@ -67,28 +63,60 @@ push( @{ $conf->{actions} }, sub {
         }
     }
 
-    my $blacklist = $conf->{blacklist_dir} . '/' . $conf->{postfix}{blacklist};
-    my @blacklist;
-    if ( open( my $blacklist, '<', $blacklist ) ) {
-        @blacklist = grep { defined } map { /\b(\d+\.\d+\.\d+\.\d+)\b/; $1 } <$blacklist>;
+    my %multi;
+    for my $ip ( keys %ips ) {
+        ( my $group = $ip ) =~ s/\.\d+$//;
+        $multi{$group}{$ip}++;
+    }
+    my @groups = keys %multi;
+
+    for my $ip (
+        map { $_->[0] }
+        sort { $b->[1] <=> $a->[1] }
+        map { [ $_, $ips{$_} ] }
+        grep { defined }
+        map {
+            my $ip = $_;
+            ( not grep { index( $ip, $_ ) == 0 } map { $_ . '.' } @groups ) ? $ip : undef;
+        }
+        grep { defined }
+        map {
+            my $ip = $_;
+            ( not grep { $ip eq $_ } @whitelist, @blacklist ) ? $ip : undef;
+        }
+        grep { $ips{$_} >= $conf->{postfix}{thresholds}{single} }
+        keys %ips
+    ) {
+        my $dns = `host $ip`;
+        $rdns{$ip} = $1 if ( $dns =~ /domain name pointer (.+?)\.?$/ );
+
+        $append_to_blacklist .= sprintf "DROP net:%-16s all # %4d - %s - %s\n",
+            $ip,
+            $ips{$ip},
+            $time,
+            ( $rdns{$ip} || '(no host)' );
     }
 
-    my %rdns;
+    for my $group (
+        sort { $b->[1] <=> $a->[1] }
+        grep { defined }
+        map {
+            my $ipg = $_->[0];
+            ( not grep { index( $_, $ipg . '.' ) == 0 } @whitelist, @blacklist ) ? $_ : undef;
+        }
+        grep { $_->[1] >= $conf->{postfix}{thresholds}{multi} }
+        map {
+            my @ips = keys %{ $multi{$_} };
+            [ $_, scalar @ips ];
+        }
+        keys %multi
+    ) {
+        $append_to_blacklist .= sprintf "DROP net:%-16s all # %4d - %s\n",
+            $group->[0] . '.0/24',
+            $group->[1],
+            $time;
+    }
+
     open( my $blacklist_w, '>>', $blacklist ) or die $!;
-    printf $blacklist_w "DROP net:%-15s all # %4d - %s - %s\n",
-        $_, $ips{$_}, $time, ( $rdns{$_} || '(no host)' )
-        for (
-            map {
-                my $ip = $_;
-                my $dns = `host $ip`;
-                $rdns{$ip} = $1 if ( $dns =~ /domain name pointer (.+?)\.?$/ );
-                $ip;
-            }
-            sort grep {
-                my $this_ip = $_;
-                $ips{$this_ip} >= $conf->{postfix}{threshold}
-                    and not grep { $this_ip eq $_ } @whitelist
-                    and not grep { $this_ip eq $_ } @blacklist;
-            } keys %ips
-        );
+    print $blacklist_w $append_to_blacklist if ($append_to_blacklist);
 } );
