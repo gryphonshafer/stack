@@ -9,7 +9,9 @@
     cache_valid_time: 86400
     autoclean: yes
     autoremove: yes
-    pkg: python-certbot-nginx
+    pkg:
+      - python-certbot-nginx
+      - python3-certbot-dns-linode
     state: latest
     default_release: stretch-backports
   register: install_certbot
