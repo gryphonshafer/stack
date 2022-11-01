@@ -8,7 +8,7 @@ server {
 } # 80
 
 server {
-    listen 443 default_server;
+    listen 443 default_server ssl;
     server_name {{ domain }} www.{{ domain }};
     include snippets/server.conf;
     include snippets/ssl.conf;
