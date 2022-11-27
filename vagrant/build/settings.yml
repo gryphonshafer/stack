@@ -31,8 +31,8 @@ configs:
         hosts:
             - taunton:
                 name: Taunton Dev VM
-                memory: 4096
-                cpus: 4
+                memory: 8192
+                cpus: 8
                 network:
                     private_network: 10.42.0.42
                     public_network: true
