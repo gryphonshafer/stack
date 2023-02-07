@@ -5,6 +5,7 @@
     regexp: '{{ item.regexp }}'
     replace: '{{ item.replace }}'
   with_items:
+    - { regexp: '#PermitRootLogin \S+', replace: 'PermitRootLogin no' }
     - { regexp: 'PermitRootLogin \S+', replace: 'PermitRootLogin no' }
     - { regexp: '#PasswordAuthentication yes', replace: 'PasswordAuthentication no' }
   register: ssh_config

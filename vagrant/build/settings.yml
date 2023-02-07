@@ -2,13 +2,14 @@
 universal:
     vagrant:
         api_version: 2
-        require_version: 2.2.2
+        require_version: 2.3.4
     image:
-        name: bento/debian-10.6
-        version: 202010.24.0
+        name: bento/debian-11.5
+        version: 202212.11.0
     virtualbox:
         - vram: 20
         - vrde: off
+        - graphicscontroller: vmsvga
     synced_folder: /host
     ansible_user: true
 configs:
@@ -23,29 +24,9 @@ configs:
                     public_network: true
                     remap_ssh: 2213
                 ansible:
-                    manual:
-                        - inventory: inventories/test.ini
-                          playbook: playbooks/test.yml
-                          limit: test
-    taunton:
-        hosts:
-            - taunton:
-                name: Taunton Dev VM
-                memory: 8192
-                cpus: 8
-                network:
-                    private_network: 10.42.0.42
-                    public_network: true
-                    remap_ssh: 2242
-                ansible:
-                    auto:
-                        - inventory: inventories/all.ini
-                          playbook: playbooks/all.yml
-                          limit: taunton
-                    manual:
-                        - inventory: inventories/all.ini
-                          playbook: playbooks/all.yml
-                          limit: taunton
+                    inventory: inventories/test.ini
+                    playbook: playbooks/test.yml
+                    limit: test
     linode:
         hosts:
             - linode:
@@ -57,11 +38,34 @@ configs:
                     public_network: true
                     remap_ssh: 2203
                 ansible:
-                    auto:
-                        - inventory: inventories/all.ini
-                          playbook: playbooks/all.yml
-                          limit: linode
-                    manual:
-                        - inventory: inventories/all.ini
-                          playbook: playbooks/all.yml
-                          limit: www|mail|git
+                    inventory: inventories/all.ini
+                    playbook: playbooks/all.yml
+                    limit: linode
+    taunton:
+        hosts:
+            - taunton:
+                name: Taunton Dev VM
+                memory: 8192
+                cpus: 8
+                network:
+                    private_network: 10.42.0.42
+                    public_network: true
+                    remap_ssh: 2242
+                ansible:
+                    inventory: inventories/all.ini
+                    playbook: playbooks/all.yml
+                    limit: taunton
+    challenger:
+        hosts:
+            - challenger:
+                name: Challenger Dev VM
+                memory: 8192
+                cpus: 8
+                network:
+                    private_network: 10.42.0.51
+                    public_network: true
+                    remap_ssh: 2251
+                ansible:
+                    inventory: inventories/all.ini
+                    playbook: playbooks/all.yml
+                    limit: challenger

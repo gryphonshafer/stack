@@ -1,0 +1,14 @@
+---
+- name: install de_vagrant.bash
+  copy:
+    src: de_vagrant.bash
+    dest: /root/de_vagrant.bash
+    mode: 0700
+
+- name: copy post_stack_build_tasks.md
+  copy:
+    src: post_stack_build_tasks.md
+    dest: /root/post_stack_build_tasks.md
+    mode: 0644
+
+- import_tasks: ../../../end.yml

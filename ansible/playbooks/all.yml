@@ -7,13 +7,13 @@
     - exim
     - user
     - timezone
+    - ssh_hardening
 
 - hosts: security
   become: true
   roles:
     - shorewall
     - fail2ban
-    - ssh_hardening
 
 - hosts: web
   become: true
@@ -56,7 +56,7 @@
 - hosts: local
   become: true
   roles:
-    - devagrant
+    - de_vagrant
     - samba
 
 - hosts: dev

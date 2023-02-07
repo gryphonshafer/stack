@@ -43,6 +43,6 @@
 
     - perlbrew             # dev
     - sass                 # dev
-    - devagrant            # system
+    - de_vagrant           # system
 
-    - node
+    - node                 # dev

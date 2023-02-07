@@ -1,103 +1,82 @@
-VAGRANTFILE_API_VERSION = "[% vagrant.api_version %]"
-Vagrant.require_version ">= [% vagrant.require_version %]"
+VAGRANTFILE_API_VERSION = '[% vagrant.api_version %]'
+Vagrant.require_version '>= [% vagrant.require_version %]'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box         = "[% image.name %]"
-    config.vm.box_version = "[% image.version %]"
+    config.vm.box         = '[% image.name %]'
+    config.vm.box_version = '[% image.version %]'
 
     [%- IF virtualbox %]
-    config.vm.provider "virtualbox" do |vb|
+    config.vm.provider 'virtualbox' do |vb|
         vb.gui = false
         [%- FOR setting IN virtualbox %]
-        vb.customize ["modifyvm", :id, "--[% setting.keys.0 %]", "[% setting.values.0 %]"]
+        vb.customize ['modifyvm', :id, '--[% setting.keys.0 %]', '[% setting.values.0 %]']
         [%- END %]
     end
     [% END -%]
 
-    config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    config.ssh.shell = 'bash -c "BASH_ENV=/etc/profile exec bash"'
 
-    config.vm.provision "shell", inline:
-        "apt-get -q -y update && " +
-        "DEBIAN_FRONTEND=noninteractive apt-get -y " +
-        "-o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade"
+    config.vm.provision 'shell', inline: %q(
+        DEBIAN_FRONTEND=noninteractive apt-get -yq update
+        DEBIAN_FRONTEND=noninteractive apt-get -yq remove --purge grub-pc
+        DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
+        DEBIAN_FRONTEND=noninteractive apt-get -yq autoremove
+    )
 
     [%- IF ansible_user %]
-    config.vm.provision "shell",
-        name: "Ansible User",
-        path: "../../providers/ansible_user.bash",
-        env: { "LOCAL_DIR" => "[% synced_folder %]/local" }
+    config.vm.provision 'shell',
+        name: 'Ansible User',
+        path: '../../providers/ansible_user.bash',
+        env: { 'LOCAL_DIR' => '[% synced_folder %]/local' }
     [% END -%]
 
     [%- FOR host IN hosts -%]
     [%- hostname = host.keys.0 -%]
     [%- host = host.values.0 %]
-    config.vm.define "[% hostname %]" do |node|
-        node.vm.hostname = "[% hostname %]"
-        node.vm.provider "virtualbox" do |vb|
-            vb.name   = "[% host.name %]"
+    config.vm.define '[% hostname %]' do |node|
+        node.vm.hostname = '[% hostname %]'
+        node.vm.provider 'virtualbox' do |vb|
+            vb.name   = '[% host.name %]'
             vb.memory = [% host.memory %]
             vb.cpus   = [% host.cpus %]
         end
 
-        [%- FILTER replace( '\n[ ]+\n', "\n" ) %]
+        [%- FILTER replace( "\n[ ]+\n", "\n" ) %]
         [%- IF host.network.private_network %]
-        node.vm.network "private_network", ip: "[% host.network.private_network %]"
+        node.vm.network 'private_network', ip: '[% host.network.private_network %]'
         [% END -%]
         [%- IF host.network.public_network %]
-        node.vm.network "public_network", use_dhcp_assigned_default_route: true, bridge: [
-            "Realtek PCIe GBE Family Controller",
-            "Marvell AVASTAR Wireless-AC Network Controller",
+        node.vm.network 'public_network', use_dhcp_assigned_default_route: true, bridge: [
+            'Realtek PCIe GBE Family Controller',
+            'Surface Ethernet Adapter',
         ]
         [% END -%]
         [%- IF host.network.remap_ssh %]
-        node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
-        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: [% host.network.remap_ssh %]
+        node.vm.network 'forwarded_port', guest: 22, host: 2222, id: 'ssh', disabled: true
+        node.vm.network 'forwarded_port', host_ip: '127.0.0.1', guest: 22, host: [% host.network.remap_ssh %]
         [% END -%]
         [% END -%]
 
-        node.vm.synced_folder "../../../", "[% synced_folder %]", SharedFoldersEnableSymlinksCreate: false
+        node.vm.synced_folder '../../../', '[% synced_folder %]', SharedFoldersEnableSymlinksCreate: false
         [%- IF host.ansible %]
 
-        node.vm.provision "shell",
-            name: "Ansible",
-            path: "../../providers/ansible.bash",
+        node.vm.provision 'shell',
+            name: 'Ansible',
+            path: '../../providers/ansible.bash',
             env: {
-                "HOSTS"     => "[% synced_folder %]/vagrant/configs/[% project %]/hosts",
-                "LOCAL_DIR" => "[% synced_folder %]/local",
+                'HOSTS'     => '[% synced_folder %]/vagrant/configs/[% project %]/hosts',
+                'LOCAL_DIR' => '[% synced_folder %]/local',
             }
 
-        [% FOR host.ansible.auto %]
-
-        node.vm.provision "shell",
-            name: "Ansible Auto Playbook: [% inventory %] [% playbook %]",
-            inline:
-                "su -l ansible -c 'cd [% synced_folder %]/ansible; " +
-                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
-                "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
-                "ansible-playbook -i [% inventory %] [% IF limit %]-l [% limit %] [% END %]" +
-                "[% playbook %]" + "'"
-        [%- END %]
-        [% IF host.ansible.manual %]
-
-        node.vm.provision "shell",
-            name: "Ansible Manual Playbook Setup",
-            inline:
-                "echo -e '#!/usr/bin/env bash\ncd [% synced_folder %]/ansible' " +
-                "> /home/ansible/manual_playbooks.bash; " +
-                "chmod 755 /home/ansible/manual_playbooks.bash"
-
-        [%- END %]
-        [% FOR host.ansible.manual %]
-
-        node.vm.provision "shell",
-            name: "Ansible Manual Playbook: [% inventory %] [% playbook %]",
-            inline:
-                "echo '" +
-                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
-                "LOCAL_DIR=[% synced_folder %]/local SRC_DIR=[% synced_folder %] " +
-                "ansible-playbook -i [% inventory %] [% IF limit %]-l [% limit %] [% END %]" +
-                "[% playbook %]" + "' >> /home/ansible/manual_playbooks.bash"
-        [%- END %]
+        node.vm.provision 'shell',
+            name: 'Ansible Playbook: [% host.ansible.inventory %] [% host.ansible.playbook
+                %][% IF host.ansible.limit %] ([% host.ansible.limit %])[% END %]',
+            inline: %q(
+                su -l ansible -c 'cd /host/ansible; \\
+                PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg LOCAL_DIR=/host/local SRC_DIR=/host \\
+                ansible-playbook [% IF host.ansible.limit %]-l [% host.ansible.limit %] [% END
+                    %]-i [% host.ansible.inventory %] [% host.ansible.playbook %]'
+            )
         [%- END %]
     end
 

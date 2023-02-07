@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-export DEBIAN_FRONTEND=noninteractive
+DEBIAN_FRONTEND=noninteractive apt-get -yq install python3 python3-pip python3-setuptools
 
-apt-get -q -y update
-apt-get -q -y install python3 python3-pip python3-setuptools
-
-pip3 install -q ansible
+pip3 install -q ansible passlib
 
 # append to local /etc/hosts
 if ! grep -q "^# Appended automatically from host-based local hosts file" /etc/hosts

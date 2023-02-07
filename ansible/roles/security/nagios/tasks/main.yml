@@ -13,7 +13,7 @@
   register: nagios_exists
 
 - name: install nagios
-  include: install.yml
+  include_tasks: install.yml
   when: nagios_exists.stat.exists == false
 
 - name: set nagios.service file configuration file permissions
@@ -72,7 +72,7 @@
   register: nginx_exists
 
 - name: install nagios web user interface
-  include: web_ui.yml
+  include_tasks: web_ui.yml
   when: nginx_exists.stat.exists
 
 - import_tasks: ../../../end.yml
