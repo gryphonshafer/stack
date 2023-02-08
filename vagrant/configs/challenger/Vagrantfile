@@ -36,7 +36,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         node.vm.network 'private_network', ip: '10.42.0.51'
         node.vm.network 'public_network', use_dhcp_assigned_default_route: true, bridge: [
-            'Private Internet Access Network Adapter',
             'Realtek PCIe GBE Family Controller',
             'Surface Ethernet Adapter',
         ]
