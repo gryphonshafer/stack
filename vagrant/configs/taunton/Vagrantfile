@@ -1,77 +1,64 @@
-VAGRANTFILE_API_VERSION = "2"
-Vagrant.require_version ">= 2.2.2"
+VAGRANTFILE_API_VERSION = '2'
+Vagrant.require_version '>= 2.2.2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box         = "bento/debian-10.6"
-    config.vm.box_version = "202010.24.0"
+    config.vm.box         = 'bento/debian-10.6'
+    config.vm.box_version = '202010.24.0'
 
-    config.vm.provider "virtualbox" do |vb|
+    config.vm.provider 'virtualbox' do |vb|
         vb.gui = false
-        vb.customize ["modifyvm", :id, "--vram", "20"]
-        vb.customize ["modifyvm", :id, "--vrde", "off"]
+        vb.customize ['modifyvm', :id, '--vram', '20']
+        vb.customize ['modifyvm', :id, '--vrde', 'off']
+        vb.customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']
     end
 
-    config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    config.ssh.shell = 'bash -c "BASH_ENV=/etc/profile exec bash"'
 
-    config.vm.provision "shell", inline:
-        "apt-get -q -y update && " +
-        "DEBIAN_FRONTEND=noninteractive apt-get -y " +
-        "-o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade"
+    config.vm.provision 'shell', inline: %q(
+        DEBIAN_FRONTEND=noninteractive apt-get -yq update
+        DEBIAN_FRONTEND=noninteractive apt-get -yq remove --purge grub-pc
+        DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
+        DEBIAN_FRONTEND=noninteractive apt-get -yq autoremove
+    )
 
-    config.vm.provision "shell",
-        name: "Ansible User",
-        path: "../../providers/ansible_user.bash",
-        env: { "LOCAL_DIR" => "/host/local" }
+    config.vm.provision 'shell',
+        name: 'Ansible User',
+        path: '../../providers/ansible_user.bash',
+        env: { 'LOCAL_DIR' => '/host/local' }
 
-    config.vm.define "taunton" do |node|
-        node.vm.hostname = "taunton"
-        node.vm.provider "virtualbox" do |vb|
-            vb.name   = "Taunton Dev VM"
+    config.vm.define 'taunton' do |node|
+        node.vm.hostname = 'taunton'
+        node.vm.provider 'virtualbox' do |vb|
+            vb.name   = 'Taunton Dev VM'
             vb.memory = 8192
             vb.cpus   = 8
         end
 
-        node.vm.network "private_network", ip: "10.42.0.42"
-        node.vm.network "public_network", use_dhcp_assigned_default_route: true, bridge: [
-            "Realtek PCIe GBE Family Controller",
-            "Marvell AVASTAR Wireless-AC Network Controller",
+        node.vm.network 'private_network', ip: '10.42.0.42'
+        node.vm.network 'public_network', use_dhcp_assigned_default_route: true, bridge: [
+            'Private Internet Access Network Adapter',
+            'Realtek PCIe GBE Family Controller',
+            'Surface Ethernet Adapter',
         ]
-        node.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
-        node.vm.network "forwarded_port", host_ip: "127.0.0.1", guest: 22, host: 2242
+        node.vm.network 'forwarded_port', guest: 22, host: 2222, id: 'ssh', disabled: true
+        node.vm.network 'forwarded_port', host_ip: '127.0.0.1', guest: 22, host: 2242
 
-        node.vm.synced_folder "../../../", "/host", SharedFoldersEnableSymlinksCreate: false
+        node.vm.synced_folder '../../../', '/host', SharedFoldersEnableSymlinksCreate: false
 
-        node.vm.provision "shell",
-            name: "Ansible",
-            path: "../../providers/ansible.bash",
+        node.vm.provision 'shell',
+            name: 'Ansible',
+            path: '../../providers/ansible.bash',
             env: {
-                "HOSTS"     => "/host/vagrant/configs/taunton/hosts",
-                "LOCAL_DIR" => "/host/local",
+                'HOSTS'     => '/host/vagrant/configs/taunton/hosts',
+                'LOCAL_DIR' => '/host/local',
             }
 
-        node.vm.provision "shell",
-            name: "Ansible Auto Playbook: inventories/all.ini playbooks/all.yml",
-            inline:
-                "su -l ansible -c 'cd /host/ansible; " +
-                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
-                "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/all.ini -l taunton " +
-                "playbooks/all.yml" + "'"
-
-        node.vm.provision "shell",
-            name: "Ansible Manual Playbook Setup",
-            inline:
-                "echo -e '#!/usr/bin/env bash\ncd /host/ansible' " +
-                "> /home/ansible/manual_playbooks.bash; " +
-                "chmod 755 /home/ansible/manual_playbooks.bash"
-
-        node.vm.provision "shell",
-            name: "Ansible Manual Playbook: inventories/all.ini playbooks/all.yml",
-            inline:
-                "echo '" +
-                "PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg " +
-                "LOCAL_DIR=/host/local SRC_DIR=/host " +
-                "ansible-playbook -i inventories/all.ini -l taunton " +
-                "playbooks/all.yml" + "' >> /home/ansible/manual_playbooks.bash"
+        node.vm.provision 'shell',
+            name: 'Ansible Playbook: inventories/all.ini playbooks/all.yml (taunton)',
+            inline: %q(
+                su -l ansible -c 'cd /host/ansible; \\
+                PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg LOCAL_DIR=/host/local SRC_DIR=/host \\
+                ansible-playbook -l taunton -i inventories/all.ini playbooks/all.yml'
+            )
     end
 end
