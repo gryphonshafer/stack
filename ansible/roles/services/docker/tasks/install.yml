@@ -1,4 +1,6 @@
 ---
+# See: https://docs.docker.com/engine/install/debian/
+
 - name: install docker prereq packages
   apt:
     update_cache: yes
@@ -11,6 +13,7 @@
       - gnupg2
       - curl
       - software-properties-common
+      - lsb-release
     state: latest
 
 - name: check if apt-key installed
@@ -37,7 +40,9 @@
 
 - name: add apt repository
   command: >
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable"
+    add-apt-repository 
+    "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian 
+    $(lsb_release -cs) stable"
   when: aptkey_fingerprint.stdout == ""
 
 - name: update cache
@@ -49,7 +54,12 @@
   apt:
     update_cache: yes
     cache_valid_time: 86400
-    pkg: docker-ce
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
     state: latest
     force: yes
   register: docker_engine_installed
