@@ -1,9 +1,9 @@
 VAGRANTFILE_API_VERSION = '2'
-Vagrant.require_version '>= 2.3.4'
+Vagrant.require_version '>= 2.2.2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box         = 'bento/debian-11.5'
-    config.vm.box_version = '202212.11.0'
+    config.vm.box         = 'bento/debian-10.6'
+    config.vm.box_version = '202010.24.0'
 
     config.vm.provider 'virtualbox' do |vb|
         vb.gui = false
@@ -26,22 +26,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         path: '../../providers/ansible_user.bash',
         env: { 'LOCAL_DIR' => '/host/local' }
 
-    config.vm.define 'linode' do |node|
-        node.vm.hostname = 'linode'
+    config.vm.define 'tauntaun' do |node|
+        node.vm.hostname = 'tauntaun'
         node.vm.provider 'virtualbox' do |vb|
-            vb.name   = 'Linode Ansible Manager'
-            vb.memory = 1024
-            vb.cpus   = 1
+            vb.name   = 'Tauntaun Dev VM'
+            vb.memory = 8192
+            vb.cpus   = 8
         end
 
-        node.vm.network 'private_network', ip: '10.42.0.3'
+        node.vm.network 'private_network', ip: '10.42.0.42'
         node.vm.network 'public_network', use_dhcp_assigned_default_route: true, bridge: [
             'Realtek PCIe GBE Family Controller',
             'Marvell AVASTAR Wireless-AC Network Controller',
             'Surface Ethernet Adapter',
         ]
         node.vm.network 'forwarded_port', guest: 22, host: 2222, id: 'ssh', disabled: true
-        node.vm.network 'forwarded_port', host_ip: '127.0.0.1', guest: 22, host: 2203
+        node.vm.network 'forwarded_port', host_ip: '127.0.0.1', guest: 22, host: 2242
 
         node.vm.synced_folder '../../../', '/host', SharedFoldersEnableSymlinksCreate: false
 
@@ -49,16 +49,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             name: 'Ansible',
             path: '../../providers/ansible.bash',
             env: {
-                'HOSTS'     => '/host/vagrant/configs/linode/hosts',
+                'HOSTS'     => '/host/vagrant/configs/tauntaun/hosts',
                 'LOCAL_DIR' => '/host/local',
             }
 
         node.vm.provision 'shell',
-            name: 'Ansible Playbook: inventories/all.ini playbooks/all.yml (linode)',
+            name: 'Ansible Playbook: inventories/all.ini playbooks/all.yml (tauntaun)',
             inline: %q(
                 su -l ansible -c 'cd /host/ansible; \\
                 PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg LOCAL_DIR=/host/local SRC_DIR=/host \\
-                ansible-playbook -l linode -i inventories/all.ini playbooks/all.yml'
+                ansible-playbook -l tauntaun -i inventories/all.ini playbooks/all.yml'
             )
     end
 end

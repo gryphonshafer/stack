@@ -17,7 +17,7 @@ Install [Vagrant](http://vagrantup.com/) and
 [VirtualBox](https://www.virtualbox.org). Then clone or copy this repository.
 From the root of this repository, do the following:
 
-    cd vagrant/configs/taunton # or select a different configuration from the "configs" directory
+    cd vagrant/configs/tauntaun # or select a different configuration from the "configs" directory
     vagrant up
 
 This will run through the virtual machine build, installing
@@ -39,17 +39,17 @@ To make permanent changes to these `Vagrantfile`s, edit either:
 
 ### Calling Ansible Directly
 
-Assuming you've selected the "taunton" configuration, once the virtual machine
+Assuming you've selected the "tauntaun" configuration, once the virtual machine
 is built, you can rerun Ansible with the following:
 
     sudo su -l ansible
     cd /host/ansible
     PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg LOCAL_DIR=/host/local SRC_DIR=/host \
-        ansible-playbook -l taunton -i inventories/all.ini playbooks/all.yml'
+        ansible-playbook -l tauntaun -i inventories/all.ini playbooks/all.yml'
 
 ### Calling Docker Directly
 
-Assuming you've selected the "taunton" configuration, you can manually build
+Assuming you've selected the "tauntaun" configuration, you can manually build
 Docker images with the following:
 
     sudo su -

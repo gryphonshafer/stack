@@ -12,6 +12,10 @@ universal:
         - graphicscontroller: vmsvga
     synced_folder: /host
     ansible_user: true
+    bridge_names:
+        - Realtek PCIe GBE Family Controller
+        - Marvell AVASTAR Wireless-AC Network Controller
+        - Surface Ethernet Adapter
 configs:
     test:
         hosts:
@@ -41,10 +45,16 @@ configs:
                     inventory: inventories/all.ini
                     playbook: playbooks/all.yml
                     limit: linode
-    taunton:
+    tauntaun:
+        vagrant:
+            api_version: 2
+            require_version: 2.2.2
+        image:
+            name: bento/debian-10.6
+            version: 202010.24.0
         hosts:
-            - taunton:
-                name: Taunton Dev VM
+            - tauntaun:
+                name: Tauntaun Dev VM
                 memory: 8192
                 cpus: 8
                 network:
@@ -54,7 +64,7 @@ configs:
                 ansible:
                     inventory: inventories/all.ini
                     playbook: playbooks/all.yml
-                    limit: taunton
+                    limit: tauntaun
     challenger:
         hosts:
             - challenger:

@@ -47,8 +47,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         [% END -%]
         [%- IF host.network.public_network %]
         node.vm.network 'public_network', use_dhcp_assigned_default_route: true, bridge: [
-            'Realtek PCIe GBE Family Controller',
-            'Surface Ethernet Adapter',
+            [% FOR name IN bridge_names %]'[% name %]',
+            [% END %]
         ]
         [% END -%]
         [%- IF host.network.remap_ssh %]
