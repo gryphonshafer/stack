@@ -49,5 +49,6 @@ push( @{ $conf->{actions} }, sub {
 
 END {
     $_->() for ( @{ $conf->{actions} || [] } );
+    system('touch /etc/shorewall/rules') if ( grep { $_ eq 'shorewall' } @{ $conf->{restart} || [] } );
     system("service $_ restart") for ( @{ $conf->{restart} || [] } );
 }
