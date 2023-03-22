@@ -39,9 +39,9 @@
     state: absent
 
 - name: add apt repository
-  command: >
-    add-apt-repository 
-    "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian 
+  shell: >
+    add-apt-repository
+    "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian
     $(lsb_release -cs) stable"
   when: aptkey_fingerprint.stdout == ""
 
