@@ -65,17 +65,3 @@ configs:
                     inventory: inventories/all.ini
                     playbook: playbooks/all.yml
                     limit: tauntaun
-    challenger:
-        hosts:
-            - challenger:
-                name: Challenger Dev VM
-                memory: 8192
-                cpus: 8
-                network:
-                    private_network: 10.42.0.51
-                    public_network: true
-                    remap_ssh: 2251
-                ansible:
-                    inventory: inventories/all.ini
-                    playbook: playbooks/all.yml
-                    limit: challenger
