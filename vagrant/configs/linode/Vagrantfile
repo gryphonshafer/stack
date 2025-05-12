@@ -1,5 +1,5 @@
 VAGRANTFILE_API_VERSION = '2'
-Vagrant.require_version '>= 2.3.4'
+Vagrant.require_version '>= 2.4.5'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box         = 'bento/debian-11.5'
@@ -37,7 +37,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         node.vm.network 'private_network', ip: '10.42.0.3'
         node.vm.network 'public_network', use_dhcp_assigned_default_route: true, bridge: [
             'Realtek PCIe GBE Family Controller',
-            'Marvell AVASTAR Wireless-AC Network Controller',
+            'Intel(R) Wi-Fi 6 AX201 160MHz',
+            'Qualcomm Atheros QCA61x4A Wireless Network Adapter',
             'Surface Ethernet Adapter',
         ]
         node.vm.network 'forwarded_port', guest: 22, host: 2222, id: 'ssh', disabled: true

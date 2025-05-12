@@ -45,7 +45,7 @@ is built, you can rerun Ansible with the following:
     sudo su -l ansible
     cd /host/ansible
     PYTHONUNBUFFERED=1 ANSIBLE_CONFIG=ansible.cfg LOCAL_DIR=/host/local SRC_DIR=/host \
-        ansible-playbook -l tauntaun -i inventories/all.ini playbooks/all.yml'
+        ansible-playbook -l tauntaun -i inventories/all.ini playbooks/all.yml
 
 ### Calling Docker Directly
 

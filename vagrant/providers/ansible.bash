@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-DEBIAN_FRONTEND=noninteractive apt-get -yq install python3 python3-pip python3-setuptools
-
-pip3 install -q ansible passlib
+DEBIAN_FRONTEND=noninteractive apt-get -yq install \
+    python3 python3-pip python3-setuptools ansible python3-passlib
 
 # append to local /etc/hosts
 if ! grep -q "^# Appended automatically from host-based local hosts file" /etc/hosts
@@ -17,4 +16,4 @@ grep -v '^#' $HOSTS | cut -d' ' -f2 | xargs \
 
 cp $LOCAL_DIR/ansible.id_rsa /home/ansible/.ssh/id_rsa
 chmod 600 /home/ansible/.ssh/id_rsa
-chown -R ansible. /home/ansible/.ssh
+chown -R ansible: /home/ansible/.ssh

@@ -55,12 +55,6 @@
     replace: 'ircservices.goldenguru.com'
   register: anope_name
 
-- name: activate anope
-  replace:
-    dest: /etc/default/anope
-    regexp: 'START=no'
-    replace: 'START=yes'
-
 - name: restart ircd-hybrid
   service:
     name: ircd-hybrid

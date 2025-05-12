@@ -60,11 +60,7 @@
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
+      - python3-docker
     state: latest
     force: yes
   register: docker_engine_installed
-
-- name: install docker-py
-  pip:
-    name: docker-py
-  when: docker_engine_installed is changed

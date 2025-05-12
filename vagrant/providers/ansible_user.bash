@@ -28,7 +28,7 @@ mkdir /home/ansible/.ssh > /dev/null 2>&1
 
 cp $LOCAL_DIR/ansible.id_rsa.pub /home/ansible/.ssh/authorized_keys
 
-chown -R ansible. /home/ansible/.ssh
+chown -R ansible: /home/ansible/.ssh
 
 chmod 700 /home/ansible/.ssh
 chmod 644 /home/ansible/.ssh/authorized_keys

@@ -8,8 +8,6 @@
     wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
     echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
   when: php_source.stat.exists == false
-  args:
-    warn: false
 
 - name: install FastCGI PHP packages
   apt:
@@ -18,11 +16,11 @@
     autoclean: yes
     autoremove: yes
     pkg:
-      - php7.4
-      - php7.4-cgi
-      - php7.4-sqlite3
-      - php7.4-curl
-      - php7.4-xml
+      - php8.2
+      - php8.2-cgi
+      - php8.2-sqlite3
+      - php8.2-curl
+      - php8.2-xml
       - php-common
     state: latest
 
