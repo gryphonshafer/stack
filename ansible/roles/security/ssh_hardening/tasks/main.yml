@@ -10,6 +10,16 @@
     - { regexp: '#PasswordAuthentication yes', replace: 'PasswordAuthentication no' }
   register: ssh_config
 
+- name: ssh configuration hardening more
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: '{{ item }}'
+  with_items:
+    - MACs hmac-sha2-256,hmac-sha2-512
+    - Ciphers aes256-ctr,aes192-ctr,aes128-ctr
+    - KexAlgorithms curve25519-sha256,diffie-hellman-group-exchange-sha256
+  register: ssh_config
+
 - name: reload ssh configuration
   when: ssh_config is changed
   service:
