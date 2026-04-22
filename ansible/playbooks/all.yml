@@ -7,6 +7,7 @@
     - exim
     - user
     - timezone
+    - ntp
     - ssh_hardening
 
 - hosts: security
@@ -23,7 +24,6 @@
 - hosts: remote
   become: true
   roles:
-    - ntp
     - nagios
 
 - hosts: gitlab
